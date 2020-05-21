@@ -1,4 +1,4 @@
-src/.idea
+**/.idea
 *.pyc
 src/.env
 src/venv
