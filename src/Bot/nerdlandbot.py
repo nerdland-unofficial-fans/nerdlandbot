@@ -1,6 +1,6 @@
 from discord.ext.commands import Bot
 from EventHandlers import onready, oncommanderror, onmemberjoin
-from Commands import rolldice
+from Commands import rolldice, notify
 
 
 class NerdlandBot(Bot):
@@ -10,6 +10,10 @@ class NerdlandBot(Bot):
         super().__init__(command_prefix=self.prefix)
 
         self.command(name='roll_dice')(self.roll_dice)
+        self.command(name='sub')(self.subscribe)
+        self.command(name='unsub')(self.unsubscribe)
+        self.command(name='notify')(self.notify)
+        self.command(name='show_lists')(self.show_lists)
 
     async def on_ready(self):
         await onready.on_ready(self)
@@ -22,3 +26,15 @@ class NerdlandBot(Bot):
 
     async def roll_dice(self, ctx, number_of_dice: int, number_of_sides: int):
         await rolldice.roll(ctx, number_of_dice, number_of_sides)
+
+    async def subscribe(self, ctx, list_name):
+        await notify.subscribe(ctx, list_name)
+
+    async def unsubscribe(self, ctx, list_name):
+        await notify.unsubscribe(ctx, list_name)
+
+    async def notify(self, ctx, list_name):
+        await notify.notify(ctx, list_name)
+
+    async def show_lists(self, ctx):
+        await notify.show_lists(ctx)
