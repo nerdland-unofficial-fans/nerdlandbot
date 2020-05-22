@@ -1,8 +1,8 @@
 # nerdlandbot
-This is a Python-based discord bot developed for and by the nerdland discord server.
+This is a Python-based discord bot developed by the nerdland fan community.
 
 # Roadmap
-This bot was setup mostly as an experiment, there is no clearly defined goal so far.
+This bot was setup mostly as an experiment, and there is no clearly defined goal so far.
 If you have any suggestions feel free to log an issue in this repository, any new ideas or challenges are much appreciated.
 
 # Links
