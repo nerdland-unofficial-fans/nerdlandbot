@@ -1,4 +1,5 @@
 import json
+import os
 from abc import ABC
 
 from Persistence.abstractconfigstore import ConfigStore
@@ -6,20 +7,21 @@ from Persistence.abstractconfigstore import ConfigStore
 
 class JsonConfigStore(ConfigStore, ABC):
 
-    __filename = ""
+    _filename = ""
 
     def __init__(self, filename='config.json'):
-        self.__filename = filename
+        self._filename = filename
         self.validate()
 
     def validate(self):
-        with open(self.__filename, 'w+') as file:
-            file.write('{}')
+        if not os.path.exists(self._filename):
+            with open(self._filename, 'w') as file:
+                file.write('{}')
 
     def read(self):
-        with open(self.__filename, 'r') as file:
+        with open(self._filename, 'r') as file:
             return json.loads(file.read())
 
     def write(self, data: dict):
-        with open(self.__filename, 'r+') as file:
+        with open(self._filename, 'w') as file:
             json.dump(data, file)
