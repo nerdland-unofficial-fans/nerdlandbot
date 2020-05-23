@@ -10,5 +10,5 @@ class ConfigStore(ABC):
         pass
 
     @abstractmethod
-    def write(self, data):
+    def write(self, data: dict):
         pass

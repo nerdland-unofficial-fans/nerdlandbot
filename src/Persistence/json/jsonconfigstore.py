@@ -20,6 +20,6 @@ class JsonConfigStore(ConfigStore, ABC):
         with open(self.__filename, 'r') as file:
             return json.loads(file.read())
 
-    def write(self, data):
+    def write(self, data: dict):
         with open(self.__filename, 'r+') as file:
             json.dump(data, file)
