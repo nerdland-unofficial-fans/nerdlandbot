@@ -14,11 +14,11 @@ async def unsubscribe(ctx, list_name):
     if list_name not in notification_lists.keys():
         await ctx.Send('That list does not seem to exist, cannot unsubscribe')
     else:
-        if ctx.author.id not in notification_lists[list_name]:
-            await ctx.Send('You dont seem to be subscribed to this list')
-        else:
+        if ctx.author.id in notification_lists[list_name]:
             notification_lists[list_name].remove(ctx.author.id)
             await ctx.send('Unsubscribed ' + ctx.author.nick + ' from ' + list_name)
+        else:
+            await ctx.Send('You dont seem to be subscribed to this list')
 
 async def notify(ctx, list_name):
     if list_name not in notification_lists.keys():
@@ -34,4 +34,4 @@ async def show_lists(ctx):
     if notification_lists: 
         await ctx.send(', '.join(notification_lists.keys()))
     else:
-        await ctx.send('No lists exist yet')
+        await ctx.send('No lists exist yet')    
