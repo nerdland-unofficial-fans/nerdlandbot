@@ -27,14 +27,14 @@ class NerdlandBot(Bot):
     async def roll_dice(self, ctx, number_of_dice: int, number_of_sides: int):
         await rolldice.roll(ctx, number_of_dice, number_of_sides)
 
-    async def subscribe(self, ctx, list_name):
-        await notify.subscribe(ctx, list_name)
+    async def subscribe(self, ctx, list_name:str):
+        await notify.subscribe(ctx, list_name.lower())
 
-    async def unsubscribe(self, ctx, list_name):
-        await notify.unsubscribe(ctx, list_name)
+    async def unsubscribe(self, ctx, list_name:str):
+        await notify.unsubscribe(ctx, list_name.lower())
 
-    async def notify(self, ctx, list_name):
-        await notify.notify(ctx, list_name)
+    async def notify(self, ctx, list_name:str):
+        await notify.notify(ctx, list_name.lower())
 
     async def show_lists(self, ctx):
         await notify.show_lists(ctx)
