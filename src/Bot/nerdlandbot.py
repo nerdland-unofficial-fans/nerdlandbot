@@ -9,12 +9,14 @@ class NerdlandBot(Bot):
 
         super().__init__(command_prefix=self.prefix)
 
-        self.command(name='roll_dice')(self.roll_dice)
         self.command(name='sub')(self.subscribe)
         self.command(name='unsub')(self.unsubscribe)
         self.command(name='notify')(self.notify)
         self.command(name='show_lists')(self.show_lists)
 
+        self.command(name='roll_dice')(self.roll_dice)
+
+    # EVENTS
     async def on_ready(self):
         await onready.on_ready(self)
 
@@ -24,9 +26,7 @@ class NerdlandBot(Bot):
     async def on_member_join(self,member):
         await onmemberjoin.on_member_join(self,member)
 
-    async def roll_dice(self, ctx, number_of_dice: int, number_of_sides: int):
-        await rolldice.roll(ctx, number_of_dice, number_of_sides)
-
+    # NOTIFICATIONS
     async def subscribe(self, ctx, list_name:str):
         await notify.subscribe(ctx, list_name.lower())
 
@@ -38,3 +38,7 @@ class NerdlandBot(Bot):
 
     async def show_lists(self, ctx):
         await notify.show_lists(ctx)
+
+    # MISC
+    async def roll_dice(self, ctx, number_of_dice: int, number_of_sides: int):
+        await rolldice.roll(ctx, number_of_dice, number_of_sides)
