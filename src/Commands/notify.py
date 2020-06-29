@@ -1,4 +1,4 @@
-from serverData import loadServerData
+from .serverData import loadServerData
 
 async def subscribe(ctx, list_name):
     data = loadServerData(ctx)
