@@ -1,0 +1,7 @@
+{
+    "guild_changed": true,
+    "notification_lists": {
+        "fileTest": [],
+        "test": []
+    }
+}
