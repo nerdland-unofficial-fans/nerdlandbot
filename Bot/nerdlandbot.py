@@ -13,8 +13,8 @@ class NerdlandBot(Bot):
     async def on_ready(self):
         await onready.on_ready(self)
 
-    async def on_command_error(self, context, exception):
-        await oncommanderror.on_command_error(self, context, exception)
+    # async def on_command_error(self, context, exception):
+    #     await oncommanderror.on_command_error(self, context, exception)
 
     async def on_member_join(self,member):
         await onmemberjoin.on_member_join(self,member)
