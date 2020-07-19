@@ -1,6 +1,6 @@
 from discord.ext.commands import Bot
 from EventHandlers import onready, oncommanderror, onmemberjoin
-from Commands import rolldice, notify
+from Commands import notify
 
 
 class NerdlandBot(Bot):
@@ -11,11 +11,9 @@ class NerdlandBot(Bot):
 
         self.command(name='sub')(self.subscribe)
         self.command(name='unsub')(self.unsubscribe)
-        self.command(name='notify')(self.notify)
+        # self.command(name='notify')(self.notify)
         self.command(name='show_lists')(self.show_lists)
         self.command(name='save_config')(self.save_config)
-
-        self.command(name='roll_dice')(self.roll_dice)
 
     # EVENTS
     async def on_ready(self):
@@ -43,7 +41,3 @@ class NerdlandBot(Bot):
     async def save_config(self, ctx):
         #TODO: We should probably add some way to only allow the person that hosts the bot to run this command
         await notify.save_config(ctx)
-
-    # MISC
-    async def roll_dice(self, ctx, number_of_dice: int, number_of_sides: int):
-        await rolldice.roll(ctx, number_of_dice, number_of_sides)
