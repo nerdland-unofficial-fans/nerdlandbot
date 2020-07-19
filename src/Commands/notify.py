@@ -1,4 +1,8 @@
+from discord.ext import commands
 from .serverData import load_guild_config, save_configs
+
+#class Notify(commands.Cog)
+
 
 async def subscribe(ctx, list_name):    
     config = await load_guild_config(ctx)
