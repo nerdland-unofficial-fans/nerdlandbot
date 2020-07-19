@@ -1,7 +1,23 @@
 {
     "guild_changed": true,
     "notification_lists": {
+        "Test": [],
+        "catfacts": [
+            185089816218697729
+        ],
+        "eva": [
+            427539689663234060
+        ],
         "fileTest": [],
+        "hallo": [
+            427539689663234060
+        ],
+        "plushkin": [
+            427539689663234060
+        ],
+        "sebastiaan": [
+            427539689663234060
+        ],
         "test": []
     }
 }

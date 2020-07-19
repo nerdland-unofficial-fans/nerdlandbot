@@ -7,9 +7,10 @@ class Notify(commands.Cog):
         self.bot = bot
 
 
-
     @commands.command(name = 'sub',aliases=['subscribe'])
     async def sub(self,ctx, list_name):    
+        list_name = list_name.lower()
+
         config = await load_guild_config(ctx)
 
         if list_name not in config.notification_lists.keys():
@@ -27,6 +28,8 @@ class Notify(commands.Cog):
 
     @commands.command(name='unsub', aliases=['unsubscribe'])
     async def unsubscribe(self,ctx, list_name):
+        list_name = list_name.lower()
+        
         config = await load_guild_config(ctx)
 
         if list_name not in config.notification_lists.keys():
@@ -42,6 +45,8 @@ class Notify(commands.Cog):
 
     @commands.command(name='notify')
     async def notify(self,ctx, list_name):
+        list_name = list_name.lower()
+
         config = await load_guild_config(ctx)
 
         if list_name not in config.notification_lists.keys():
