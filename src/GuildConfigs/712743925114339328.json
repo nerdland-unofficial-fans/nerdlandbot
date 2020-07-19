@@ -1,13 +1,14 @@
 {
     "guild_changed": true,
     "notification_lists": {
-        "Test": [],
+        "Test": {
+            "icon": ":poop:",
+            "users":[]
+        },
         "catfacts": [
             185089816218697729
         ],
-        "eva": [
-            427539689663234060
-        ],
+        "eva": [],
         "fileTest": [],
         "hallo": [
             427539689663234060
