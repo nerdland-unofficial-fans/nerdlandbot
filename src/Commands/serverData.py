@@ -12,7 +12,7 @@ async def load_guild_config(ctx):
 
     #check if server config file exists
     config = None
-    fileName = _configFolder + str(ctx.message.guild.id) + ".txt"
+    fileName = _configFolder + str(ctx.message.guild.id) + ".json"
 
     if path.exists(fileName):
         #Load data
@@ -30,7 +30,7 @@ async def save_configs(ctx):
         config = _guildConfigCache[key]
 
         if config.guild_changed:
-            fileName = _configFolder + str(ctx.message.guild.id) + ".txt"
+            fileName = _configFolder + str(ctx.message.guild.id) + ".json"
             await __write_file(fileName, config)
 
 async def __read_file(filename:str):
