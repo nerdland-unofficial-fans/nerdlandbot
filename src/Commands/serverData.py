@@ -2,28 +2,30 @@ from os import path
 
 import json
 
-_configFolder = "./GuildConfigs/"
+_configFolder = "./src/GuildConfigs/"
 _guildConfigCache = dict()
 
+
 async def load_guild_config(ctx):
-    #check if memory cache contains server config
+    # check if memory cache contains server config
     if ctx.message.guild.id in _guildConfigCache.keys():
         return _guildConfigCache[ctx.message.guild.id]
 
-    #check if server config file exists
+    # check if server config file exists
     config = None
     fileName = _configFolder + str(ctx.message.guild.id) + ".json"
 
     if path.exists(fileName):
-        #Load data
+        # Load data
         config = await __read_file(fileName)
         config.guild_changed = False
     else:
-        #Init new instance of ServerData
+        # Init new instance of ServerData
         config = GuildData()
 
     _guildConfigCache[ctx.message.guild.id] = config
     return config
+
 
 async def save_configs(ctx):
     for key in _guildConfigCache:
@@ -33,7 +35,8 @@ async def save_configs(ctx):
             fileName = _configFolder + str(ctx.message.guild.id) + ".json"
             await __write_file(fileName, config)
 
-async def __read_file(filename:str):
+
+async def __read_file(filename: str):
     with open(filename) as config:
         data = json.load(config)
 
@@ -42,11 +45,13 @@ async def __read_file(filename:str):
 
         return serverData
 
-async def __write_file(filename:str, guildConfig):
-    with open(filename, 'w') as config:
-        json.dump(guildConfig.__dict__, config, indent=4, sort_keys=True)    
 
-class GuildData():
+async def __write_file(filename: str, guildConfig):
+    with open(filename, "w") as config:
+        json.dump(guildConfig.__dict__, config, indent=4, sort_keys=True)
+
+
+class GuildData:
     guild_changed: bool
     notification_lists: dict()
 
