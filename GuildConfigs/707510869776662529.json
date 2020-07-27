@@ -1,22 +1,20 @@
 {
     "guild_changed": true,
-    "guild_id": 712743925114339328,
+    "guild_id": 707510869776662529,
     "notification_lists": {
         "boardgames": {
             "icon": "\ud83c\udfb2",
-            "users": []
+            "users": [
+                185089816218697729
+            ]
         },
         "csgo": {
             "icon": "\u2714",
-            "users": [
-                427539689663234060
-            ]
+            "users": []
         },
         "escaperoom": {
             "icon": "\ud83d\udd13",
-            "users": [
-                427539689663234060
-            ]
+            "users": []
         },
         "leagueoflegends": {
             "icon": "\u2764",
@@ -24,9 +22,7 @@
         },
         "rocketleague": {
             "icon": "\ud83d\udd25",
-            "users": [
-                427539689663234060
-            ]
+            "users": []
         },
         "test": {
             "icon": "\ud83d\udca9",
@@ -37,8 +33,9 @@
         "test2": {
             "icon": "\ud83d\ude02",
             "users": [
-                261845884734537759,
-                185089816218697729
+                185089816218697729,
+                427539689663234060,
+                261845884734537759
             ]
         }
     }
