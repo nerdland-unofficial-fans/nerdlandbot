@@ -39,14 +39,15 @@ class Notify(commands.Cog):
         guild_data = await get_guild_data(ctx.message.guild.id)
 
         if guild_data.notification_lists:
-            msg = await ctx.send(
-                ", ".join(
-                    [
-                        v["icon"] + " - " + k
-                        for k, v in guild_data.notification_lists.items()
-                    ]
-                )
+            text = "Lists:\n"
+            text += "\n".join(
+                [
+                    v["icon"] + " - " + k
+                    for k, v in guild_data.notification_lists.items()
+                ]
             )
+
+            msg = await ctx.send(text)
             for v in guild_data.notification_lists.values():
                 await msg.add_reaction(v["icon"])
 
