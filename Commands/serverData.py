@@ -25,7 +25,7 @@ async def get_guild_data(guild_id: int):
 
     if path.exists(fileName):
         # Load data
-        config = await __read_file(fileName)
+        config = await __read_file(guild_id, fileName)
         config.guild_changed = False
     else:
         # Init new instance of ServerData
@@ -35,12 +35,12 @@ async def get_guild_data(guild_id: int):
     return config
 
 
-async def __read_file(filename: str):
+async def __read_file(guild_id: int, filename: str):
     # TODO: Actually make this async
     with open(filename) as config:
         data = json.load(config)
 
-        serverData = GuildData()
+        serverData = GuildData(guild_id)
         serverData.notification_lists = data["notification_lists"]
 
         return serverData
