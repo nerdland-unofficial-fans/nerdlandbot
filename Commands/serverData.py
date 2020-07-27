@@ -2,7 +2,7 @@ from os import path
 
 import json
 
-_configFolder = "./src/GuildConfigs/"
+_configFolder = "./GuildConfigs/"
 _guildConfigCache = dict()
 
 
