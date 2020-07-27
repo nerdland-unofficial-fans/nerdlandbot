@@ -97,6 +97,11 @@ class GuildData:
             else:
                 return "Nobody to notify"
 
+    async def add_notification_list(self, list_name, emoji):
+        # TODO add boolean custom_icon
+        self.notification_lists[list_name] = {"icon": str(emoji), "users": []}
+        await self.save()
+
     async def save(self):
         await self.__write_file()
         self.guild_changed = False
