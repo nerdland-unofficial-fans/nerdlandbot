@@ -110,13 +110,14 @@ class Notify(commands.Cog):
 
     @commands.command(name="show_lists")
     async def show_lists(self, ctx):
+        #TODO printing of custom emojis
         guild_data = await get_guild_data(ctx.message.guild.id)
 
         if guild_data.notification_lists:
             text = "Lists:\n"
             text += "\n".join(
                 [
-                    v["icon"] + " - " + k
+                    v["icon"] else + " - " + k
                     for k, v in guild_data.notification_lists.items()
                 ]
             )
@@ -125,7 +126,8 @@ class Notify(commands.Cog):
             for v in guild_data.notification_lists.values():
                 await msg.add_reaction(v["icon"])
 
-            timeout = time.time() + 60 * 5  # 5 minutes from now
+            # TODO make reaction time configurable
+            timeout = time.time() + 60  # 1 minutes from now
             reaction_added_task = asyncio.create_task(
                 self.wait_for_added_reactions(ctx, msg, guild_data, timeout)
             )
@@ -168,6 +170,59 @@ class Notify(commands.Cog):
     async def save_config(self, ctx):
         await save_configs(ctx)
         await ctx.send("Configurations saved")
+
+    @commands.command(name="add_list")
+    async def add_list(self, ctx, list_name):
+        # if not ctx.message.author.guild_permissions.administrator:
+        #     await ctx.send("https://gph.is/g/4w8PDNj")
+        #     return
+        list_name = list_name.lower()
+        guild_data = await get_guild_data(ctx.message.guild.id)
+
+        if list_name in guild_data.notification_lists.keys():
+            await ctx.send(list_name + " already exists, foemp")
+            # TODO: foemp mode
+        else:
+            msg = await ctx.send(
+                "What emoji do you want to use for " + list_name + " ?"
+            )
+            try:
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user: reaction.message.id == msg.id
+                    and user == ctx.message.author,
+                    timeout=30.0,
+                )
+                if reaction.custom_emoji:
+                    reaction_emoji = reaction.emoji.id
+                    emoji_to_print = (
+                        "<:"
+                        + ctx.bot.get_emoji(reaction_emoji).name
+                        + ":"
+                        + str(reaction_emoji)
+                        + ">"
+                    )
+                else:
+                    reaction_emoji = reaction.emoji
+                    emoji_to_print = str(reaction_emoji)
+                emoji_exists = False
+                for key, v in guild_data.notification_lists.items():
+                    if reaction_emoji == v["icon"]:
+                        emoji_exists = True
+
+                if emoji_exists:
+                    await ctx.send("This emoji is already used for a list, foemp")
+                else:
+                    await guild_data.add_notification_list(list_name, reaction_emoji)
+                    await ctx.send(
+                        "The list `"
+                        + list_name
+                        + "` is saved with the emoji "
+                        + emoji_to_print
+                    )
+
+            except asyncio.TimeoutError:
+                pass
 
 
 def setup(bot):

@@ -4,7 +4,9 @@
     "notification_lists": {
         "boardgames": {
             "icon": "\ud83c\udfb2",
-            "users": []
+            "users": [
+                427539689663234060
+            ]
         },
         "csgo": {
             "icon": "\u2714",
@@ -18,27 +20,28 @@
                 427539689663234060
             ]
         },
+        "foemp": {
+            "icon": "\ud83e\udd2f",
+            "users": []
+        },
         "leagueoflegends": {
             "icon": "\u2764",
             "users": []
         },
         "rocketleague": {
             "icon": "\ud83d\udd25",
-            "users": [
-                427539689663234060
-            ]
+            "users": []
         },
         "test": {
             "icon": "\ud83d\udca9",
-            "users": [
-                185089816218697729
-            ]
+            "users": []
         },
         "test2": {
             "icon": "\ud83d\ude02",
             "users": [
                 261845884734537759,
-                185089816218697729
+                185089816218697729,
+                427539689663234060
             ]
         }
     }
