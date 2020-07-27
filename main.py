@@ -14,8 +14,6 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = NerdlandBot("?")
-for cog in ["games", "notify"]:
-    bot.load_extension("Commands." + cog)
-
+bot.load_extension("Commands.notify")
 
 bot.run(TOKEN)
