@@ -11,7 +11,7 @@ async def save_configs(guild_id: int):
         config = _guildConfigCache[key]
 
         if config.guild_changed:
-            config.save(guild_id)
+            await config.save(guild_id)
 
 
 async def get_guild_data(guild_id: int):
@@ -21,7 +21,7 @@ async def get_guild_data(guild_id: int):
 
     # check if server config file exists
     config = None
-    fileName = __get_file_path(guild_id)
+    fileName = get_file_path(guild_id)
 
     if path.exists(fileName):
         # Load data
@@ -40,13 +40,13 @@ async def __read_file(guild_id: int, filename: str):
     with open(filename) as config:
         data = json.load(config)
 
-        serverData = GuildData(guild_id)
-        serverData.notification_lists = data["notification_lists"]
+        guildData = GuildData(guild_id)
+        guildData.notification_lists = data["notification_lists"]
 
-        return serverData
+        return guildData
 
 
-def __get_file_path(guild_id: int):
+def get_file_path(guild_id: int):
     return _configFolder + str(guild_id) + ".json"
 
 
@@ -60,26 +60,26 @@ class GuildData:
         self.guild_changed = False
         self.notification_lists = dict()
 
-    def sub_user(self, list_name: str, user_id: int):
-        if self.notification_lists.keys():
+    async def sub_user(self, list_name: str, user_id: int):
+        if list_name not in self.notification_lists.keys():
             return "This list does not exist"
             # TODO: print lists with reactions to sub
         elif user_id in self.notification_lists[list_name]["users"]:
-            return "You are already subscribed to this list"
+            return "<@" + str(user_id) + ">, you are already subscribed to " + list_name
         else:
             self.notification_lists[list_name]["users"].append(user_id)
             self.guild_changed = True
-            self.save()
+            await self.save()
             return "Subscribed <@" + str(user_id) + "> to " + list_name
 
-    def unsub_user(self, list_name: str, user_id: int):
+    async def unsub_user(self, list_name: str, user_id: int):
         if list_name not in self.notification_lists.keys():
             return "That list does not seem to exist, cannot unsubscribe"
         else:
             if user_id in self.notification_lists[list_name]["users"]:
                 self.notification_lists[list_name]["users"].remove(user_id)
                 self.guild_changed = True
-                self.save()
+                await self.save()
                 return "Unsubscribed <@" + str(user_id) + "> from " + list_name
             else:
                 return "You dont seem to be subscribed to this list"
@@ -88,20 +88,21 @@ class GuildData:
         if list_name not in self.notification_lists.keys():
             return "That list does not seem to exist"
         else:
-            if self.notification_lists[list_name]:
-
+            users = self.notification_lists[list_name]["users"]
+            if len(users) > 0:
                 mentionList = []
-                for id in self.notification_lists[list_name]["users"]:
-                    mentionList.append("<@" + str(id) + ">")
+                for user_id in users:
+                    mentionList.append("<@" + str(user_id) + ">")
                 return "Notifying " + ", ".join(mentionList)
             else:
                 return "Nobody to notify"
 
     async def save(self):
-        await __write_file()
+        await self.__write_file()
         self.guild_changed = False
 
     async def __write_file(self):
-        with open(__get_file_path(self.guild_id), "w+") as config:
+        # TODO: Actually make this async
+        with open(get_file_path(self.guild_id), "w+") as config:
             json.dump(self.__dict__, config, indent=4, sort_keys=True)
 
