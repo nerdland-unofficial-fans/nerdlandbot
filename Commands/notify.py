@@ -110,14 +110,14 @@ class Notify(commands.Cog):
 
     @commands.command(name="show_lists")
     async def show_lists(self, ctx):
-        #TODO printing of custom emojis
+        # TODO printing of custom emojis
         guild_data = await get_guild_data(ctx.message.guild.id)
 
         if guild_data.notification_lists:
             text = "Lists:\n"
             text += "\n".join(
                 [
-                    v["icon"] else + " - " + k
+                    v["icon"] + " - " + k
                     for k, v in guild_data.notification_lists.items()
                 ]
             )
@@ -202,9 +202,11 @@ class Notify(commands.Cog):
                         + str(reaction_emoji)
                         + ">"
                     )
+                    custom_emoji = True
                 else:
                     reaction_emoji = reaction.emoji
                     emoji_to_print = str(reaction_emoji)
+                    custom_emoji = False
                 emoji_exists = False
                 for key, v in guild_data.notification_lists.items():
                     if reaction_emoji == v["icon"]:
@@ -213,7 +215,9 @@ class Notify(commands.Cog):
                 if emoji_exists:
                     await ctx.send("This emoji is already used for a list, foemp")
                 else:
-                    await guild_data.add_notification_list(list_name, reaction_emoji)
+                    await guild_data.add_notification_list(
+                        list_name, reaction_emoji, custom_emoji
+                    )
                     await ctx.send(
                         "The list `"
                         + list_name
