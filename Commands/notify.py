@@ -80,9 +80,9 @@ class Notify(commands.Cog):
                 and not user.bot,
             )
 
-            # Todo: Sub the user to the list
-            # Todo: When making a list, ask the user for an emoticon
-            # Todo: listen to all reactions within a certain timeframe (in a while True loop with a time.time() timer)
+            # TODO: Sub the user to the list
+            # TODO: When making a list, ask the user for an emoticon
+            # TODO: listen to all reactions within a certain timeframe (in a while True loop with a time.time() timer)
         else:
             await ctx.send("No lists exist yet")
 
