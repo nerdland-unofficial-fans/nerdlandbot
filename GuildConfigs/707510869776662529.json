@@ -1,77 +1,44 @@
 {
-    "guild_changed": false,
+    "guild_changed": true,
     "guild_id": 707510869776662529,
     "notification_lists": {
-        ";lkawjer": {
-            "icon": "735238757665603714",
-            "users": []
-        },
         "boardgames": {
-            "icon": "\ud83c\udfb2",
+            "emoji": "\ud83c\udfb2",
+            "is_custom_emoji": false,
             "users": [
                 185089816218697729
             ]
         },
         "csgo": {
-            "icon": "\u2714",
+            "emoji": "\u2714",
+            "is_custom_emoji": false,
             "users": []
         },
-        "edede": {
-            "icon": "737366953160867920",
+        "custom_list": {
+            "emoji": "735238757665603714",
+            "is_custom_emoji": true,
             "users": []
         },
         "escaperoom": {
-            "icon": "\ud83d\udd13",
-            "users": []
-        },
-        "eva": {
-            "icon": "735238757665603714",
-            "users": []
-        },
-        "haha": {
-            "icon": "\ud83d\udc40",
-            "users": []
-        },
-        "hihi": {
-            "icon": "\ud83d\ude06",
-            "users": []
-        },
-        "hihid": {
-            "icon": "737366953689350305",
-            "users": []
-        },
-        "ietsgrappig": {
-            "icon": "737366954427285595",
+            "emoji": "\ud83d\udd13",
+            "is_custom_emoji": false,
             "users": []
         },
         "leagueoflegends": {
-            "icon": "\u2764",
-            "users": []
-        },
-        "minimalvaaiableprodukt": {
-            "icon": "737366954427285595",
+            "emoji": "\u2764",
+            "is_custom_emoji": false,
             "users": []
         },
         "rocketleague": {
-            "icon": "\ud83d\udd25",
-            "users": []
-        },
-        "sebastiaan": {
-            "icon": "\ud83e\udd88",
+            "emoji": "\ud83d\udd25",
+            "is_custom_emoji": false,
             "users": []
         },
         "test": {
-            "icon": "\ud83d\udca9",
+            "emoji": "737366954427285595",
+            "is_custom_emoji": true,
             "users": [
-                185089816218697729
-            ]
-        },
-        "test2": {
-            "icon": "\ud83d\ude02",
-            "users": [
-                185089816218697729,
-                427539689663234060,
-                261845884734537759
+                427539689663234060
             ]
         }
     }

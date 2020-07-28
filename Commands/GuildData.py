@@ -100,9 +100,9 @@ class GuildData:
     async def add_notification_list(self, list_name, emoji, custom_emoji):
         # TODO add boolean custom_icon
         self.notification_lists[list_name] = {
-            "icon": str(emoji),
+            "emoji": str(emoji),
+            "is_custom_emoji": custom_emoji,
             "users": [],
-            "custom": custom_emoji,
         }
         await self.save()
 
@@ -114,4 +114,3 @@ class GuildData:
         # TODO: Actually make this async
         with open(get_file_path(self.guild_id), "w+") as config:
             json.dump(self.__dict__, config, indent=4, sort_keys=True)
-
