@@ -7,21 +7,6 @@ from discord.ext import commands
 from .GuildData import get_guild_data, save_configs
 
 
-async def main():
-    task1 = asyncio.create_task(say_after(1, "hello"))
-
-    task2 = asyncio.create_task(say_after(2, "world"))
-
-    print(f"started at {time.strftime('%X')}")
-
-    # Wait until both tasks are completed (should take
-    # around 2 seconds.)
-    await task1
-    await task2
-
-    print(f"finished at {time.strftime('%X')}")
-
-
 class Notify(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -65,13 +50,15 @@ class Notify(commands.Cog):
                     and not user.bot,
                     timeout=30.0,
                 )
+
                 if reaction.custom_emoji:
-                    reaction_emoji = reaction.emoji.id
+                    reaction_emoji = str(reaction.emoji.id)
                 else:
                     reaction_emoji = reaction.emoji
+
                 for key, v in guild_data.notification_lists.items():
 
-                    if reaction_emoji == v["icon"]:
+                    if reaction_emoji == v["emoji"]:
 
                         msg_string = await guild_data.sub_user(key, user.id)
                         await ctx.send(msg_string)
@@ -92,12 +79,12 @@ class Notify(commands.Cog):
                     timeout=30.0,
                 )
                 if reaction.custom_emoji:
-                    reaction_emoji = reaction.emoji.id
+                    reaction_emoji = str(reaction.emoji.id)
                 else:
                     reaction_emoji = reaction.emoji
                 for key, v in guild_data.notification_lists.items():
 
-                    if reaction_emoji == v["icon"]:
+                    if reaction_emoji == v["emoji"]:
 
                         msg_string = await guild_data.unsub_user(key, user.id)
                         await ctx.send(msg_string)
@@ -115,16 +102,28 @@ class Notify(commands.Cog):
 
         if guild_data.notification_lists:
             text = "Lists:\n"
-            text += "\n".join(
-                [
-                    v["icon"] + " - " + k
-                    for k, v in guild_data.notification_lists.items()
-                ]
-            )
+            for k, v in guild_data.notification_lists.items():
+                if v["is_custom_emoji"]:
+                    # TODO: Extract to 'get_custom_emoji' method for reusability
+                    text += ("\n<:"
+                             + ctx.bot.get_emoji(int(v["emoji"])).name
+                             + ":"
+                             + v["emoji"]
+                             + "> - "
+                             + k
+                             )
+                else:
+                    text += "\n" + v["emoji"] + " - " + k
+            # text += "\n".join(
+            #     [
+            #         v["emoji"] + " - " + k
+            #         for k, v in guild_data.notification_lists.items()
+            #     ]
+            # )
 
             msg = await ctx.send(text)
             for v in guild_data.notification_lists.values():
-                await msg.add_reaction(v["icon"])
+                await msg.add_reaction(v["emoji"] if not v["is_custom_emoji"] else ctx.bot.get_emoji(int(v["emoji"])))
 
             # TODO make reaction time configurable
             timeout = time.time() + 60  # 1 minutes from now
@@ -138,11 +137,9 @@ class Notify(commands.Cog):
             await reaction_added_task
             await reaction_removed_task
             await msg.delete()
+            # TODO give option to send a message after delete, or just stay silent?
             await ctx.channel.send("You snooze, you lose!")
 
-            # TODO: Sub the user to the list
-            # TODO: When making a list, ask the user for an emoticon
-            # TODO: listen to all reactions within a certain timeframe (in a while True loop with a time.time() timer)
         else:
             await ctx.send("No lists exist yet")
 
@@ -207,9 +204,10 @@ class Notify(commands.Cog):
                     reaction_emoji = reaction.emoji
                     emoji_to_print = str(reaction_emoji)
                     custom_emoji = False
+
                 emoji_exists = False
                 for key, v in guild_data.notification_lists.items():
-                    if reaction_emoji == v["icon"]:
+                    if reaction_emoji == v["emoji"]:
                         emoji_exists = True
 
                 if emoji_exists:
