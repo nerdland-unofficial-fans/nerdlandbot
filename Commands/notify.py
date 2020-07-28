@@ -28,7 +28,7 @@ class Notify(commands.Cog):
         list_name = list_name.lower()
 
         guild_data = await get_guild_data(ctx.message.guild.id)
-        msg_string = guild_data.unsub_user(list_name, ctx.author.id)
+        msg_string = await guild_data.unsub_user(list_name, ctx.author.id)
 
         await ctx.send(msg_string)
 
@@ -224,6 +224,42 @@ class Notify(commands.Cog):
                     )
 
             except asyncio.TimeoutError:
+                pass
+
+    @commands.command(name="remove_list")
+    async def remove_list(self, ctx, list_name):
+        # if not ctx.message.author.guild_permissions.administrator:
+        #     await ctx.send("https://gph.is/g/4w8PDNj")
+        #     return
+        list_name = list_name.lower()
+        guild_data = await get_guild_data(ctx.message.guild.id)
+
+        if list_name not in guild_data.notification_lists.keys():
+            await ctx.send("No such list, foemp.")
+        else:
+            msg = await ctx.send("Are you sure, foemp?")
+            await msg.add_reaction("👍")
+            await msg.add_reaction("👎")
+            try:
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user: reaction.message.id == msg.id
+                    and user == ctx.message.author,
+                    timeout=30.0,
+                )
+                if reaction.emoji == "👍":
+                    await guild_data.remove_notification_list(
+                        list_name
+                    )
+                    await ctx.send("The list `" + list_name + "` is removed")
+                elif reaction.emoji == "👎":
+                    await ctx.send(list_name+" won't be removed.")
+                await msg.delete()
+
+            except asyncio.TimeoutError:
+                # TODO add option to delete message or not
+                await msg.delete()
+                await ctx.send("You snooze, you lose!")
                 pass
 
 

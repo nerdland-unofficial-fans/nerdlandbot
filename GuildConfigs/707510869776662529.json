@@ -12,12 +12,16 @@
         "csgo": {
             "emoji": "\u2714",
             "is_custom_emoji": false,
-            "users": []
+            "users": [
+                427539689663234060
+            ]
         },
         "custom_list": {
             "emoji": "735238757665603714",
             "is_custom_emoji": true,
-            "users": []
+            "users": [
+                427539689663234060
+            ]
         },
         "escaperoom": {
             "emoji": "\ud83d\udd13",
@@ -37,9 +41,7 @@
         "test": {
             "emoji": "737366954427285595",
             "is_custom_emoji": true,
-            "users": [
-                427539689663234060
-            ]
+            "users": []
         }
     }
 }
