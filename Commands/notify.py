@@ -97,7 +97,6 @@ class Notify(commands.Cog):
 
     @commands.command(name="show_lists")
     async def show_lists(self, ctx):
-        # TODO printing of custom emojis
         guild_data = await get_guild_data(ctx.message.guild.id)
 
         if guild_data.notification_lists:
@@ -114,19 +113,13 @@ class Notify(commands.Cog):
                              )
                 else:
                     text += "\n" + v["emoji"] + " - " + k
-            # text += "\n".join(
-            #     [
-            #         v["emoji"] + " - " + k
-            #         for k, v in guild_data.notification_lists.items()
-            #     ]
-            # )
 
             msg = await ctx.send(text)
             for v in guild_data.notification_lists.values():
                 await msg.add_reaction(v["emoji"] if not v["is_custom_emoji"] else ctx.bot.get_emoji(int(v["emoji"])))
 
             # TODO make reaction time configurable
-            timeout = time.time() + 60  # 1 minutes from now
+            timeout = time.time() + 60*5  # 5 minutes from now
             reaction_added_task = asyncio.create_task(
                 self.wait_for_added_reactions(ctx, msg, guild_data, timeout)
             )
@@ -138,7 +131,7 @@ class Notify(commands.Cog):
             await reaction_removed_task
             await msg.delete()
             # TODO give option to send a message after delete, or just stay silent?
-            await ctx.channel.send("You snooze, you lose!")
+            # await ctx.channel.send("You snooze, you lose!")
 
         else:
             await ctx.send("No lists exist yet")
@@ -170,9 +163,9 @@ class Notify(commands.Cog):
 
     @commands.command(name="add_list")
     async def add_list(self, ctx, list_name):
-        # if not ctx.message.author.guild_permissions.administrator:
-        #     await ctx.send("https://gph.is/g/4w8PDNj")
-        #     return
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.send("https://gph.is/g/4w8PDNj")
+            return
         list_name = list_name.lower()
         guild_data = await get_guild_data(ctx.message.guild.id)
 
@@ -228,16 +221,16 @@ class Notify(commands.Cog):
 
     @commands.command(name="remove_list")
     async def remove_list(self, ctx, list_name):
-        # if not ctx.message.author.guild_permissions.administrator:
-        #     await ctx.send("https://gph.is/g/4w8PDNj")
-        #     return
+        if not ctx.message.author.guild_permissions.administrator:
+            await ctx.send("https://gph.is/g/4w8PDNj")
+            return
         list_name = list_name.lower()
         guild_data = await get_guild_data(ctx.message.guild.id)
 
         if list_name not in guild_data.notification_lists.keys():
             await ctx.send("No such list, foemp.")
         else:
-            msg = await ctx.send("Are you sure, foemp?")
+            msg = await ctx.send("Are you sure?")
             await msg.add_reaction("👍")
             await msg.add_reaction("👎")
             try:
