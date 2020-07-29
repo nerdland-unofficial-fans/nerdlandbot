@@ -21,7 +21,7 @@ async def get_guild_data(guild_id: int):
 
     # check if server config file exists
     config = None
-    fileName = get_file_path(guild_id)
+    fileName = get_config_file_path(guild_id)
 
     if path.exists(fileName):
         # Load data
@@ -46,7 +46,7 @@ async def __read_file(guild_id: int, filename: str):
         return guildData
 
 
-def get_file_path(guild_id: int):
+def get_config_file_path(guild_id: int):
     return _configFolder + str(guild_id) + ".json"
 
 
@@ -63,7 +63,6 @@ class GuildData:
     async def sub_user(self, list_name: str, user_id: int):
         if list_name not in self.notification_lists.keys():
             return "This list does not exist"
-            # TODO: print lists with reactions to sub
         elif user_id in self.notification_lists[list_name]["users"]:
             return "<@" + str(user_id) + ">, you are already subscribed to " + list_name
         else:
@@ -115,5 +114,5 @@ class GuildData:
 
     async def __write_file(self):
         # TODO: Actually make this async
-        with open(get_file_path(self.guild_id), "w+") as config:
+        with open(get_config_file_path(self.guild_id), "w+") as config:
             json.dump(self.__dict__, config, indent=4, sort_keys=True)
