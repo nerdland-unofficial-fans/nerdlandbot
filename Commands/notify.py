@@ -131,7 +131,6 @@ class Notify(commands.Cog):
             await reaction_removed_task
             await msg.delete()
             # TODO give option to send a message after delete, or just stay silent?
-            # await ctx.channel.send("You snooze, you lose!")
 
         else:
             await ctx.send("No lists exist yet")
