@@ -11,9 +11,10 @@ os.chdir(dname)
 
 load_dotenv()
 
+PREFIX = os.getenv("PREFIX")
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-bot = NerdlandBot("?")
+bot = NerdlandBot(PREFIX)
 bot.load_extension("Commands.notify")
 
 bot.run(TOKEN)
