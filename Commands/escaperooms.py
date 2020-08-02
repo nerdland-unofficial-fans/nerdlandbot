@@ -21,6 +21,13 @@ class Escaperooms(commands.Cog):
         """ Writes the Tracking Table into CSV from Pandas DF"""
         tracking_table.to_csv('tracking_table.csv',index=False)
 
+    def transpose_tracking_table(self,tracking_table) -> pd.DataFrame:
+        tracking_table = tracking_table.T
+        headers = tracking_table.iloc[0]
+        tracking_table = tracking_table[1:]
+        tracking_table.columns = headers
+        return tracking_table
+
     def register_room_play(self,discord_id,escaperoom):
         """ Register that a user has played a room """
         # TODO: add new record in case user does not yet exists in table
@@ -46,10 +53,7 @@ class Escaperooms(commands.Cog):
         tracking_table = tracking_table.drop(columns=['Naam','Heeft tabletop'])
         
         # Transpose table
-        tracking_table = tracking_table.T
-        headers = tracking_table.iloc[0]
-        tracking_table = tracking_table[1:]
-        tracking_table.columns = headers
+        tracking_table = self.transpose_tracking_table(tracking_table)
 
         rooms_list = tracking_table.loc[tracking_table[str(discord_id)] > 0]
         rooms_list = rooms_list.index.values
@@ -90,7 +94,7 @@ class Escaperooms(commands.Cog):
         # Clean table and transpose
         subset = tracking_table.loc[tracking_table['Discord ID'].isin(user_list)]
         subset = pd.DataFrame(subset.drop(columns=['Naam','Heeft tabletop']))
-        subset = transpose_tracking_table(subset)
+        subset = self.transpose_tracking_table(subset)
         
         # Calculate sum of games per user and sort
         sums = pd.DataFrame(subset.sum(axis = 0, skipna = True))
