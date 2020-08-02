@@ -57,29 +57,30 @@ class Escaperooms(commands.Cog):
 
         return rooms_list
 
-    def calculate_room(self,user_list,is_large_group=False) -> str:
+    def calculate_room(self,user_list) -> str:
         """ Calculates the best room available for the users in list"""
-        # TODO: add logic to remove rooms where a player has more than 3 plays
         tracking_table = self.read_tracking_table()
 
-        #Filter table on user list
+        # calculate sum of each room for full userbase
+        room_sums = pd.DataFrame(tracking_table.drop(columns=['Naam','Discord ID','Heeft tabletop']).sum(axis = 0, skipna = True))
+        room_sums.columns = ['sum_total']
+
+        # Filter table on current users
         subset = tracking_table.loc[tracking_table['Discord ID'].isin(user_list)]
         
-        #Calculate sum of each game
-        room_sums = pd.DataFrame(subset.drop(columns=['Naam','Discord ID','Heeft tabletop']).sum(axis = 0, skipna = True))
-        room_sums.columns = ['sum']
+        # calculate sum of each room for current users
+        sub_room_sums = pd.DataFrame(subset.drop(columns=['Naam','Discord ID','Heeft tabletop']).sum(axis = 0, skipna = True))
+        sub_room_sums.columns = ['sum']
 
-        if is_large_group:
-            room_sums.sort_values(by=['sum'],ascending=True,inplace=True)
-            #to be sure, remove rooms which half the players have already played
-            room_sums = room_sums[room_sums['sum'] < len(user_list)/2]
-        else:
-            #sort by values descending
-            room_sums.sort_values(by=['sum'],ascending=True,inplace=True)
-            #remove rooms where sum is smaller than 3
-            room_sums = room_sums[room_sums['sum'] > 2]
-            #remove rooms where sum equal or higher to 2/3 number of players
-            room_sums = room_sums[room_sums['sum'] < (2*len(user_list))/3]
+        # keep only rooms not yet played by current users
+        sub_room_sums = sub_room_sums[sub_room_sums['sum'] < 1]
 
-        room_sums.reset_index(level=0, inplace=True)
-        return room_sums.iloc[0][0]
+        # join in the number of plays by the full userbase
+        sub_room_sums = sub_room_sums.join(room_sums)
+
+        # sort descending
+        sub_room_sums.sort_values(by=['sum_total'],ascending=False,inplace=True)
+        sub_room_sums.reset_index(level=0, inplace=True)
+
+        # pick first room
+        return sub_room_sums.loc[0][0]
