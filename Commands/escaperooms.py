@@ -21,14 +21,13 @@ class Escaperooms(commands.Cog):
         """ Writes the Tracking Table into CSV from Pandas DF"""
         tracking_table.to_csv('tracking_table.csv',index=False)
 
-    def increment_user(self,discord_id,escaperoom):
-        """ Increments the numer of times a player has played
-        an escapreoom with 1 """
+    def register_room_play(self,discord_id,escaperoom):
+        """ Register that a user has played a room """
         # TODO: add new record in case user does not yet exists in table
         tracking_table = self.read_tracking_table()
 
         user_row_index = tracking_table.index[tracking_table['Discord ID'] == discord_id]
-        tracking_table.loc[user_row_index,escaperoom] += 1
+        tracking_table.loc[user_row_index,escaperoom] = 1
 
         self.write_tracking_table(tracking_table)
 
@@ -84,3 +83,29 @@ class Escaperooms(commands.Cog):
 
         # pick first room
         return sub_room_sums.loc[0][0]
+
+    def split_group(self,user_list,is_balanced=False):
+        tracking_table = self.read_tracking_table()
+        
+        # Clean table and transpose
+        subset = tracking_table.loc[tracking_table['Discord ID'].isin(user_list)]
+        subset = pd.DataFrame(subset.drop(columns=['Naam','Heeft tabletop']))
+        subset = transpose_tracking_table(subset)
+        
+        # Calculate sum of games per user and sort
+        sums = pd.DataFrame(subset.sum(axis = 0, skipna = True))
+        sums.columns = ['sum']
+        sums.sort_values(by=['sum'],ascending=False,inplace=True)
+        
+        # split groups unbalanced (in order of experience)
+        groupsize = int(len(user_list) / 2)
+        group1 = sums[:groupsize]
+        group2 = sums[groupsize:]
+
+        if is_balanced:
+            #split groups balanced by rebuildig dataframe with alternating selection
+            alternated_groups = pd.concat([group1,group2]).sort_index(kind='merge')
+            group1 = alternated_groups[:groupsize]
+            group2 = alternated_groups[groupsize:]
+        
+        return group1, group2
