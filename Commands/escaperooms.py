@@ -47,6 +47,22 @@ class Escaperooms(commands.Cog):
 
         return users_list
 
+    @commands.command(name="escaperoom", help="List the people that played the escaperoom")
+    async def cmd_escaperoom(self, ctx, escaperoom_name):
+        list_users = self.list_users_escaperoom(escaperoom_name)
+        message = ""
+
+        if len(list_users) > 0:
+            usernames = []
+            for user in list_users:
+                username = "<@" + user + ">"
+                usernames.append(username)
+            message = escaperoom_name + " has been played by: " + ", ".join(usernames)
+        else:
+            message = "No-one has played " + escaperoom_name + " yet."
+        
+        await ctx.send(message)
+
     def list_escaperooms_user(self,discord_id) -> list:
         """ Returns list of users who have played the room"""
         tracking_table = self.read_tracking_table()
@@ -112,4 +128,4 @@ class Escaperooms(commands.Cog):
             group1 = alternated_groups[:groupsize]
             group2 = alternated_groups[groupsize:]
         
-        return group1, group2
+        return group1.index.values, group2.index.values
