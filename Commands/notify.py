@@ -7,7 +7,7 @@ from discord.ext import commands
 from .GuildData import get_guild_data, save_configs
 
 
-class Notify(commands.Cog):
+class Notify(commands.Cog, name = "Notification_lists"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -160,7 +160,7 @@ class Notify(commands.Cog):
         await save_configs(ctx)
         await ctx.send("Configurations saved")
 
-    @commands.command(name="add_list", brief="**admin-only** \u2003 To add a new list.", help="*admin-only* \u2003 To add a new list. You will be asked what emoji to use for this list. React to the question of the bot with an emoji that is not yet used for another list.")
+    @commands.command(name="add_list", brief="**admin-only** \u2003 To add a new list", help="*admin-only* \u2003 To add a new list. You will be asked what emoji to use for this list. React to the question of the bot with an emoji that is not yet used for another list.")
     async def add_list(self, ctx, list_name):
         if not ctx.message.author.guild_permissions.administrator:
             await ctx.send("https://gph.is/g/4w8PDNj")
@@ -218,7 +218,7 @@ class Notify(commands.Cog):
             except asyncio.TimeoutError:
                 pass
 
-    @commands.command(name="remove_list", brief="**admin-only** \u2003 To remove a list.",usage='<list name>', help="*admin-only* \u2003 To remove a list. \n\n <list name> \u2003 The name of the list to remove.")
+    @commands.command(name="remove_list", brief="**admin-only** \u2003 To remove a list",usage='<list name>', help="*admin-only* \u2003 To remove a list. \n\n <list name> \u2003 The name of the list to remove.")
     async def remove_list(self, ctx, list_name):
         if not ctx.message.author.guild_permissions.administrator:
             await ctx.send("https://gph.is/g/4w8PDNj")

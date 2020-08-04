@@ -23,12 +23,8 @@ class Help(commands.Cog):
                             message[command.name] = command.brief
                             msg.append("*{0}*\n \u2003 {1}\n".format(command.name,command.brief))
                 string = []
-                if cog_name == 'converters':
-                    for name in message.keys():
-                        string.append("__*{0}*__\n \u2003 {1}\n".format(name,message[name]))
-                else:
-                    for name in sorted(message):
-                        string.append("__*{0}*__\n \u2003 {1}\n".format(name,message[name]))
+                for name in sorted(message):
+                    string.append("*{0}*\n \u2003 {1}\n".format(name,message[name]))
 
                 to_embed.add_field(name='~~-'+' '*30+'-~~' + '\n**' + cog_name + '**\n', value=" ".join(string), inline=False)
             to_embed.add_field(name='\u200b', value="Type `{0}help [command]` for more info on a command. \nType `{0}help [category]` for more info on a category.".format(ctx.prefix), inline=False)
