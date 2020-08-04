@@ -16,7 +16,7 @@ pip install python-dotenv
 pip install discord-py
 ```
 
-You will also need to acquire a DISCORD_TOKEN for this to work. You can get a new token by creating a new developer account on github.
+You will also need to acquire a DISCORD_TOKEN for this to work. It is possible to obtain one with a developer account on Discord.
 
 You can now run the bot by running the following command with the src folder active
 ```
