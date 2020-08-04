@@ -11,7 +11,7 @@ class Notify(commands.Cog, name = "Notification_lists"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="sub", aliases=["subscribe"], brief="To subscribe to one or more list(s)", usage="[list name]", help="To subscribe to list(s)\nWithout a list name you get an overview of all the lists with the corresponding emoji's. \nClick the emoji to subscribe to the specific list. \nClick the emoji again to unsubscribe from the specific list.\n\n[list name] \u2003 The name of the list to subscribe to.")
+    @commands.command(name="sub", aliases=["subscribe"], brief="Subscribe to one or more list(s)", usage="[list name]", help="Subscribe to list(s)\n\nWithout a list name: you get an overview of all the lists with the corresponding emoji's. \nClick the emoji to subscribe to the corresponding list. \nClick the emoji again to unsubscribe from the corresponding list.\n\n With a list name: you will be subscribed to that list.")
     async def sub(self, ctx, list_name: typing.Optional[str] = None):
         if list_name:
             list_name = list_name.lower()
@@ -23,7 +23,7 @@ class Notify(commands.Cog, name = "Notification_lists"):
         else:
             await self.show_lists(ctx)
 
-    @commands.command(name="unsub", aliases=["unsubscribe"], brief="To unsubscribe from a list", usage="<list name>", help="To subscribe from a list \n\n<list name> \u2003 The name of the list to unsubscribe from.")
+    @commands.command(name="unsub", aliases=["unsubscribe"], brief="Unsubscribe from a list", usage="<list name>", help="Unsubscribe from a list \n\n<list name> \u2003 The name of the list to unsubscribe from.")
     async def unsubscribe(self, ctx, list_name):
         list_name = list_name.lower()
 
@@ -32,7 +32,7 @@ class Notify(commands.Cog, name = "Notification_lists"):
 
         await ctx.send(msg_string)
 
-    @commands.command(name="notify", brief="To notify a list of people", usage="<list name>", help="To notify a list \n\n<list name> \u2003 The name of the list to notify. \n\n **IMPORTANT: The people in this list will be mentioned. Use this wisely!**")
+    @commands.command(name="notify", brief="Notify a list of people", usage="<list name>", help="Notify a list \n\n<list name> \u2003 The name of the list to notify. \n\n **IMPORTANT: The people in this list will be mentioned. Use this wisely!**")
     async def notify(self, ctx, list_name):
         list_name = list_name.lower()
 
@@ -95,7 +95,7 @@ class Notify(commands.Cog, name = "Notification_lists"):
             if time.time() > timeout:
                 break
 
-    @commands.command(name="show_lists", brief="To show all the existing lists",help="To show all the lists with the corresponding emoji's. \nClick the emoji to subscribe to the specific list. \nClick the emoji again to unsubscribe from the specific list.")
+    @commands.command(name="show_lists", brief="Show all the existing lists",help="Show all the lists with the corresponding emoji's. \nClick the emoji to subscribe to the specific list. \nClick the emoji again to unsubscribe from the specific list.")
     async def show_lists(self, ctx):
         guild_data = await get_guild_data(ctx.message.guild.id)
 
@@ -135,7 +135,7 @@ class Notify(commands.Cog, name = "Notification_lists"):
         else:
             await ctx.send("No lists exist yet")
 
-    @commands.command(name="my_lists", help="To get an overview of the lists you are subscribed to.")
+    @commands.command(name="my_lists", help="Get an overview of the lists you are subscribed to")
     async def my_lists(self, ctx):
         guild_data = await get_guild_data(ctx.message.guild.id)
         subbed_lists = []
@@ -160,7 +160,7 @@ class Notify(commands.Cog, name = "Notification_lists"):
         await save_configs(ctx)
         await ctx.send("Configurations saved")
 
-    @commands.command(name="add_list", brief="**admin-only** \n\u2003 To add a new list", help="*admin-only* \u2003 To add a new list. You will be asked what emoji to use for this list. React to the question of the bot with an emoji that is not yet used for another list.")
+    @commands.command(name="add_list", brief="**admin-only** \n\u2003 Add a new list",usage='<list name>', help="*admin-only* \u2003 Add a new list. \n You will be asked what emoji to use for this list. React to the question of the bot with an emoji that is not yet used for another list. \n\n <list name> \u2003 The name of the list to add.")
     async def add_list(self, ctx, list_name):
         if not ctx.message.author.guild_permissions.administrator:
             await ctx.send("https://gph.is/g/4w8PDNj")
@@ -218,7 +218,7 @@ class Notify(commands.Cog, name = "Notification_lists"):
             except asyncio.TimeoutError:
                 pass
 
-    @commands.command(name="remove_list", brief="**admin-only** \n\u2003 To remove a list",usage='<list name>', help="*admin-only* \u2003 To remove a list. \n\n <list name> \u2003 The name of the list to remove.")
+    @commands.command(name="remove_list", brief="**admin-only** \n\u2003 Remove a list",usage='<list name>', help="*admin-only* \u2003 Remove a list. \n\n <list name> \u2003 The name of the list to remove.")
     async def remove_list(self, ctx, list_name):
         if not ctx.message.author.guild_permissions.administrator:
             await ctx.send("https://gph.is/g/4w8PDNj")
