@@ -15,5 +15,6 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 bot = NerdlandBot("?")
 bot.load_extension("Commands.notify")
+bot.load_extension("Commands.escaperooms")
 
 bot.run(TOKEN)

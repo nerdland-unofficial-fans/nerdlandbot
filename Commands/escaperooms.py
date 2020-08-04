@@ -10,7 +10,7 @@ class Escaperooms(commands.Cog):
     def read_tracking_table(self) -> pd.DataFrame:
         """ Reads the Tracking Table from CSV and returns it as Pandas DF"""
         convert_dict = {'Naam': str}
-        tracking_table = pd.read_csv('tracking_table.csv',dtype=convert_dict)
+        tracking_table = pd.read_csv('EscaperoomsCSV/tracking_table.csv',dtype=convert_dict)
 
         tracking_table['Discord ID'] = tracking_table['Discord ID'].astype("Int64").astype(str)
         tracking_table = tracking_table.fillna(0)
@@ -19,7 +19,7 @@ class Escaperooms(commands.Cog):
 
     def write_tracking_table(self,tracking_table):
         """ Writes the Tracking Table into CSV from Pandas DF"""
-        tracking_table.to_csv('tracking_table.csv',index=False)
+        tracking_table.to_csv('EscaperoomsCSV/tracking_table.csv',index=False)
 
     def transpose_tracking_table(self,tracking_table) -> pd.DataFrame:
         tracking_table = tracking_table.T
@@ -47,24 +47,8 @@ class Escaperooms(commands.Cog):
 
         return users_list
 
-    @commands.command(name="escaperoom", help="List the people that played the escaperoom")
-    async def cmd_escaperoom(self, ctx, escaperoom_name):
-        list_users = self.list_users_escaperoom(escaperoom_name)
-        message = ""
-
-        if len(list_users) > 0:
-            usernames = []
-            for user in list_users:
-                username = "<@" + user + ">"
-                usernames.append(username)
-            message = escaperoom_name + " has been played by: " + ", ".join(usernames)
-        else:
-            message = "No-one has played " + escaperoom_name + " yet."
-        
-        await ctx.send(message)
-
     def list_escaperooms_user(self,discord_id) -> list:
-        """ Returns list of users who have played the room"""
+        """ Returns list of room that the user has played"""
         tracking_table = self.read_tracking_table()
         tracking_table = tracking_table.drop(columns=['Naam','Heeft tabletop'])
         
@@ -75,6 +59,62 @@ class Escaperooms(commands.Cog):
         rooms_list = rooms_list.index.values
 
         return rooms_list
+
+    @commands.command(name="where_escaped", brief="Check which escaperooms a user has played", usage="[mentioned user]", help="Without @-mention: list the escaperooms you have played.\nWith @-mention: list the escaperooms the mentioned user has played. This has to be a mention, not just a name or ID")
+    async def cmd_userescaped(self, ctx, user_id=None):
+        print(user_id)
+        if not user_id:
+            user_id = str(ctx.author.id)
+        elif user_id[:2] == "<@":
+            user_id = user_id[3:-1]
+        else:
+            await ctx.send("Please @-mention a user, Foemp.")
+            return       
+
+        try:
+            escaperooms = sorted(self.list_escaperooms_user(user_id))
+            if len(escaperooms) != 0:
+                message = ctx.bot.get_user(int(user_id)).display_name + " has played:\n- "
+                await ctx.send(message + "\n- ".join(escaperooms))
+            else:
+                await ctx.send("This Foemp has not played any rooms yet.")
+        except KeyError:
+            await ctx.send("This Foemp has not played any rooms yet.")
+            
+
+    def list_escaperooms(self) -> list:
+        """Returns a list of the escaperooms in the tracking table"""
+        tracking_table = self.read_tracking_table()
+        tracking_table = tracking_table.drop(columns=['Naam','Heeft tabletop','Discord ID'])
+        escaperooms = list(tracking_table.columns.values)
+        return escaperooms
+        
+    @commands.command(name="who_escaped", brief="List the people that played the escaperoom",usage="[escaperoom name]", help="With an argument: list the people that played that escaperoom. \nWithout an argument: list all the available escaperooms.")
+    async def cmd_escaperoom(self, ctx, *, escaperoom_name=None):
+        if escaperoom_name:
+            try:
+                list_users = self.list_users_escaperoom(escaperoom_name)
+                if len(list_users) > 0:
+                    usernames = []
+                    for user_id in list_users:
+                        try:
+                            user = ctx.bot.get_user(int(user_id))
+                            usernames.append(user.display_name)
+                        except AttributeError:
+                            print("could not find user with ID: " + user_id)
+                            pass
+                    usernames = sorted(usernames)
+                    message = escaperoom_name + " has been played by: " + ", ".join(usernames[:-1]) + ", and "+ usernames[-1]
+                else:
+                    message = "No-one has played " + escaperoom_name + " yet."
+                await ctx.send(message)
+
+            except KeyError:
+                await ctx.send("This escaperoom does not exist, foemp!")
+        else:
+            escaperooms = sorted(self.list_escaperooms())
+            message = "These are the available escaperooms: \n- " + "\n- ".join(escaperooms)
+            await ctx.send(message)
 
     def calculate_room(self,user_list) -> str:
         """ Calculates the best room available for the users in list"""
@@ -129,3 +169,8 @@ class Escaperooms(commands.Cog):
             group2 = alternated_groups[groupsize:]
         
         return group1.index.values, group2.index.values
+
+def setup(bot):
+    bot.add_cog(Escaperooms(bot))
+
+
