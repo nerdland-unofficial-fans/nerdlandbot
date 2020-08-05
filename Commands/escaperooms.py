@@ -1,5 +1,6 @@
 import discord
 import pandas as pd
+import re
 
 from discord.ext import commands
 
@@ -22,6 +23,7 @@ class Escaperooms(commands.Cog):
         tracking_table.to_csv('EscaperoomsCSV/tracking_table.csv',index=False)
 
     def transpose_tracking_table(self,tracking_table) -> pd.DataFrame:
+        """Returns transposed tracking table with Usernames as columns and Rooms as rows"""
         tracking_table = tracking_table.T
         headers = tracking_table.iloc[0]
         tracking_table = tracking_table[1:]
@@ -60,18 +62,28 @@ class Escaperooms(commands.Cog):
 
         return rooms_list
 
+    def list_escaperooms(self) -> list:
+        """Returns a list of the escaperooms in the tracking table"""
+        tracking_table = self.read_tracking_table()
+        tracking_table = tracking_table.drop(columns=['Naam','Heeft tabletop','Discord ID'])
+        escaperooms = list(tracking_table.columns.values)
+        return escaperooms
+
     @commands.command(name="where_escaped", brief="Check which escaperooms a user has played", usage="[mentioned user]", help="Without @-mention: list the escaperooms you have played.\nWith @-mention: list the escaperooms the mentioned user has played. This has to be a mention, not just a name or ID")
     async def cmd_userescaped(self, ctx, user_id=None):
-        print(user_id)
         if not user_id:
+            # No user mentioned, therefor set user_id to the command sender
             user_id = str(ctx.author.id)
         elif user_id[:2] == "<@":
-            user_id = user_id[3:-1]
+            # Valid user id, strip special characters and only retain uder_id numbers
+            user_id = re.sub("[^0-9]", "", user_id)
         else:
+            # No valid user mentioned, report foemp
             await ctx.send("Please @-mention a user, Foemp.")
-            return       
+            return
 
         try:
+            # collect and sort escaperooms for user and send message
             escaperooms = sorted(self.list_escaperooms_user(user_id))
             if len(escaperooms) != 0:
                 message = ctx.bot.get_user(int(user_id)).display_name + " has played:\n- "
@@ -79,28 +91,24 @@ class Escaperooms(commands.Cog):
             else:
                 await ctx.send("This Foemp has not played any rooms yet.")
         except KeyError:
+            # user does not appear in dataframe, therefor hasn't played
             await ctx.send("This Foemp has not played any rooms yet.")
-            
-
-    def list_escaperooms(self) -> list:
-        """Returns a list of the escaperooms in the tracking table"""
-        tracking_table = self.read_tracking_table()
-        tracking_table = tracking_table.drop(columns=['Naam','Heeft tabletop','Discord ID'])
-        escaperooms = list(tracking_table.columns.values)
-        return escaperooms
         
     @commands.command(name="who_escaped", brief="List the people that played the escaperoom",usage="[escaperoom name]", help="With an argument: list the people that played that escaperoom. \nWithout an argument: list all the available escaperooms.")
     async def cmd_escaperoom(self, ctx, *, escaperoom_name=None):
         if escaperoom_name:
+            # escaperoom name provided, list users and report back
             try:
                 list_users = self.list_users_escaperoom(escaperoom_name)
                 if len(list_users) > 0:
                     usernames = []
                     for user_id in list_users:
                         try:
+                            # get user displayname based on ID in tracking table
                             user = ctx.bot.get_user(int(user_id))
                             usernames.append(user.display_name)
                         except AttributeError:
+                            # if user not known on server, handle here
                             print("could not find user with ID: " + user_id)
                             pass
                     usernames = sorted(usernames)
@@ -110,8 +118,10 @@ class Escaperooms(commands.Cog):
                 await ctx.send(message)
 
             except KeyError:
+                # room does not exist in dataframe, send Foemp
                 await ctx.send("This escaperoom does not exist, foemp!")
         else:
+            # no escaperoom name provided, send back list of available rooms
             escaperooms = sorted(self.list_escaperooms())
             message = "These are the available escaperooms: \n- " + "\n- ".join(escaperooms)
             await ctx.send(message)
