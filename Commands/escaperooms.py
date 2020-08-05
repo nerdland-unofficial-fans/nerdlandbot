@@ -30,12 +30,22 @@ class Escaperooms(commands.Cog):
         tracking_table.columns = headers
         return tracking_table
 
-    def register_room_play(self,discord_id,escaperoom):
+    def register_room_play(self,ctx,discord_id,escaperoom):
         """ Register that a user has played a room """
-        # TODO: add new record in case user does not yet exists in table
         tracking_table = self.read_tracking_table()
 
-        user_row_index = tracking_table.index[tracking_table['Discord ID'] == discord_id]
+        if discord_id in tracking_table.values:
+            user_row_index = tracking_table.index[tracking_table['Discord ID'] == discord_id]
+        else:
+            # user not yet present in table, add empty row
+            tracking_table = tracking_table.append(pd.Series(), ignore_index=True)
+            # populate name and discord ID
+            tracking_table.iloc[-1, tracking_table.columns.get_loc('Discord ID')] = discord_id
+            tracking_table.iloc[-1, tracking_table.columns.get_loc('Naam')] = ctx.bot.get_user(int(discord_id)).display_name
+            tracking_table = tracking_table.fillna(0.0)
+            print(tracking_table)
+            user_row_index = tracking_table.index[tracking_table['Discord ID'] == discord_id]
+
         tracking_table.loc[user_row_index,escaperoom] = 1
 
         self.write_tracking_table(tracking_table)
@@ -68,6 +78,20 @@ class Escaperooms(commands.Cog):
         tracking_table = tracking_table.drop(columns=['Naam','Heeft tabletop','Discord ID'])
         escaperooms = list(tracking_table.columns.values)
         return escaperooms
+
+    @commands.command(name="i_escaped", brief="Register that you played an escaperoom", usage="<escaperoom>", help="Register that you played escaperoom <escaperoom>")
+    async def cmd_iescaped(self, ctx, *, escaperoom_name=None):
+        if escaperoom_name:
+            if escaperoom_name in self.list_escaperooms():
+                self.register_room_play(ctx,str(ctx.author.id),escaperoom_name)
+                message = "Congratulation you escaped " + escaperoom_name + " and we have noted this"
+            else:
+                message = "but Foemp, that room does not exist!"
+        else:
+            escaperooms = sorted(self.list_escaperooms())
+            message = "Foemp, you didn't tell me which escaperoom, here's a list:\n - " + "\n- ".join(escaperooms)
+        await ctx.send(message)
+
 
     @commands.command(name="where_escaped", brief="Check which escaperooms a user has played", usage="[mentioned user]", help="Without @-mention: list the escaperooms you have played.\nWith @-mention: list the escaperooms the mentioned user has played. This has to be a mention, not just a name or ID")
     async def cmd_userescaped(self, ctx, user_id=None):
