@@ -16,7 +16,7 @@ load_dotenv()
 PREFIX = os.getenv("PREFIX")
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-if(PREFIX):
+if PREFIX:
     print("Start bot with prefix '" + PREFIX + "'")
 else:
     sys.exit("Please provide a PREFIX in your .env file")
@@ -30,3 +30,4 @@ bot.load_extension("Commands.settings")
 
 
 bot.run(TOKEN)
+

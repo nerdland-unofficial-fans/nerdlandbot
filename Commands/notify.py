@@ -32,24 +32,45 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         await ctx.send(msg_string)
 
-    @commands.command(name="notify", brief="Notify a list of people", usage="<list name>", help="Notify a list \n\n<list name> \u2003 The name of the list to notify. \n\n **IMPORTANT: The people in this list will be mentioned. Use this wisely!**")
-    async def notify(self, ctx, list_name):
-        list_name = list_name.lower()
+    @commands.command(name="notify")
+    async def notify(self, ctx, *, message):
+        list_name = message.split(" ")[0].lower()
 
         guild_data = await get_guild_data(ctx.message.guild.id)
-        msg_string = guild_data.notify(list_name)
 
-        await ctx.send(msg_string)
+        # check if list exists
+        if guild_data.does_list_exist(list_name):
+            # list exists, pull users from guild_data and check if there are users in the list
+            users = guild_data.get_users_list(list_name)
+            if len(users) > 0:
+                # build users mentioning string
+                users_str = ""
+                for user_id in users:
+                    users_str += " <@" + str(user_id) + ">"
+
+                # send list name and the person that gave the command
+                firstline = f"**{list_name.capitalize()}** notified by <@{ctx.message.author.id}>"
+                # check if a message was given with the command
+                if len(message.split()) > 1:
+                    # message given, send message and mention users
+                    message_text = firstline + " with message:\n\n" + " ".join(message.split(" ")[1:]) + "\n\n"
+                else:
+                    # no message given, just mention users
+                    message_text = firstline + "\n\n"
+
+                await ctx.send(message_text + users_str)
+
+            # no users in the list
+            else:
+                await ctx.send(f"{list_name.capitalize()} has no members yet.")
+        # list does not exist
+        else:
+            await ctx.send("That list does not exist, foemp.")
 
     async def wait_for_added_reactions(self, ctx, msg, guild_data, timeout):
         while True:
             try:
-                reaction, user = await ctx.bot.wait_for(
-                    "reaction_add",
-                    check=lambda reaction, user: reaction.message.id == msg.id
-                    and not user.bot,
-                    timeout=30.0,
-                )
+                reaction, user = await ctx.bot.wait_for("reaction_add", check=lambda reaction, user: reaction.message.id == msg.id and not user.bot, timeout=30.0,)
 
                 if reaction.custom_emoji:
                     reaction_emoji = str(reaction.emoji.id)
@@ -72,12 +93,7 @@ class Notify(commands.Cog, name="Notification_lists"):
     async def wait_for_removed_reactions(self, ctx, msg, guild_data, timeout):
         while True:
             try:
-                reaction, user = await ctx.bot.wait_for(
-                    "reaction_remove",
-                    check=lambda reaction, user: reaction.message.id == msg.id
-                    and not user.bot,
-                    timeout=30.0,
-                )
+                reaction, user = await ctx.bot.wait_for("reaction_remove", check=lambda reaction, user: reaction.message.id == msg.id and not user.bot, timeout=30.0,)
                 if reaction.custom_emoji:
                     reaction_emoji = str(reaction.emoji.id)
                 else:
@@ -104,13 +120,7 @@ class Notify(commands.Cog, name="Notification_lists"):
             for k, v in guild_data.notification_lists.items():
                 if v["is_custom_emoji"]:
                     # TODO: Extract to 'get_custom_emoji' method for reusability
-                    text += ("\n<:"
-                             + ctx.bot.get_emoji(int(v["emoji"])).name
-                             + ":"
-                             + v["emoji"]
-                             + "> - "
-                             + k
-                             )
+                    text += "\n<:" + ctx.bot.get_emoji(int(v["emoji"])).name + ":" + v["emoji"] + "> - " + k
                 else:
                     text += "\n" + v["emoji"] + " - " + k
 
@@ -119,13 +129,9 @@ class Notify(commands.Cog, name="Notification_lists"):
                 await msg.add_reaction(v["emoji"] if not v["is_custom_emoji"] else ctx.bot.get_emoji(int(v["emoji"])))
 
             # TODO make reaction time configurable
-            timeout = time.time() + 60*5  # 5 minutes from now
-            reaction_added_task = asyncio.create_task(
-                self.wait_for_added_reactions(ctx, msg, guild_data, timeout)
-            )
-            reaction_removed_task = asyncio.create_task(
-                self.wait_for_removed_reactions(ctx, msg, guild_data, timeout)
-            )
+            timeout = time.time() + 60 * 5  # 5 minutes from now
+            reaction_added_task = asyncio.create_task(self.wait_for_added_reactions(ctx, msg, guild_data, timeout))
+            reaction_removed_task = asyncio.create_task(self.wait_for_removed_reactions(ctx, msg, guild_data, timeout))
 
             await reaction_added_task
             await reaction_removed_task
@@ -173,16 +179,9 @@ class Notify(commands.Cog, name="Notification_lists"):
             await ctx.send(list_name + " already exists, foemp")
             # TODO: foemp mode
         else:
-            msg = await ctx.send(
-                "What emoji do you want to use for " + list_name + " ?"
-            )
+            msg = await ctx.send("What emoji do you want to use for " + list_name + " ?")
             try:
-                reaction, user = await ctx.bot.wait_for(
-                    "reaction_add",
-                    check=lambda reaction, user: reaction.message.id == msg.id
-                    and user == ctx.message.author,
-                    timeout=30.0,
-                )
+                reaction, user = await ctx.bot.wait_for("reaction_add", check=lambda reaction, user: reaction.message.id == msg.id and user == ctx.message.author, timeout=30.0,)
                 if reaction.custom_emoji:
                     try:
                         reaction_emoji = reaction.emoji.id
@@ -210,15 +209,8 @@ class Notify(commands.Cog, name="Notification_lists"):
                 if emoji_exists:
                     await ctx.send("This emoji is already used for a list, foemp")
                 else:
-                    await guild_data.add_notification_list(
-                        list_name, reaction_emoji, custom_emoji
-                    )
-                    await ctx.send(
-                        "The list `"
-                        + list_name
-                        + "` is saved with the emoji "
-                        + emoji_to_print
-                    )
+                    await guild_data.add_notification_list(list_name, reaction_emoji, custom_emoji)
+                    await ctx.send("The list `" + list_name + "` is saved with the emoji " + emoji_to_print)
 
             except asyncio.TimeoutError:
                 pass
@@ -239,19 +231,12 @@ class Notify(commands.Cog, name="Notification_lists"):
             await msg.add_reaction("👍")
             await msg.add_reaction("👎")
             try:
-                reaction, user = await ctx.bot.wait_for(
-                    "reaction_add",
-                    check=lambda reaction, user: reaction.message.id == msg.id
-                    and user == ctx.message.author,
-                    timeout=30.0,
-                )
+                reaction, user = await ctx.bot.wait_for("reaction_add", check=lambda reaction, user: reaction.message.id == msg.id and user == ctx.message.author, timeout=30.0,)
                 if reaction.emoji == "👍":
-                    await guild_data.remove_notification_list(
-                        list_name
-                    )
+                    await guild_data.remove_notification_list(list_name)
                     await ctx.send("The list `" + list_name + "` is removed")
                 elif reaction.emoji == "👎":
-                    await ctx.send(list_name+" won't be removed.")
+                    await ctx.send(list_name + " won't be removed.")
                 await msg.delete()
 
             except asyncio.TimeoutError:
