@@ -74,18 +74,12 @@ class GuildData:
             else:
                 return "You dont seem to be subscribed to this list, foemp."
 
-    def notify(self, list_name: str):
-        if list_name not in self.notification_lists.keys():
-            return "That list does not seem to exist, foemp."
-        else:
-            users = self.notification_lists[list_name]["users"]
-            if len(users) > 0:
-                mentionList = []
-                for user_id in users:
-                    mentionList.append("<@" + str(user_id) + ">")
-                return "Notifying " + ", ".join(mentionList)
-            else:
-                return "Nobody to notify"
+    def get_users_list(self, list_name: str) -> list:
+        users = self.notification_lists[list_name]["users"]
+        return users
+
+    def does_list_exist(self, list_name: str) -> bool:
+        return list_name in self.notification_lists.keys()
 
     async def add_notification_list(self, list_name, emoji, custom_emoji):
         self.notification_lists[list_name] = {
