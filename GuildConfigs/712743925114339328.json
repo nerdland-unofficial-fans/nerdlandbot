@@ -1,16 +1,21 @@
 {
-    "guild_changed": false,
+    "guild_changed": true,
     "guild_id": 712743925114339328,
     "notification_lists": {
         "boardgames": {
             "emoji": "\ud83c\udfb2",
             "is_custom_emoji": false,
-            "users": []
+            "users": [
+                360468589159120898,
+                427539689663234060
+            ]
         },
         "csgo": {
             "emoji": "\u2714",
             "is_custom_emoji": false,
-            "users": []
+            "users": [
+                360468589159120898
+            ]
         },
         "escaperoom": {
             "emoji": "\ud83d\udd13",
