@@ -125,7 +125,7 @@ class GuildData:
         if list_name not in self.notification_lists.keys():
             return "This list does not exist"
         elif user_id in self.notification_lists[list_name]["users"]:
-            return "<@" + str(user_id) + ">, you are already subscribed to " + list_name
+            return "<@" + str(user_id) + ">, you are already subscribed to " + list_name + ", foemp."
         else:
             self.notification_lists[list_name]["users"].append(user_id)
             self.guild_changed = True
@@ -134,7 +134,7 @@ class GuildData:
 
     async def unsub_user(self, list_name: str, user_id: int):
         if list_name not in self.notification_lists.keys():
-            return "That list does not seem to exist, cannot unsubscribe"
+            return "That list does not seem to exist, cannot unsubscribe, foemp."
         else:
             if user_id in self.notification_lists[list_name]["users"]:
                 self.notification_lists[list_name]["users"].remove(user_id)
@@ -142,11 +142,11 @@ class GuildData:
                 await self.save()
                 return "Unsubscribed <@" + str(user_id) + "> from " + list_name
             else:
-                return "You dont seem to be subscribed to this list"
+                return "You dont seem to be subscribed to this list, foemp."
 
     def notify(self, list_name: str):
         if list_name not in self.notification_lists.keys():
-            return "That list does not seem to exist"
+            return "That list does not seem to exist, foemp."
         else:
             users = self.notification_lists[list_name]["users"]
             if len(users) > 0:
