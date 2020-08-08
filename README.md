@@ -10,10 +10,9 @@ To get this project up and running, make sure you have the following installed:
 - Python 3
 - PIP
 
-Once you have these installed (you can check by running 'python --version' and 'pip -V' in a commandline) run the following commands to install the required packages:
+Once you have these installed (you can check by running 'python --version' and 'pip -V' in a commandline) run the following command to install the required packages:
 ```
-pip install python-dotenv
-pip install discord-py
+pip install -r requirements.txt -y
 ```
 
 You will also need to acquire a DISCORD_TOKEN for this to work. You can get a new token by creating a new developer account on github.
