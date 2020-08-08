@@ -2,7 +2,9 @@ import discord
 import pandas as pd
 import re
 
+from datetime import datetime
 from discord.ext import commands
+from .GuildData import get_guild_data, save_configs
 
 class Escaperooms(commands.Cog):
     def __init__(self, bot):
@@ -42,12 +44,12 @@ class Escaperooms(commands.Cog):
             # populate name and discord ID
             tracking_table.iloc[-1, tracking_table.columns.get_loc('Discord ID')] = discord_id
             tracking_table.iloc[-1, tracking_table.columns.get_loc('Naam')] = ctx.bot.get_user(int(discord_id)).display_name
+            # fill room columns with 0
             tracking_table = tracking_table.fillna(0.0)
-            print(tracking_table)
             user_row_index = tracking_table.index[tracking_table['Discord ID'] == discord_id]
 
         tracking_table.loc[user_row_index,escaperoom] = 1
-
+        
         self.write_tracking_table(tracking_table)
 
     def list_users_escaperoom(self,escaperoom) -> list:
@@ -149,6 +151,49 @@ class Escaperooms(commands.Cog):
             escaperooms = sorted(self.list_escaperooms())
             message = "These are the available escaperooms: \n- " + "\n- ".join(escaperooms)
             await ctx.send(message)
+
+    @commands.command(name="lets_escape", brief="set up a new escape session or get the current one",usage="[escaperoom time hh:mm]", help="With an argument: sets up a new escaperoom game at given time. \nWithout an argument: let's you know when the game is taking place.")
+    async def cmd_lets_escape(self, ctx, escaperoom_time=None):
+        guild_data = await get_guild_data(ctx.message.guild.id)
+
+        # escaperoom_time provided, register new game time for today
+        if escaperoom_time:
+            pattern = re.compile('^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$')
+            if pattern.match(escaperoom_time):
+                now = datetime.today()
+                escaperoom_datetime = datetime.strptime(escaperoom_time, '%H:%M').replace(year=now.year,month=now.month,day=now.day)
+                is_new_time = await guild_data.new_escaproom_game_time(escaperoom_datetime)
+                if is_new_time:
+                    await ctx.send("Registering game at: " + escaperoom_time + " today")
+                else:
+                    await ctx.send("Sorry, There's already a game scheduled today")
+            else:
+                await ctx.send("That's not a valid time, Foemp!")
+
+        # no escaperoom_time provided, call when_escape
+        else:
+            await self.cmd_when_escape(ctx)
+
+    @commands.command(name="when_escape", brief="check when there is an escaperoom session today", help="check when there is an escaperoom session today and register using emoji reaction")
+    async def cmd_when_escape(self, ctx):
+        guild_data = await get_guild_data(ctx.message.guild.id)
+
+        if guild_data.get_datetime_escaperoom_game():
+            escape_datetime = guild_data.get_datetime_escaperoom_game()
+            str_escapetime = str(escape_datetime.hour) + ":" + str(escape_datetime.minute)
+            escapeusers = guild_data.get_users_escaperoom_game()
+            message = "Escaperoom today at: **" + str_escapetime + "**"
+            if len(escapeusers)>0:
+                escapeusernames = []
+                for user_id in escapeusers:
+                    escapeusernames.append(ctx.bot.get_user(int(user_id)).display_name)
+                message += "\n\nThe following players are taking part: " + ", ".join(escapeusernames)
+            else:
+                message += ", no players registered yet."
+            
+            await ctx.send(message)
+        else:        
+            await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`') 
 
     def calculate_room(self,user_list) -> str:
         """ Calculates the best room available for the users in list"""

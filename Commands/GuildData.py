@@ -1,4 +1,5 @@
 from os import path
+from datetime import datetime
 
 import json
 
@@ -42,6 +43,7 @@ async def __read_file(guild_id: int, filename: str):
 
         guildData = GuildData(guild_id)
         guildData.notification_lists = data["notification_lists"]
+        guildData.escaperoom_game = data["escaperoom_game"] 
 
         return guildData
 
@@ -54,11 +56,70 @@ class GuildData:
     guild_id: int
     guild_changed: bool
     notification_lists: dict()
+    escaperoom_game: dict()
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
         self.guild_changed = False
         self.notification_lists = dict()
+        self.escaperoom_game = dict()
+
+    async def register_user_escape(self, user_id: int) -> bool:
+        if 'users' not in self.escaperoom_game.keys():
+            self.escaperoom_game['users'] = []
+
+        if user_id not in self.escaperoom_game['users']:
+            self.escaperoom_game['users'].append(user_id)
+            self.guild_changed = True
+            await self.save()
+            return True
+        else:
+            return False
+    
+    async def deregister_user_escape(self,user_id: int) -> bool:
+        if 'users' in self.escaperoom_game.keys():
+            if user_id in self.escaperoom_game['users']:
+                self.escaperoom_game['users'].remove(user_id)
+                self.guild_changed = True
+                await self.save()
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    async def new_escaproom_game_time(self, escape_time: datetime, overwrite=False) -> bool:
+        if not 'datetime' in self.escaperoom_game.keys():
+            # not time has been set yet, set time and clear userlist
+            print(escape_time.timestamp())
+            self.escaperoom_game['datetime'] = escape_time.timestamp()
+            self.escaperoom_game['users'] = []
+            self.guild_changed = True
+            await self.save()
+            return True
+        elif self.escaperoom_game['datetime'] < datetime.now().timestamp() or overwrite:
+            # set time has passed or is to be overwritten, set new time and clear userlist
+            self.escaperoom_game['datetime'] = escape_time.timestamp()
+            self.escaperoom_game['users'] = []
+            self.guild_changed = True
+            await self.save()
+            return True
+        else:
+            # time has already been set, don't overwrite
+            return False
+
+    def get_users_escaperoom_game(self) -> list:
+        if 'users' in self.escaperoom_game.keys():
+            return self.escaperoom_game['users']
+        else:
+            return []
+
+    def get_datetime_escaperoom_game(self) -> datetime:
+        if 'datetime' in self.escaperoom_game.keys():
+            escaperoom_datetime = datetime.fromtimestamp(self.escaperoom_game['datetime'])
+            return escaperoom_datetime
+        else:
+            return None   
 
     async def sub_user(self, list_name: str, user_id: int):
         if list_name not in self.notification_lists.keys():

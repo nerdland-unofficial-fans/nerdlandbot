@@ -1,5 +1,9 @@
 {
-    "guild_changed": false,
+    "escaperoom_game": {
+        "datetime": 1596889980.0,
+        "users": []
+    },
+    "guild_changed": true,
     "guild_id": 712743925114339328,
     "notification_lists": {
         "boardgames": {
