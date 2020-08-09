@@ -41,6 +41,7 @@ async def __read_file(guild_id: int, filename: str):
         data = json.load(config)
 
         guildData = GuildData(guild_id)
+        guildData.bot_admins = data["bot_admins"]
         guildData.notification_lists = data["notification_lists"]
 
         return guildData
@@ -51,6 +52,7 @@ def get_config_file_path(guild_id: int):
 
 
 class GuildData:
+    bot_admins: list
     guild_id: int
     guild_changed: bool
     notification_lists: dict()
@@ -116,3 +118,11 @@ class GuildData:
         # TODO: Actually make this async
         with open(get_config_file_path(self.guild_id), "w+") as config:
             json.dump(self.__dict__, config, indent=4, sort_keys=True)
+
+    async def add_admin(self, user_id: int):
+        self.bot_admins.append(user_id)
+        await self.save()
+
+    async def remove_admin(self, user_id: int):
+        self.bot_admins.remove(user_id)
+        await self.save()
