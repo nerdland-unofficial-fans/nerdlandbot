@@ -60,28 +60,29 @@ class GuildData:
         self.guild_changed = False
         self.notification_lists = dict()
 
-    async def sub_user(self, list_name: str, user_id: int):
-        if list_name not in self.notification_lists.keys():
-            return "This list does not exist"
-        elif user_id in self.notification_lists[list_name]["users"]:
-            return "<@" + str(user_id) + ">, you are already subscribed to " + list_name
-        else:
+    async def sub_user(self, list_name: str, user_id: int) -> bool:
+        """adds a user to the list if not already there."""
+        """returns True when user was added, returns False if already in list"""
+        if user_id not in self.notification_lists[list_name]["users"]:
+            #user not in list, add to list and return True
             self.notification_lists[list_name]["users"].append(user_id)
             self.guild_changed = True
             await self.save()
-            return "Subscribed <@" + str(user_id) + "> to " + list_name
-
-    async def unsub_user(self, list_name: str, user_id: int):
-        if list_name not in self.notification_lists.keys():
-            return "That list does not seem to exist, cannot unsubscribe"
+            return True 
         else:
-            if user_id in self.notification_lists[list_name]["users"]:
-                self.notification_lists[list_name]["users"].remove(user_id)
-                self.guild_changed = True
-                await self.save()
-                return "Unsubscribed <@" + str(user_id) + "> from " + list_name
-            else:
-                return "You dont seem to be subscribed to this list"
+            # user already in list, return false
+            return False 
+
+    async def unsub_user(self, list_name: str, user_id: int) -> bool:
+        if user_id in self.notification_lists[list_name]["users"]:
+            # user exists in list, remove and return True
+            self.notification_lists[list_name]["users"].remove(user_id)
+            self.guild_changed = True
+            await self.save()
+            return True
+        else:
+            # user does not exist in list, return False
+            return False
 
     def get_users_list(self, list_name: str) -> list:
         users = self.notification_lists[list_name]["users"]
