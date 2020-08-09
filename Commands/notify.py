@@ -7,7 +7,7 @@ from discord.ext import commands
 from .GuildData import get_guild_data, save_configs
 
 
-class Notify(commands.Cog, name = "Notification_lists"):
+class Notify(commands.Cog, name="Notification_lists"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -95,7 +95,7 @@ class Notify(commands.Cog, name = "Notification_lists"):
             if time.time() > timeout:
                 break
 
-    @commands.command(name="show_lists", brief="Show all the existing lists",help="Show all the lists with the corresponding emoji's. \nClick the emoji to subscribe to the specific list. \nClick the emoji again to unsubscribe from the specific list.")
+    @commands.command(name="show_lists", brief="Show all the existing lists", help="Show all the lists with the corresponding emoji's. \nClick the emoji to subscribe to the specific list. \nClick the emoji again to unsubscribe from the specific list.")
     async def show_lists(self, ctx):
         guild_data = await get_guild_data(ctx.message.guild.id)
 
@@ -160,9 +160,10 @@ class Notify(commands.Cog, name = "Notification_lists"):
         await save_configs(ctx)
         await ctx.send("Configurations saved")
 
-    @commands.command(name="add_list", brief="**admin-only** \n\u2003 Add a new list",usage='<list name>', help="*admin-only* \u2003 Add a new list. \n You will be asked what emoji to use for this list. React to the question of the bot with an emoji that is not yet used for another list. \n\n <list name> \u2003 The name of the list to add.")
+    @commands.command(name="add_list", brief="**admin-only** \n\u2003 Add a new list", usage='<list name>', help="*admin-only* \u2003 Add a new list. \n You will be asked what emoji to use for this list. React to the question of the bot with an emoji that is not yet used for another list. \n\n <list name> \u2003 The name of the list to add.")
     async def add_list(self, ctx, list_name):
-        if not ctx.message.author.guild_permissions.administrator:
+        guild_data = await get_guild_data(ctx.message.guild.id)
+        if not (ctx.message.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
         list_name = list_name.lower()
@@ -183,15 +184,19 @@ class Notify(commands.Cog, name = "Notification_lists"):
                     timeout=30.0,
                 )
                 if reaction.custom_emoji:
-                    reaction_emoji = reaction.emoji.id
-                    emoji_to_print = (
-                        "<:"
-                        + ctx.bot.get_emoji(reaction_emoji).name
-                        + ":"
-                        + str(reaction_emoji)
-                        + ">"
-                    )
-                    custom_emoji = True
+                    try:
+                        reaction_emoji = reaction.emoji.id
+                        emoji_to_print = (
+                            "<:"
+                            + ctx.bot.get_emoji(reaction_emoji).name
+                            + ":"
+                            + str(reaction_emoji)
+                            + ">"
+                        )
+                        custom_emoji = True
+                    except AttributeError:
+                        await ctx.send("Emoji not recognized, try again with a standard emoji or a custom emoji from this server")
+                        return
                 else:
                     reaction_emoji = reaction.emoji
                     emoji_to_print = str(reaction_emoji)
@@ -218,9 +223,10 @@ class Notify(commands.Cog, name = "Notification_lists"):
             except asyncio.TimeoutError:
                 pass
 
-    @commands.command(name="remove_list", brief="**admin-only** \n\u2003 Remove a list",usage='<list name>', help="*admin-only* \u2003 Remove a list. \n\n <list name> \u2003 The name of the list to remove.")
+    @commands.command(name="remove_list", brief="**admin-only** \n\u2003 Remove a list", usage='<list name>', help="*admin-only* \u2003 Remove a list. \n\n <list name> \u2003 The name of the list to remove.")
     async def remove_list(self, ctx, list_name):
-        if not ctx.message.author.guild_permissions.administrator:
+        guild_data = await get_guild_data(ctx.message.guild.id)
+        if not (ctx.message.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
         list_name = list_name.lower()

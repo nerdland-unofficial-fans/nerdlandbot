@@ -26,6 +26,7 @@ bot = NerdlandBot(PREFIX)
 bot.remove_command('help')
 bot.load_extension("Commands.notify")
 bot.load_extension("Commands.help")
+bot.load_extension("Commands.settings")
 
 
 bot.run(TOKEN)
