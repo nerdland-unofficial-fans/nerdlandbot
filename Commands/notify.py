@@ -163,7 +163,7 @@ class Notify(commands.Cog, name="Notification_lists"):
     @commands.command(name="add_list", brief="**admin-only** \n\u2003 Add a new list", usage='<list name>', help="*admin-only* \u2003 Add a new list. \n You will be asked what emoji to use for this list. React to the question of the bot with an emoji that is not yet used for another list. \n\n <list name> \u2003 The name of the list to add.")
     async def add_list(self, ctx, list_name):
         guild_data = await get_guild_data(ctx.message.guild.id)
-        if not (ctx.message.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
+        if not guild_data.user_is_admin(ctx.author):
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
         list_name = list_name.lower()
@@ -226,7 +226,7 @@ class Notify(commands.Cog, name="Notification_lists"):
     @commands.command(name="remove_list", brief="**admin-only** \n\u2003 Remove a list", usage='<list name>', help="*admin-only* \u2003 Remove a list. \n\n <list name> \u2003 The name of the list to remove.")
     async def remove_list(self, ctx, list_name):
         guild_data = await get_guild_data(ctx.message.guild.id)
-        if not (ctx.message.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
+        if not guild_data.user_is_admin(ctx.author):
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
         list_name = list_name.lower()

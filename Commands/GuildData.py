@@ -126,3 +126,8 @@ class GuildData:
     async def remove_admin(self, user_id: int):
         self.bot_admins.remove(user_id)
         await self.save()
+
+    def user_is_admin(self, user_to_check):
+        # returns True if the user is a server admin or bot admin
+        # returns False if the user is neither a server admin or a bot admin
+        return (user_to_check.guild_permissions.administrator or user_to_check.id in self.bot_admins)
