@@ -13,7 +13,7 @@ class Settings(commands.Cog):
     async def add_admin(self, ctx, mention):
         guild_data = await get_guild_data(ctx.guild.id)
 
-        if not (ctx.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
+        if not guild_data.user_is_admin(ctx.author):
             # if the user is not a bot admin or server admin
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
@@ -39,7 +39,7 @@ class Settings(commands.Cog):
     async def remove_admin(self, ctx, mention):
         guild_data = await get_guild_data(ctx.guild.id)
 
-        if not (ctx.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
+        if not guild_data.user_is_admin(ctx.author):
             # if the person to give the command is not a server or bot admin, send gif
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
