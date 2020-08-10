@@ -80,9 +80,12 @@ class Notify(commands.Cog, name="Notification_lists"):
                 for key, v in guild_data.notification_lists.items():
 
                     if reaction_emoji == v["emoji"]:
-
-                        msg_string = await guild_data.sub_user(key, user.id)
-                        await ctx.send(msg_string)
+                        list_name = key
+                        succeeded = await guild_data.sub_user(list_name, ctx.author.id)
+                        if succeeded:
+                            await ctx.send("Subscribed <@" + str(ctx.author.id) + "> to " + list_name)
+                        else:
+                            await ctx.send("<@" + str(ctx.author.id) + ">, you are already subscribed to " + list_name)
 
             except asyncio.TimeoutError:
                 pass
@@ -101,9 +104,12 @@ class Notify(commands.Cog, name="Notification_lists"):
                 for key, v in guild_data.notification_lists.items():
 
                     if reaction_emoji == v["emoji"]:
-
-                        msg_string = await guild_data.unsub_user(key, user.id)
-                        await ctx.send(msg_string)
+                        list_name = key
+                        succeeded = await guild_data.unsub_user(key, ctx.author.id)
+                        if succeeded:
+                            await ctx.send("Unubscribed <@" + str(ctx.author.id) + "> from " + list_name)
+                        else:
+                            await ctx.send("<@" + str(ctx.author.id) + ">, you are not subscribed to " + list_name)
 
             except asyncio.TimeoutError:
                 pass
