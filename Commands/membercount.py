@@ -33,10 +33,10 @@ class MemberCount(commands.Cog, name="member_count"):
         channel = discord.utils.get(ctx.channel.guild.channels, name=channel_name)
 
         if channel is None:
-            return await ctx.send("Please add a channel name to your command!")
+            return await ctx.send("Please add a channel name to your command, foemp!")
 
         if len(channel.members) < 1:
-            return await ctx.send("That channel is empty!")
+            return await ctx.send("That channel is empty, foemp!")
 
         if len(channel.members) == 1:
             return await ctx.send(f'There is one person in channel <#{channel.id}>!')
