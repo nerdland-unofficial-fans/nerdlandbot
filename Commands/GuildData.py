@@ -6,14 +6,6 @@ _configFolder = "./GuildConfigs/"
 _guildConfigCache = dict()
 
 
-async def save_configs(guild_id: int):
-    for key in _guildConfigCache:
-        config = _guildConfigCache[key]
-
-        if config.guild_changed:
-            await config.save(guild_id)
-
-
 async def get_guild_data(guild_id: int):
     # check if memory cache contains server config
     if guild_id in _guildConfigCache.keys():
@@ -26,7 +18,6 @@ async def get_guild_data(guild_id: int):
     if path.exists(fileName):
         # Load data
         config = await __read_file(guild_id, fileName)
-        config.guild_changed = False
     else:
         # Init new instance of ServerData
         config = GuildData(guild_id)
@@ -55,12 +46,10 @@ def get_config_file_path(guild_id: int):
 class GuildData:
     bot_admins: list
     guild_id: int
-    guild_changed: bool
     notification_lists: dict()
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
-        self.guild_changed = False
         self.notification_lists = dict()
         self.bot_admins = []
 
@@ -71,7 +60,6 @@ class GuildData:
             return "<@" + str(user_id) + ">, you are already subscribed to " + list_name + ", foemp."
         else:
             self.notification_lists[list_name]["users"].append(user_id)
-            self.guild_changed = True
             await self.save()
             return "Subscribed <@" + str(user_id) + "> to " + list_name
 
@@ -81,7 +69,6 @@ class GuildData:
         else:
             if user_id in self.notification_lists[list_name]["users"]:
                 self.notification_lists[list_name]["users"].remove(user_id)
-                self.guild_changed = True
                 await self.save()
                 return "Unsubscribed <@" + str(user_id) + "> from " + list_name
             else:
@@ -114,7 +101,6 @@ class GuildData:
 
     async def save(self):
         await self.__write_file()
-        self.guild_changed = False
 
     async def __write_file(self):
         # TODO: Actually make this async
