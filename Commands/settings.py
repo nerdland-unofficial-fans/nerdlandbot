@@ -2,7 +2,7 @@ import discord
 import asyncio
 
 from discord.ext import commands
-from .GuildData import get_guild_data, save_configs
+from .GuildData import get_guild_data
 
 
 class Settings(commands.Cog):

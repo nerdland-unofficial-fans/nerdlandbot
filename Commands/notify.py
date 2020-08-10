@@ -4,7 +4,7 @@ import asyncio
 import discord
 
 from discord.ext import commands
-from .GuildData import get_guild_data, save_configs
+from .GuildData import get_guild_data
 
 
 class Notify(commands.Cog, name="Notification_lists"):
@@ -154,11 +154,6 @@ class Notify(commands.Cog, name="Notification_lists"):
                 await ctx.send("You are not subscribed to any lists.")
         else:
             await ctx.send("No lists exist yet")
-
-    @commands.command(name="save_config", help="Save the current lists")
-    async def save_config(self, ctx):
-        await save_configs(ctx)
-        await ctx.send("Configurations saved")
 
     @commands.command(name="add_list", brief="**admin-only** \n\u2003 Add a new list", usage='<list name>', help="*admin-only* \u2003 Add a new list. \n You will be asked what emoji to use for this list. React to the question of the bot with an emoji that is not yet used for another list. \n\n <list name> \u2003 The name of the list to add.")
     async def add_list(self, ctx, list_name):
