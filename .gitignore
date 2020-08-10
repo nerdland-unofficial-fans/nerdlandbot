@@ -1,6 +1,13 @@
+# ignore IDE files
 **/.idea
 **/.vscode
 *.pyc
-.env
+
+# ignore virtual environments
 venv
-GuildConfigs/
+
+# ignore config env
+.env
+
+# ignore guildconfigs (only json files, keep the foler)
+GuildConfigs/*.json
