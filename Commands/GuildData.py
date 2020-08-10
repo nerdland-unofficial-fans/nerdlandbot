@@ -25,6 +25,9 @@ async def get_guild_data(guild_id: int):
     _guildConfigCache[guild_id] = config
     return config
 
+async def get_guild_culture(guild_id: int):
+    guild = await get_guild_data(guild_id)
+    return guild.culture
 
 async def __read_file(guild_id: int, filename: str):
     # TODO: Actually make this async
@@ -35,6 +38,7 @@ async def __read_file(guild_id: int, filename: str):
 
         guildData.bot_admins = data.get("bot_admins", [])
         guildData.notification_lists = data.get("notification_lists", [])
+        guildData.culture = data.get("culture", "en")
 
         return guildData
 
@@ -47,11 +51,13 @@ class GuildData:
     bot_admins: list
     guild_id: int
     notification_lists: dict()
+    culture: str
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
         self.notification_lists = dict()
         self.bot_admins = []
+        self.culture = "en"
 
     async def sub_user(self, list_name: str, user_id: int):
         if list_name not in self.notification_lists.keys():

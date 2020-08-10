@@ -3,7 +3,7 @@ import sys
 
 from Bot.nerdlandbot import NerdlandBot
 from dotenv import load_dotenv
-
+from Translations.Translations import get_text as _
 
 # Set working directory
 abspath = os.path.abspath(__file__)
@@ -37,6 +37,5 @@ bot.load_extension("Commands.notify")
 bot.load_extension("Commands.help")
 bot.load_extension("Commands.settings")
 bot.load_extension("Commands.membercount")
-
 
 bot.run(TOKEN)
