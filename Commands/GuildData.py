@@ -41,8 +41,9 @@ async def __read_file(guild_id: int, filename: str):
         data = json.load(config)
 
         guildData = GuildData(guild_id)
-        guildData.bot_admins = data["bot_admins"]
-        guildData.notification_lists = data["notification_lists"]
+
+        guildData.bot_admins = data.get("bot_admins", [])
+        guildData.notification_lists = data.get("notification_lists", [])
 
         return guildData
 
