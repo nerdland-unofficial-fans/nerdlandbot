@@ -11,9 +11,9 @@ class Settings(commands.Cog):
 
     @commands.command(name="add_admin", brief="**admin-only** \n\u2003 Add a bot admin", usage="<mentioned user>", help="*admin-only* \u2003 Add a bot admin. The user will be given access to the bot commands that are labelled **admin-only**. The user will not be given the role of server admin. \n\n<mention user> \u2003 Mention the user that you want to make a bot admin.")
     async def add_admin(self, ctx, mention):
-        guild_data = await get_guild_data(ctx.message.guild.id)
+        guild_data = await get_guild_data(ctx.guild.id)
 
-        if not (ctx.message.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
+        if not (ctx.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
             # if the user is not a bot admin or server admin
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
@@ -23,9 +23,9 @@ class Settings(commands.Cog):
             return
 
         user_id_to_add = ctx.message.mentions[0].id
-        user_name_to_add = ctx.message.guild.get_member(
+        user_name_to_add = ctx.guild.get_member(
             int(user_id_to_add)).display_name
-        if ctx.message.guild.get_member(int(user_id_to_add)).guild_permissions.administrator:
+        if ctx.guild.get_member(int(user_id_to_add)).guild_permissions.administrator:
             # if the requested user is already a server admin
             await ctx.send(f"{user_name_to_add} is a server admin, so no need to make them a bot admin, foemp.")
         elif ctx.message.mentions[0].id in guild_data.bot_admins:
@@ -37,9 +37,9 @@ class Settings(commands.Cog):
 
     @commands.command(name="remove_admin", brief="**admin-only** \n\u2003 Remove a bot admin", usage="<mentioned user>", help="*admin-only* \u2003 Remove a bot admin. If the user also has the role of server admin, this role will not be revoked. \n\n<mention user> \u2003 Mention the user that you want to remove from the bot admins.")
     async def remove_admin(self, ctx, mention):
-        guild_data = await get_guild_data(ctx.message.guild.id)
+        guild_data = await get_guild_data(ctx.guild.id)
 
-        if not (ctx.message.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
+        if not (ctx.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
             # if the person to give the command is not a server or bot admin, send gif
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
@@ -49,7 +49,7 @@ class Settings(commands.Cog):
             return
 
         user_id_to_remove = ctx.message.mentions[0].id
-        user_name_to_remove = ctx.message.guild.get_member(
+        user_name_to_remove = ctx.guild.get_member(
             int(user_id_to_remove)).display_name
         if user_id_to_remove not in guild_data.bot_admins:
             # if the user to remove is not a bot admin
@@ -90,11 +90,11 @@ class Settings(commands.Cog):
 
     @commands.command(name="bot_admins", aliases=["who_da_boss"], brief="List the bot admins", help="List the current bot admins. Bot admins can use the **admin-only** commands, but do not have the role of server admin.")
     async def admins_bot(self, ctx):
-        guild_data = await get_guild_data(ctx.message.guild.id)
-        if len(guild_data.bot_admins) > 1:
+        guild_data = await get_guild_data(ctx.guild.id)
+        if len(guild_data.bot_admins) >= 1:
             message = "The bot admins are:"
             for user_id in guild_data.bot_admins:
-                message += f"\n- {ctx.message.guild.get_member(int(user_id)).display_name}"
+                message += f"\n- {ctx.guild.get_member(int(user_id)).display_name}"
         else:
             message = "There are no bot admins."
         await ctx.send(message)
