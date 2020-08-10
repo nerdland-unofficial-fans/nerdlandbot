@@ -6,6 +6,7 @@ from datetime import datetime
 from discord.ext import commands
 from .GuildData import get_guild_data, save_configs
 import constants
+from common_functions import *
 
 class Escaperooms(commands.Cog):
     def __init__(self, bot):
@@ -44,7 +45,7 @@ class Escaperooms(commands.Cog):
             tracking_table = tracking_table.append(pd.Series(), ignore_index=True)
             # populate name and discord ID
             tracking_table.iloc[-1, tracking_table.columns.get_loc('Discord ID')] = discord_id
-            tracking_table.iloc[-1, tracking_table.columns.get_loc('Naam')] = ctx.bot.get_user(int(discord_id)).display_name
+            tracking_table.iloc[-1, tracking_table.columns.get_loc('Naam')] = ctx.guild.get_member(int(user_id)).display_name
             # fill room columns with 0
             tracking_table = tracking_table.fillna(0.0)
             user_row_index = tracking_table.index[tracking_table['Discord ID'] == discord_id]
@@ -81,6 +82,19 @@ class Escaperooms(commands.Cog):
         tracking_table = tracking_table.drop(columns=['Naam','Heeft tabletop','Discord ID'])
         escaperooms = list(tracking_table.columns.values)
         return escaperooms
+    
+    # def usernames_from_ids(self,ctx,list_users) -> list:
+    #     usernames = []
+    #     for user_id in list_users:
+    #         try:
+    #             # get user displayname based on ID in tracking table
+    #             user = ctx.guild.get_member(int(user_id))
+    #             usernames.append(user.display_name)
+    #         except AttributeError:
+    #             # if user not known on server, handle here
+    #             print("could not find user with ID: " + user_id)
+    #             pass
+    #     return sorted(usernames)
 
     @commands.command(name="i_escaped", brief="Register that you played an escaperoom", usage="<escaperoom>", help="Register that you played escaperoom <escaperoom>")
     async def cmd_iescaped(self, ctx, *, escaperoom_name=None):
@@ -113,7 +127,7 @@ class Escaperooms(commands.Cog):
             # collect and sort escaperooms for user and send message
             escaperooms = sorted(self.list_escaperooms_user(user_id))
             if len(escaperooms) != 0:
-                message = ctx.bot.get_user(int(user_id)).display_name + " has played:\n- "
+                message = ctx.guild.get_member(int(user_id)).display_name + " has played:\n- "
                 await ctx.send(message + "\n- ".join(escaperooms))
             else:
                 await ctx.send("This Foemp has not played any rooms yet.")
@@ -128,17 +142,7 @@ class Escaperooms(commands.Cog):
             try:
                 list_users = self.list_users_escaperoom(escaperoom_name)
                 if len(list_users) > 0:
-                    usernames = []
-                    for user_id in list_users:
-                        try:
-                            # get user displayname based on ID in tracking table
-                            user = ctx.bot.get_user(int(user_id))
-                            usernames.append(user.display_name)
-                        except AttributeError:
-                            # if user not known on server, handle here
-                            print("could not find user with ID: " + user_id)
-                            pass
-                    usernames = sorted(usernames)
+                    usernames = usernames_from_ids(ctx, list_users)
                     message = escaperoom_name + " has been played by: " + ", ".join(usernames[:-1]) + ", and "+ usernames[-1]
                 else:
                     message = "No-one has played " + escaperoom_name + " yet."
@@ -185,10 +189,7 @@ class Escaperooms(commands.Cog):
             escapeusers = guild_data.get_users_escaperoom_game()
             message = "Escaperoom today at: **" + str_escapetime + "**"
             if len(escapeusers)>0:
-                escapeusernames = []
-                for user_id in escapeusers:
-                    print(user_id)
-                    escapeusernames.append(ctx.bot.get_user(int(user_id)).display_name)
+                escapeusernames = usernames_from_ids(ctx,escapeusers)
                 message += "\n\nThe following players are taking part: " + ", ".join(escapeusernames)
                 message += "\n\nRegister by clicking the ✅ below"
             else:
@@ -207,7 +208,7 @@ class Escaperooms(commands.Cog):
                 if is_new_register:
                     await ctx.send("You've registered for the session")
                 else:
-                    await ctx.send("Already registered, mr. Foemp")
+                    await ctx.send("Already registered, dear Foemp")
         else:        
             await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`') 
 
@@ -278,13 +279,17 @@ class Escaperooms(commands.Cog):
             number_of_users = len(escape_users)
             if number_of_users > constants.ESCAPE_MIN_GROUPSIZE:
                 # we have enough information to start
+                embed=discord.Embed(title="Escaperoom Start", description="the bot recommends the following rooms", color=0x004080)
+                embed.set_thumbnail(url="https://previews.123rf.com/images/arcady31/arcady311810/arcady31181000064/109268325-escape-room-vector-icon.jpg")
+
+                await ctx.send("OK, let's see how what we can do with this group: " + ", ".join(usernames_from_ids(ctx,escape_users)))
                 groups = []
                 if number_of_users > constants.ESCAPE_MAX_GROUPZIZE:
                     # too many users for one game, split groups
                     msg = await ctx.send('The group is too large and needs to be split, would you like a balanced split (⚖️) or one based on experience (🏆)?')
                     await msg.add_reaction("⚖️")
                     await msg.add_reaction("🏆")
-                    reaction, register_user = await ctx.bot.wait_for(
+                    reaction, reaction_user = await ctx.bot.wait_for(
                         "reaction_add",
                         check=lambda reaction, user: reaction.message.id == msg.id
                         and user == ctx.message.author,
@@ -296,8 +301,14 @@ class Escaperooms(commands.Cog):
                     groups = [escape_users]
                 
                 for group in groups:
-                    print(group)
-                    await ctx.send(self.calculate_room(group))
+                    room = self.calculate_room(group)
+                    mentions = list()
+                    for user_id in group:
+                        mentions.append('<@!' + str(user_id) + '>')
+                    embed.add_field(name=room, value=" ".join(mentions), inline=False)
+                
+                embed.set_footer(text="Please register your play with the i_escaped command afterwards")
+                await ctx.channel.send(embed = embed)
             else:
                 # group is too small
                 await ctx.send('Sorry, the group is too small. Please get more players.')
