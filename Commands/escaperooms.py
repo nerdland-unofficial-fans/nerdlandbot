@@ -91,19 +91,6 @@ class Escaperooms(commands.Cog):
         escaperooms = list(tracking_table.columns.values)
         return escaperooms
 
-    # def usernames_from_ids(self,ctx,list_users) -> list:
-    #     usernames = []
-    #     for user_id in list_users:
-    #         try:
-    #             # get user displayname based on ID in tracking table
-    #             user = ctx.guild.get_member(int(user_id))
-    #             usernames.append(user.display_name)
-    #         except AttributeError:
-    #             # if user not known on server, handle here
-    #             print("could not find user with ID: " + user_id)
-    #             pass
-    #     return sorted(usernames)
-
     @commands.command(name="i_escaped", brief="Register that you played an escaperoom", usage="<escaperoom>", help="Register that you played escaperoom <escaperoom>")
     async def cmd_iescaped(self, ctx, *, escaperoom_name=None):
         if escaperoom_name:
@@ -199,32 +186,35 @@ class Escaperooms(commands.Cog):
 
         if guild_data.get_datetime_escaperoom_game():
             escape_datetime = guild_data.get_datetime_escaperoom_game()
-            str_escapetime = str(escape_datetime.hour) + \
-                ":" + str(escape_datetime.minute)
-            escapeusers = guild_data.get_users_escaperoom_game()
-            message = "Escaperoom today at: **" + str_escapetime + "**"
-            if len(escapeusers) > 0:
-                escapeusernames = usernames_from_ids(ctx, escapeusers)
-                message += "\n\nThe following players are taking part: " + \
-                    ", ".join(escapeusernames)
-                message += "\n\nRegister by clicking the ✅ below"
-            else:
-                message += ", no players registered yet.\n\nRegister by clicking the ✅ below"
-
-            msg = await ctx.send(message)
-            await msg.add_reaction("✅")
-            reaction, register_user = await ctx.bot.wait_for(
-                "reaction_add",
-                check=lambda reaction, user: reaction.message.id == msg.id
-                and user == ctx.message.author,
-                timeout=60.0
-            )
-            if reaction.emoji == "✅":
-                is_new_register = await guild_data.register_user_escape(register_user.id)
-                if is_new_register:
-                    await ctx.send("You've registered for the session")
+            if escape_datetime > datetime.now():
+                str_escapetime = escape_datetime.strftime('%H:%M')
+                escapeusers = guild_data.get_users_escaperoom_game()
+                message = "Escaperoom today at: **" + str_escapetime + "**"
+                if len(escapeusers) > 0:
+                    escapeusernames = usernames_from_ids(ctx, escapeusers)
+                    message += "\n\nThe following players are taking part: " + \
+                        ", ".join(escapeusernames)
+                    message += "\n\nRegister by clicking the ✅ below"
                 else:
-                    await ctx.send("Already registered, dear Foemp")
+                    message += ", no players registered yet.\n\nRegister by clicking the ✅ below"
+
+                msg = await ctx.send(message)
+                await msg.add_reaction("✅")
+                reaction, register_user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user: reaction.message.id == msg.id
+                    and user == ctx.message.author,
+                    timeout=60.0
+                )
+                if reaction.emoji == "✅":
+                    is_new_register = await guild_data.register_user_escape(register_user.id)
+                    if is_new_register:
+                        await ctx.send("You've registered for the session")
+                    else:
+                        await ctx.send("Already registered, dear Foemp")
+            else:
+                await guild_data.clear_escaperoom_users()
+                await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`')
         else:
             await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`')
 
@@ -329,8 +319,11 @@ class Escaperooms(commands.Cog):
                     mentions = list()
                     for user_id in group:
                         mentions.append('<@!' + str(user_id) + '>')
-                    embed.add_field(name=room, value=" ".join(
-                        mentions), inline=False)
+
+                    embed.add_field(
+                        name=room,
+                        value=" ".join(mentions),
+                        inline=False)
 
                 embed.set_footer(
                     text="Please register your play with the i_escaped command afterwards")

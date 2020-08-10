@@ -108,6 +108,10 @@ class GuildData:
             # time has already been set, don't overwrite
             return False
 
+    async def clear_escaperoom_users(self):
+        self.escaperoom_game['users'] = []
+        await self.save()
+
     def get_users_escaperoom_game(self) -> list:
         if 'users' in self.escaperoom_game.keys():
             return self.escaperoom_game['users']
