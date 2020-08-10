@@ -17,9 +17,14 @@ class Notify(commands.Cog, name="Notification_lists"):
             list_name = list_name.lower()
 
             guild_data = await get_guild_data(ctx.message.guild.id)
-            msg_string = await guild_data.sub_user(list_name, ctx.author.id)
-
-            await ctx.send(msg_string)
+            if guild_data.does_list_exist(list_name):
+                succeeded = await guild_data.sub_user(list_name, ctx.author.id)
+                if succeeded:
+                    await ctx.send("Subscribed <@" + str(ctx.author.id) + "> to " + list_name)
+                else:
+                    await ctx.send("<@" + str(ctx.author.id) + ">, you are already subscribed to " + list_name)
+            else:
+                await ctx.send("This list does not exist, foemp.")
         else:
             await self.show_lists(ctx)
 
@@ -28,9 +33,14 @@ class Notify(commands.Cog, name="Notification_lists"):
         list_name = list_name.lower()
 
         guild_data = await get_guild_data(ctx.message.guild.id)
-        msg_string = await guild_data.unsub_user(list_name, ctx.author.id)
-
-        await ctx.send(msg_string)
+        if guild_data.does_list_exist(list_name):
+            succeeded = await guild_data.unsub_user(list_name, ctx.author.id)
+            if succeeded:
+                await ctx.send("Unubscribed <@" + str(ctx.author.id) + "> from " + list_name)
+            else:
+                await ctx.send("<@" + str(ctx.author.id) + ">, you are not subscribed to " + list_name)
+        else:
+            await ctx.send("This list does not exist, foemp.")
 
     @commands.command(name="notify")
     async def notify(self, ctx, *, message):
