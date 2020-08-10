@@ -16,6 +16,7 @@ class Settings(commands.Cog):
         if not (ctx.message.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
             # if the user is not a bot admin or server admin
             await ctx.send("https://gph.is/g/4w8PDNj")
+            return
         elif not ctx.message.mentions:
             # if the message has no mentions
             await ctx.send("You should mention a user, foemp.")
@@ -24,7 +25,7 @@ class Settings(commands.Cog):
         user_id_to_add = ctx.message.mentions[0].id
         user_name_to_add = ctx.message.guild.get_member(
             int(user_id_to_add)).display_name
-        elif ctx.message.guild.get_member(int(user_id_to_add)).guild_permissions.administrator:
+        if ctx.message.guild.get_member(int(user_id_to_add)).guild_permissions.administrator:
             # if the requested user is already a server admin
             await ctx.send(f"{user_name_to_add} is a server admin, so no need to make them a bot admin.")
         elif ctx.message.mentions[0].id in guild_data.bot_admins:
@@ -41,6 +42,7 @@ class Settings(commands.Cog):
         if not (ctx.message.author.guild_permissions.administrator or ctx.author.id in guild_data.bot_admins):
             # if the person to give the command is not a server or bot admin, send gif
             await ctx.send("https://gph.is/g/4w8PDNj")
+            return
         elif not ctx.message.mentions:
             # if the message has no mentions
             await ctx.send("You should mention a user, foemp.")
