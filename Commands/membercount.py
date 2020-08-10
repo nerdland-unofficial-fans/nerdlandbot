@@ -21,7 +21,7 @@ class MemberCount(commands.Cog, name="member_count"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="member_count", aliases=["count", "membercount"], brief="performs a member count", usage="[channel name]", help="Perform a member count.\n\nWithout parameter: returns the server member count.\n\nWith a channel name: returns a ")
+    @commands.command(name="member_count", aliases=["count", "membercount"], brief="performs a member count", usage="[channel name]", help="Perform a member count.\n\nWithout parameter: returns the server member count.\n\nWith a channel name: returns a count of all members currently in the given channel.\n\n With parameter 'online': Return all members curenlty online. ")
     async def count(self, ctx, channel_name=None):
         if channel_name == "online":
             online_member_count = count_online_members(ctx)
