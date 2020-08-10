@@ -1,4 +1,4 @@
-def usernames_from_ids(ctx,list_users) -> list:
+def usernames_from_ids(ctx, list_users) -> list:
     usernames = []
     for user_id in list_users:
         try:
