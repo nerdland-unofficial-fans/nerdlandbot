@@ -61,6 +61,7 @@ class GuildData:
         self.guild_id = guild_id
         self.guild_changed = False
         self.notification_lists = dict()
+        self.bot_admins = []
 
     async def sub_user(self, list_name: str, user_id: int):
         if list_name not in self.notification_lists.keys():
