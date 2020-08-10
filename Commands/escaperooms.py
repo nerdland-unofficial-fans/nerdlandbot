@@ -5,6 +5,7 @@ import re
 from datetime import datetime
 from discord.ext import commands
 from .GuildData import get_guild_data, save_configs
+import constants
 
 class Escaperooms(commands.Cog):
     def __init__(self, bot):
@@ -275,10 +276,10 @@ class Escaperooms(commands.Cog):
 
         if escape_time and escape_users:
             number_of_users = len(escape_users)
-            if number_of_users > 3:
+            if number_of_users > constants.ESCAPE_MIN_GROUPSIZE:
                 # we have enough information to start
                 groups = []
-                if number_of_users > 2:
+                if number_of_users > constants.ESCAPE_MAX_GROUPZIZE:
                     # too many users for one game, split groups
                     msg = await ctx.send('The group is too large and needs to be split, would you like a balanced split (⚖️) or one based on experience (🏆)?')
                     await msg.add_reaction("⚖️")
