@@ -186,12 +186,27 @@ class Escaperooms(commands.Cog):
             if len(escapeusers)>0:
                 escapeusernames = []
                 for user_id in escapeusers:
+                    print(user_id)
                     escapeusernames.append(ctx.bot.get_user(int(user_id)).display_name)
                 message += "\n\nThe following players are taking part: " + ", ".join(escapeusernames)
+                message += "\n\nRegister by clicking the ✅ below"
             else:
-                message += ", no players registered yet."
+                message += ", no players registered yet.\n\nRegister by clicking the ✅ below"
             
-            await ctx.send(message)
+            msg = await ctx.send(message)
+            await msg.add_reaction("✅")
+            reaction, register_user = await ctx.bot.wait_for(
+                "reaction_add",
+                check=lambda reaction, user: reaction.message.id == msg.id
+                and user == ctx.message.author,
+                timeout=60.0
+            )
+            if reaction.emoji == "✅":
+                is_new_register = await guild_data.register_user_escape(register_user.id)
+                if is_new_register:
+                    await ctx.send("You've registered for the session")
+                else:
+                    await ctx.send("Already registered, mr. Foemp")
         else:        
             await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`') 
 
@@ -223,11 +238,14 @@ class Escaperooms(commands.Cog):
         # pick first room
         return sub_room_sums.loc[0][0]
 
-    def split_group(self,user_list,is_balanced=False):
+    def split_group(self,user_list,is_balanced=False)->list:
         tracking_table = self.read_tracking_table()
-        
+        user_list = list(map(str,user_list))
+
         # Clean table and transpose
         subset = tracking_table.loc[tracking_table['Discord ID'].isin(user_list)]
+        print(user_list)
+        print(subset)
         subset = pd.DataFrame(subset.drop(columns=['Naam','Heeft tabletop']))
         subset = self.transpose_tracking_table(subset)
         
@@ -247,7 +265,49 @@ class Escaperooms(commands.Cog):
             group1 = alternated_groups[:groupsize]
             group2 = alternated_groups[groupsize:]
         
-        return group1.index.values, group2.index.values
+        return [group1.index.values, group2.index.values]
+
+    @commands.command(name="start_escape", brief="Start the escaperoom group and room selection", help="let the bot figure out which room to play with the registered players")
+    async def cmd_start_escape(self,ctx):
+        guild_data = await get_guild_data(ctx.message.guild.id)
+        escape_time = guild_data.get_datetime_escaperoom_game()
+        escape_users = guild_data.get_users_escaperoom_game()
+
+        if escape_time and escape_users:
+            number_of_users = len(escape_users)
+            if number_of_users > 3:
+                # we have enough information to start
+                groups = []
+                if number_of_users > 2:
+                    # too many users for one game, split groups
+                    msg = await ctx.send('The group is too large and needs to be split, would you like a balanced split (⚖️) or one based on experience (🏆)?')
+                    await msg.add_reaction("⚖️")
+                    await msg.add_reaction("🏆")
+                    reaction, register_user = await ctx.bot.wait_for(
+                        "reaction_add",
+                        check=lambda reaction, user: reaction.message.id == msg.id
+                        and user == ctx.message.author,
+                    timeout=60.0
+                    )
+                    balanced = reaction.emoji == '⚖️'
+                    groups = self.split_group(escape_users,balanced)
+                else:
+                    groups = [escape_users]
+                
+                for group in groups:
+                    print(group)
+                    await ctx.send(self.calculate_room(group))
+            else:
+                # group is too small
+                await ctx.send('Sorry, the group is too small. Please get more players.')
+                await self.cmd_when_escape(ctx)
+        elif not escape_users:
+            # no users registered for the game
+            await ctx.send('Sorry no players registered at the moment')
+        else:
+            # no time is set for the game
+            await ctx.send('Sorry no game planned yet')
+
 
 def setup(bot):
     bot.add_cog(Escaperooms(bot))
