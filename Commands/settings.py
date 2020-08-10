@@ -17,7 +17,7 @@ class Settings(commands.Cog):
             # if the user is not a bot admin or server admin
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
-        elif not ctx.message.mentions:
+        if not ctx.message.mentions:
             # if the message has no mentions
             await ctx.send("You should mention a user, foemp.")
             return
@@ -27,13 +27,13 @@ class Settings(commands.Cog):
             int(user_id_to_add)).display_name
         if ctx.message.guild.get_member(int(user_id_to_add)).guild_permissions.administrator:
             # if the requested user is already a server admin
-            await ctx.send(f"{user_name_to_add} is a server admin, so no need to make them a bot admin.")
+            await ctx.send(f"{user_name_to_add} is a server admin, so no need to make them a bot admin, foemp.")
         elif ctx.message.mentions[0].id in guild_data.bot_admins:
             # if the requested user is already an admin
-            await ctx.send(f"{user_name_to_add} is already a bot boss, foemp.")
+            await ctx.send(f"{user_name_to_add} is already a bot admin, foemp.")
         else:
             await guild_data.add_admin(user_id_to_add)
-            await ctx.send(f"{user_name_to_add} is now a bot boss.")
+            await ctx.send(f"{user_name_to_add} is now a bot admin.")
 
     @commands.command(name="remove_admin", brief="**admin-only** \n\u2003 Remove a bot admin", usage="<mentioned user>", help="*admin-only* \u2003 Remove a bot admin. If the user also has the role of server admin, this role will not be revoked. \n\n<mention user> \u2003 Mention the user that you want to remove from the bot admins.")
     async def remove_admin(self, ctx, mention):
@@ -43,7 +43,7 @@ class Settings(commands.Cog):
             # if the person to give the command is not a server or bot admin, send gif
             await ctx.send("https://gph.is/g/4w8PDNj")
             return
-        elif not ctx.message.mentions:
+        if not ctx.message.mentions:
             # if the message has no mentions
             await ctx.send("You should mention a user, foemp.")
             return
@@ -89,11 +89,14 @@ class Settings(commands.Cog):
                 pass
 
     @commands.command(name="bot_admins", aliases=["who_da_boss"], brief="List the bot admins", help="List the current bot admins. Bot admins can use the **admin-only** commands, but do not have the role of server admin.")
-    async def bosses(self, ctx):
+    async def admins_bot(self, ctx):
         guild_data = await get_guild_data(ctx.message.guild.id)
-        message = "The bot admins are:"
-        for user_id in guild_data.bot_admins:
-            message += f"\n- {ctx.message.guild.get_member(int(user_id)).display_name}"
+        if len(guild_data.bot_admins) > 1:
+            message = "The bot admins are:"
+            for user_id in guild_data.bot_admins:
+                message += f"\n- {ctx.message.guild.get_member(int(user_id)).display_name}"
+        else:
+            message = "There are no bot admins."
         await ctx.send(message)
 
 
