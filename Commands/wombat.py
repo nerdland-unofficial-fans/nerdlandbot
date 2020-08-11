@@ -9,7 +9,7 @@ class Wombat(commands.Cog, name="Wombat"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="wombat_pic", brief="Post a random wombat picture", help="The bot will search in its database for a random picture of a wombat in its database, and post it in the chat")
+    @commands.command(name="wombat_pic", brief="Post a random wombat picture", help="The bot will search for a random picture of a wombat in its database, and post it in the chat")
     async def cmd_wombat_pic(self, ctx):
 
         parent_dir = os.path.join(os.path.dirname(__file__), os.pardir)
