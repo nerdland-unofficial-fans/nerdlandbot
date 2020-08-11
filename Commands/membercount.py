@@ -1,8 +1,12 @@
 import discord
 from discord.ext import commands
+import typing
+
+from Translations.Translations import get_text as translate
+from Helpers.TranslationHelper import get_culture_from_context as culture
 
 
-async def count_online_members(ctx):
+async def count_online_members(ctx: commands.Context) -> int:
     def is_online(user):
         if user.status == discord.Status.online:
             return True
@@ -18,31 +22,39 @@ async def count_online_members(ctx):
 
 
 class MemberCount(commands.Cog, name="member_count"):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.bot):
         self.bot = bot
 
-    @commands.command(name="member_count", aliases=["count", "membercount"], brief="performs a member count", usage="[channel name]", help="Perform a member count.\n\nWithout parameter: returns the server member count.\n\nWith a channel name: returns a count of all members currently in the given channel.\n\n With parameter 'online': Return all members curenlty online. ")
-    async def count(self, ctx, channel_name=None):
+    @commands.command(name="member_count", aliases=["count", "membercount"], brief="membercount_brief",
+                      usage="membercount_usage", help="membercount_help")
+    async def count(self, ctx: commands.Context, channel_name: typing.Optional[str] = None):
         if channel_name == "online":
-            online_member_count = count_online_members(ctx)
-            return await ctx.send(f'There are {online_member_count} people online in this server!')
+            online_member_count = await count_online_members(ctx)
+            msg = translate("membercount_online_result", await culture(ctx)).format(online_member_count)
+            return await ctx.send(msg)
 
         if channel_name is None:
-            return await ctx.send(f'There are {len(ctx.guild.members)} people in `{ctx.guild.name}`!')
+            msg = translate("membercount_server_result", await culture(ctx)) \
+                .format(len(ctx.guild.members), ctx.guild.name)
+            return await ctx.send(msg)
 
         channel = discord.utils.get(ctx.channel.guild.channels, name=channel_name)
 
         if channel is None:
-            return await ctx.send("Please add a channel name to your command!")
+            msg = translate("membercount_channel_nonexistant", await culture(ctx))
+            return await ctx.send(msg)
 
         if len(channel.members) < 1:
-            return await ctx.send("That channel is empty!")
+            msg = translate("membercount_empty_channel", await culture(ctx)).format(channel.id)
+            return await ctx.send(msg)
 
         if len(channel.members) == 1:
-            return await ctx.send(f'There is one person in channel <#{channel.id}>!')
+            msg = translate("membercount_single_person", await culture(ctx)).format(channel.id)
+            return await ctx.send(msg)
 
-        await ctx.send(f'There are {len(channel.members)} people in channel <#{channel.id}>!')
+        msg = translate("membercount_channel_result", await culture(ctx)).format(len(channel.members), channel.id)
+        await ctx.send(msg)
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(MemberCount(bot))
