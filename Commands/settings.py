@@ -60,7 +60,11 @@ class Settings(commands.Cog):
             await msg.add_reaction("👍")
             await msg.add_reaction("👎")
             try:
-                reaction, user = await ctx.bot.wait_for("reaction_add", check=lambda reaction, user: reaction.message.id == msg.id and user == ctx.message.author, timeout=30.0,)
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user: reaction.message.id == msg.id and user == ctx.message.author,
+                    timeout=30.0
+                )
                 if reaction.emoji == "👍":
                     await guild_data.remove_admin(user_id_to_remove)
                     await ctx.send(f"{user_name_to_remove} is no longer a bot admin.")
@@ -76,7 +80,11 @@ class Settings(commands.Cog):
             await msg.add_reaction("👍")
             await msg.add_reaction("👎")
             try:
-                reaction, user = await ctx.bot.wait_for("reaction_add", check=lambda reaction, user: reaction.message.id == msg.id and user == ctx.message.author, timeout=30.0,)
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user: reaction.message.id == msg.id and user == ctx.message.author,
+                    timeout=30.0
+                )
                 if reaction.emoji == "👍":
                     await guild_data.remove_admin(user_id_to_remove)
                     await ctx.send(f"{user_name_to_remove} is no longer a bot admin.")

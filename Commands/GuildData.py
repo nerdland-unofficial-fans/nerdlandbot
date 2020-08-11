@@ -57,13 +57,13 @@ class GuildData:
         """adds a user to the list if not already there."""
         """returns True when user was added, returns False if already in list"""
         if user_id not in self.notification_lists[list_name]["users"]:
-            #user not in list, add to list and return True
+            # user not in list, add to list and return True
             self.notification_lists[list_name]["users"].append(user_id)
             await self.save()
-            return True 
+            return True
         else:
             # user already in list, return false
-            return False 
+            return False
 
     async def unsub_user(self, list_name: str, user_id: int) -> bool:
         if user_id in self.notification_lists[list_name]["users"]:
