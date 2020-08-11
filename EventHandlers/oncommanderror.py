@@ -1,4 +1,7 @@
 from discord.ext import commands
+from Translations.Translations import get_text as translate
+from Helpers.TranslationHelper import get_culture_from_context as culture
+
 
 class OnCommandError(commands.Cog, name="on_command_error"):
     def __init__(self, bot):
@@ -10,17 +13,12 @@ class OnCommandError(commands.Cog, name="on_command_error"):
 
         if isinstance(error, commands.MissingRequiredArgument):
             command_name = ctx.message.content.split(" ")[0]
-            msg = (
-                "My command `"
-                + command_name
-                + "` requires more arguments. `"
-                + error.param.name
-                + "` is missing."
-            )
+            msg = translate("err_missing_parameter", await culture(ctx)).format(command_name, error.param.name)
         else:
-            msg = "Unrecognized command"
+            msg = translate("err_unrecognized_command", await culture(ctx))
 
         await ctx.send(msg)
+
 
 def setup(bot):
     bot.add_cog(OnCommandError(bot))
