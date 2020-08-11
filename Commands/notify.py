@@ -80,12 +80,13 @@ class Notify(commands.Cog, name="Notification_lists"):
     async def wait_for_added_reactions(self, ctx, msg, guild_data, timeout):
         while True:
             try:
-                reaction, user = await ctx.bot.wait_for("reaction_add",
-                                                        check=lambda reaction, user:
-                                                        reaction.message.id == msg.id
-                                                        and not user.bot,
-                                                        timeout=30.0,
-                                                        )
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user:
+                    reaction.message.id == msg.id
+                    and not user.bot,
+                    timeout=30.0,
+                )
 
                 if reaction.custom_emoji:
                     reaction_emoji = str(reaction.emoji.id)
@@ -107,12 +108,13 @@ class Notify(commands.Cog, name="Notification_lists"):
     async def wait_for_removed_reactions(self, ctx, msg, guild_data, timeout):
         while True:
             try:
-                reaction, user = await ctx.bot.wait_for("reaction_remove",
-                                                        check=lambda reaction, user:
-                                                        reaction.message.id == msg.id
-                                                        and not user.bot,
-                                                        timeout=30.0,
-                                                        )
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_remove",
+                    check=lambda reaction, user:
+                    reaction.message.id == msg.id
+                    and not user.bot,
+                    timeout=30.0,
+                )
                 if reaction.custom_emoji:
                     reaction_emoji = str(reaction.emoji.id)
                 else:
@@ -198,12 +200,13 @@ class Notify(commands.Cog, name="Notification_lists"):
         else:
             msg = await ctx.send("What emoji do you want to use for " + list_name + " ?")
             try:
-                reaction, user = await ctx.bot.wait_for("reaction_add",
-                                                        check=lambda reaction, user:
-                                                        reaction.message.id == msg.id
-                                                        and user == ctx.message.author,
-                                                        timeout=30.0,
-                                                        )
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user:
+                    reaction.message.id == msg.id
+                    and user == ctx.message.author,
+                    timeout=30.0,
+                )
                 if reaction.custom_emoji:
                     try:
                         reaction_emoji = reaction.emoji.id
@@ -253,12 +256,13 @@ class Notify(commands.Cog, name="Notification_lists"):
             await msg.add_reaction("👍")
             await msg.add_reaction("👎")
             try:
-                reaction, user = await ctx.bot.wait_for("reaction_add",
-                                                        check=lambda reaction, user:
-                                                        reaction.message.id == msg.id
-                                                        and user == ctx.message.author,
-                                                        timeout=30.0,
-                                                        )
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user:
+                    reaction.message.id == msg.id
+                    and user == ctx.message.author,
+                    timeout=30.0,
+                )
                 if reaction.emoji == "👍":
                     await guild_data.remove_notification_list(list_name)
                     await ctx.send("The list `" + list_name + "` is removed")
