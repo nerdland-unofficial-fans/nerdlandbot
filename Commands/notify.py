@@ -6,13 +6,12 @@ from discord.ext import commands
 from .GuildData import get_guild_data
 
 
-
 class Notify(commands.Cog, name="Notification_lists"):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="sub", aliases=["subscribe"], brief="Subscribe to one or more list(s)", usage="[list name]", help="Subscribe to list(s)\n\nWithout a list name: you get an overview of all the lists with the corresponding emoji's. \nClick the emoji to subscribe to the corresponding list. \nClick the emoji again to unsubscribe from the corresponding list.\n\n With a list name: you will be subscribed to that list.")
-    async def sub(self, ctx, list_name: typing.Optional[str] = None):
+    async def subscribe(self, ctx, list_name: typing.Optional[str] = None):
         if list_name:
             list_name = list_name.lower()
 
@@ -63,7 +62,8 @@ class Notify(commands.Cog, name="Notification_lists"):
                 # check if a message was given with the command
                 if len(message.split()) > 1:
                     # message given, send message and mention users
-                    message_text = firstline + " with message:\n\n" + " ".join(message.split(" ")[1:]) + "\n\n"
+                    message_text = firstline + " with message:\n\n" + \
+                        " ".join(message.split(" ")[1:]) + "\n\n"
                 else:
                     # no message given, just mention users
                     message_text = firstline + "\n\n"
@@ -91,11 +91,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        succeeded = await guild_data.sub_user(list_name, ctx.author.id)
-                        if succeeded:
-                            await ctx.send("Subscribed <@" + str(ctx.author.id) + "> to " + list_name)
-                        else:
-                            await ctx.send("<@" + str(ctx.author.id) + ">, you are already subscribed to " + list_name)
+                        await self.subscribe(ctx, list_name)
 
             except asyncio.TimeoutError:
                 pass
@@ -115,11 +111,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        succeeded = await guild_data.unsub_user(key, ctx.author.id)
-                        if succeeded:
-                            await ctx.send("Unubscribed <@" + str(ctx.author.id) + "> from " + list_name)
-                        else:
-                            await ctx.send("<@" + str(ctx.author.id) + ">, you are not subscribed to " + list_name)
+                        await self.unsubscribe(ctx, list_name)
 
             except asyncio.TimeoutError:
                 pass
@@ -136,7 +128,9 @@ class Notify(commands.Cog, name="Notification_lists"):
             for k, v in guild_data.notification_lists.items():
                 if v["is_custom_emoji"]:
                     # TODO: Extract to 'get_custom_emoji' method for reusability
-                    text += "\n<:" + ctx.bot.get_emoji(int(v["emoji"])).name + ":" + v["emoji"] + "> - " + k
+                    text += "\n<:" + \
+                        ctx.bot.get_emoji(
+                            int(v["emoji"])).name + ":" + v["emoji"] + "> - " + k
                 else:
                     text += "\n" + v["emoji"] + " - " + k
 
@@ -146,8 +140,10 @@ class Notify(commands.Cog, name="Notification_lists"):
 
             # TODO make reaction time configurable
             timeout = time.time() + 60 * 5  # 5 minutes from now
-            reaction_added_task = asyncio.create_task(self.wait_for_added_reactions(ctx, msg, guild_data, timeout))
-            reaction_removed_task = asyncio.create_task(self.wait_for_removed_reactions(ctx, msg, guild_data, timeout))
+            reaction_added_task = asyncio.create_task(
+                self.wait_for_added_reactions(ctx, msg, guild_data, timeout))
+            reaction_removed_task = asyncio.create_task(
+                self.wait_for_removed_reactions(ctx, msg, guild_data, timeout))
 
             await reaction_added_task
             await reaction_removed_task

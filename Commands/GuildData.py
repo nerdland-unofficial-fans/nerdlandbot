@@ -69,7 +69,6 @@ class GuildData:
         if user_id in self.notification_lists[list_name]["users"]:
             # user exists in list, remove and return True
             self.notification_lists[list_name]["users"].remove(user_id)
-            self.guild_changed = True
             await self.save()
             return True
         else:
