@@ -9,21 +9,19 @@ class Help(commands.Cog):
     async def help(self,ctx,subject=None):
         to_embed = discord.Embed()
         if subject == None:
+            to_embed = discord.Embed(description="below you find the different categories on which to request help",color=0x999900)
+            to_embed.title = "Help Categories"
+            cog_string = ""
             for cog_name in ctx.bot.cogs:
-                message = {}   
+                cog_count = 0   
                 cog = ctx.bot.get_cog(cog_name)
                 for command in cog.get_commands():
-                    if not command.hidden:  
-                        if command.brief == None:
-                            message[command.name] = command.help
-                        else:
-                            message[command.name] = command.brief
-                string = []
-                for name in sorted(message):
-                    string.append("*{0}*\n \u2003 {1}\n".format(name,message[name]))
-                if len(message)!=0:
-                    to_embed.add_field(name='~~-'+' '*30+'-~~' + '\n**' + cog_name + '**\n', value=" ".join(string), inline=False)
-            to_embed.add_field(name='\u200b', value="Type `{0}help [command]` for more info on a command. \nType `{0}help [category]` for more info on a category.".format(ctx.prefix), inline=False)
+                    if not command.hidden:
+                        cog_count += 1
+                if cog_count > 0:
+                    cog_string += "- " + cog_name + "\n"
+            to_embed.add_field(name='\u200b' , value=cog_string, inline=False)        
+            to_embed.add_field(name='\u200b', value="Type `{0}help [category]` for more info on a category.".format(ctx.prefix), inline=False)
         else:
             for cog_name in ctx.bot.cogs:
                 if cog_name.lower() == subject.lower():
