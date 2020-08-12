@@ -25,7 +25,7 @@
 "list_unsubscribed","Unsubscribed <@{0}> from {1}.","<@{0}> ontvangt niet langer notificaties voor {1}."
 "list_err_empty","Nobody to notify, foemp!","Deze lijst is leeg, foemp!"
 "notifying","**{0}** Notified by <@{1}>\n","Ahem, dit is NerdlandBot uit de montagekamer, willen de volgende personen zich op vraag van <@{1}> melden voor **{0}** a.u.b.\n"
-"notify_message","with message: {0}",""
+"notify_message","With message: {0}","Met de volgende mededeling: {0}"
 "notify_sub_usage","[list name]","[lijst naam]"
 "notify_sub_brief","Subscribe to one or more list(s)","Abonneer op een of meerdere lijsten"
 "notify_sub_help","Subscribe to list(s)\n\nWithout a list name: you get an overview of all the lists with the corresponding emoji's. \nClick the emoji to subscribe to the corresponding list. \nClick the emoji again to unsubscribe from the corresponding list.\n\n With a list name: you will be subscribed to that list.","Abbonneer om notificaties te ontvangen\n\nZonder lijst: Je krijgt een overzicht van alle lijsten met de overeenkomstige emoji's.\nKies de emoji die overeenkomt met de gewenste lijst om je aan of af te melden\n\nMet lijst: Je zal notificaties ontvangen voor de gekozen lijst."
