@@ -3,6 +3,7 @@ import asyncio
 from discord.ext import commands
 from Helpers.TranslationHelper import get_culture_from_context as culture
 from Translations.Translations import get_text as translate
+from Helpers.emoji import thumbs_up, thumbs_down
 
 from .GuildData import get_guild_data
 
@@ -14,105 +15,143 @@ class Settings(commands.Cog):
     @commands.command(name="add_admin", brief="settings_add_admin_brief", usage="settings_add_admin_usage",
                       help="settings_add_admin_help")
     async def add_admin(self, ctx: commands.Context):
+        """
+        Add a new bot admin.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        """
+
         guild_data = await get_guild_data(ctx.guild.id)
 
+        # Error if not admin
         if not guild_data.user_is_admin(ctx.author):
-            # if the user is not a bot admin or server admin
             gif = translate("not_admin_gif", await culture(ctx))
             return await ctx.send(gif)
 
+        # Error if the command had no mention
         if not ctx.message.mentions:
-            # if the message has no mentions
             err = translate("mention_required", await culture(ctx))
             return await ctx.send(err)
 
+        # Fetch user data
         user_id_to_add = ctx.message.mentions[0].id
-        user_to_add = ctx.guid.get_member(int(user_id_to_add))
+        user_to_add = ctx.guild.get_member(int(user_id_to_add))
         user_name_to_add = user_to_add.display_name
 
+        # Error if the user is a server admin (no point in giving him bot admin rights)
         if ctx.guild.get_member(int(user_id_to_add)).guild_permissions.administrator:
-            # if the requested user is already a server admin
             err = translate("bot_admin_error_discord_admin", await culture(ctx)).format(user_name_to_add)
             return await ctx.send(err)
 
+        # Error if the user already is a bot admin
         if ctx.message.mentions[0].id in guild_data.bot_admins:
-            # if the requested user is already an admin
             err = translate("bot_admin_error_already_admin", await culture(ctx)).format(user_name_to_add)
             return await ctx.send(err)
 
+        # Actually add the user to the admins
         await guild_data.add_admin(user_id_to_add)
 
+        # Display success
         msg = translate("bot_admin_add_success", await culture(ctx)).format(user_name_to_add)
         await ctx.send(msg)
 
     @commands.command(name="remove_admin", brief="settings_remove_admin_brief", usage="settings_remove_admin_usage",
                       help="settings_remove_admin_help")
     async def remove_admin(self, ctx: commands.Context):
+        """
+        Remove a bot admin.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        """
+
         guild_data = await get_guild_data(ctx.guild.id)
 
+        # Error if not admin
         if not guild_data.user_is_admin(ctx.author):
-            # if the person to give the command is not a server or bot admin, send gif
             gif = translate("not_admin_gif", await culture(ctx))
             return await ctx.send(gif)
+
+        # Error if the command had no mention
         if not ctx.message.mentions:
-            # if the message has no mentions
             err = translate("mention_required", await culture(ctx))
             return await ctx.send(err)
 
+        # Fetch user data
         user_id_to_remove = ctx.message.mentions[0].id
-        user_to_remove = ctx.guild.get_member(user_id_to_remove)
+        user_to_remove = ctx.guild.get_member(int(user_id_to_remove))
         user_name_to_remove = user_to_remove.display_name
 
+        # Error if the user is not a bot admin
         if user_id_to_remove not in guild_data.bot_admins:
-            # if the user to remove is not a bot admin
             err = translate("bot_admin_error_not_admin", await culture(ctx)).format(user_name_to_remove)
             return await ctx.send(err)
 
+        # User is trying to revoke his own rights
         if ctx.author.id == user_id_to_remove:
-            # if the user wants to remove themselves as a bot admin
+            # Ask confirmation
             confirmation_text = translate("bot_admin_confirm_remove_self", await culture(ctx))
             msg = await ctx.send(confirmation_text)
-            await msg.add_reaction("👍")
-            await msg.add_reaction("👎")
+            await msg.add_reaction(thumbs_up)
+            await msg.add_reaction(thumbs_down)
+
+            # Handle user reaction
             try:
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_add",
-                    check=lambda new_reaction, author:
-                        new_reaction.message.id == msg.id and author == ctx.message.author,
-                    timeout=30.0, )
+                    check=lambda new_reaction, author: new_reaction.message.id == msg.id and author == ctx.message.author,
+                    timeout=30.0,
+                )
 
-                if reaction.emoji == "👍":
+                # Process thumbs up
+                if reaction.emoji == thumbs_up:
                     await guild_data.remove_admin(user_id_to_remove)
                     msg = translate("bot_admin_remove_success", await culture(ctx)).format(user_name_to_remove)
                     return await ctx.send(msg)
-                elif reaction.emoji == "👎":
+
+                # Process thumbs down
+                if reaction.emoji == thumbs_down:
                     msg = translate("bot_admin_remove_cancel", await culture(ctx)).format(user_name_to_remove)
                     return await ctx.send(msg)
 
+                # If we reach here, an invalid emoji was used
+                await msg.delete()
+                return
+
+                # Handle timeout
             except asyncio.TimeoutError:
                 await msg.delete()
                 msg = translate("snooze_lose", await culture(ctx))
                 return await ctx.send(msg)
 
-        # if an authorized user wants to remove another bot admin
+        # Authorized user wants to remove another bot admin
+        # Ask confirmation
         confirmation_text = translate("bot_admin_confirm_remove", await culture(ctx)).format(user_name_to_remove)
         msg = await ctx.send(confirmation_text)
-        await msg.add_reaction("👍")
-        await msg.add_reaction("👎")
+        await msg.add_reaction(thumbs_up)
+        await msg.add_reaction(thumbs_down)
+
+        # Handle user reaction
         try:
             reaction, user = await ctx.bot.wait_for(
                 "reaction_add",
                 check=lambda new_reaction, author: new_reaction.message.id == msg.id and author == ctx.message.author,
                 timeout=30.0,
             )
-            if reaction.emoji == "👍":
+
+            # Process thumbs up
+            if reaction.emoji == thumbs_up:
                 await guild_data.remove_admin(user_id_to_remove)
                 msg = translate("bot_admin_remove_success", await culture(ctx)).format(user_name_to_remove)
                 return await ctx.send(msg)
-            elif reaction.emoji == "👎":
+
+            # Process thumbs down
+            elif reaction.emoji == thumbs_down:
                 msg = translate("bot_admin_remove_cancel", await culture(ctx)).format(user_name_to_remove)
                 return await ctx.send(msg)
 
+            # If we reach here, an invalid emoji was used
+            await msg.delete()
+            return
+
+        # Handle timeout
         except asyncio.TimeoutError:
             await msg.delete()
             msg = translate("snooze_lose", await culture(ctx))
@@ -121,13 +160,24 @@ class Settings(commands.Cog):
     @commands.command(name="bot_admins", aliases=["who_da_boss"], brief="settings_bot_admins_brief",
                       help="settings_bot_admins_help")
     async def admins_bot(self, ctx: commands.Context):
+        """
+        Show a list of all bot admins.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        """
+
         guild_data = await get_guild_data(ctx.guild.id)
-        if len(guild_data.bot_admins) >= 1:
-            message = translate("bot_admin_list_prefix", await culture(ctx))
-            for user_id in guild_data.bot_admins:
-                message += f"\n- {ctx.guild.get_member(int(user_id)).display_name}"
-        else:
-            message = translate("bot_admin_err_no_admins", await culture(ctx))
+
+        # Error if no admins found
+        if not guild_data.bot_admins:
+            msg = translate("bot_admin_err_no_admins", await culture(ctx))
+            return await ctx.send(msg)
+
+        # Build list
+        message = translate("bot_admin_list_prefix", await culture(ctx))
+        for user_id in guild_data.bot_admins:
+            message += f"\n- {ctx.guild.get_member(int(user_id)).display_name}"
+
+        # Show list
         await ctx.send(message)
 
 

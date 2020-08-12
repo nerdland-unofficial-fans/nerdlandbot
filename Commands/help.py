@@ -7,11 +7,22 @@ import discord
 empty = '\u200b'
 
 
-def build_title(title: str) -> str:
-    return f"~~-{' ' * 30}-~~" + '\n' + f"**{title}**" + '\n'
+def build_title(title: str, line_width: int = 30) -> str:
+    """
+    Draws a separator and prints the title
+    :param title: The title to print. (str)
+    :param line_width: The width of the separator to draw. (optional - int - default = 30)
+    :return: A string containing the separator and title. (str)
+    """
+    return f"~~-{' ' * line_width}-~~" + '\n' + f"**{title}**" + '\n'
 
 
-async def send_embed(ctx: commands.context, embed: discord.Embed):
+async def send_embed(ctx: commands.Context, embed: discord.Embed):
+    """
+    Send embed to the current context
+    :param ctx: The current context. (discord.ext.commands.Context)
+    :param embed: the embed to send back to the current context. (discord.Embed)
+    """
     if len(embed) > 0:
         return await ctx.channel.send(embed=embed)
 
@@ -22,8 +33,13 @@ async def send_embed(ctx: commands.context, embed: discord.Embed):
     await ctx.channel.send(ctx, embed)
 
 
-async def build_commands_message(ctx: commands.Context, cog_name: str) -> str:
-    cog = ctx.bot.get_cog(cog_name)
+async def build_commands_message(cog: commands.Cog, current_culture: str) -> str:
+    """
+    Builds the help info for a certain cog
+    :param cog: The requested cog. (discord.ext.commands.Cog)
+    :param current_culture: The culture in which the help should be generated (str)
+    :return: The help info for the given cog (str)
+    """
 
     message = {}
     for command in cog.get_commands():
@@ -31,9 +47,9 @@ async def build_commands_message(ctx: commands.Context, cog_name: str) -> str:
             continue
 
         if command.brief is None:
-            message[command.name] = translate(command.help, await culture(ctx))
+            message[command.name] = translate(command.help, current_culture)
         else:
-            message[command.name] = translate(command.brief, await culture(ctx))
+            message[command.name] = translate(command.brief, current_culture)
 
     strings = []
     for name in sorted(message):
@@ -43,10 +59,14 @@ async def build_commands_message(ctx: commands.Context, cog_name: str) -> str:
 
 
 async def general_help(ctx: commands.Context):
+    """
+    Builds and sends the general help info to the current context.
+    :param ctx: The current context. (discord.ext.commands.Context)
+    """
     embed = discord.Embed()
 
     for cog_name in ctx.bot.cogs:
-        content = await build_commands_message(ctx, cog_name)
+        content = await build_commands_message(ctx.bot.get_cog(cog_name), await culture(ctx))
 
         if len(content) == 0:
             continue
@@ -62,8 +82,13 @@ async def general_help(ctx: commands.Context):
 
 
 async def subject_help(ctx: commands.Context, subject: str):
+    """
+    Builds and sends the help info for the given subject to the current context.
+    :param ctx: The current context. (discord.ext.commands.Context)
+    :param subject: The subject to request help on. (str)
+    """
     embed = discord.Embed()
-    content = await build_commands_message(ctx, subject)
+    content = await build_commands_message(ctx.bot.get_cog(subject), await culture(ctx))
 
     # add subject title
     title = f'**{0}**\n'.format(subject)
@@ -77,6 +102,11 @@ async def subject_help(ctx: commands.Context, subject: str):
 
 
 async def command_help(ctx: commands.Context, command_name: str):
+    """
+    Builds and sends the help info on the given command to the current context.
+    :param ctx: The current context. (discord.ext.commands.Context)
+    :param command_name: The command to request help on. (str)
+    """
     # TODO print aliases
     embed = discord.Embed()
 
@@ -105,6 +135,11 @@ class Help(commands.Cog):
 
     @commands.command(name='help', hidden=True, usage='help_usage', brief='help_brief', help='help_help')
     async def help(self, ctx: commands.Context, subject: str = None):
+        """
+        Show the help text for the given subject, or the general help if no subject provided.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        :param subject: The subject to request help on. (optional - str - default = None)
+        """
         if subject is None:
             return await general_help(ctx)
 

@@ -7,8 +7,11 @@ class OnReady(commands.Cog, name="on_ready"):
 
     @commands.Cog.listener(name="on_ready")
     async def on_ready(self):
+        """
+        This gets executed when the bot connects to discord.
+        """
         print(f'{self.bot.user.name} has connected to Discord!')
 
 
-def setup(bot):
+def setup(bot: commands.Bot):
     bot.add_cog(OnReady(bot))
