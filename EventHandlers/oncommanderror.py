@@ -3,6 +3,7 @@ from typing import Any
 from discord.ext import commands
 from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
+from Helpers.log import error as log_error
 
 
 class OnCommandError(commands.Cog, name="on_command_error"):
@@ -18,7 +19,7 @@ class OnCommandError(commands.Cog, name="on_command_error"):
         """
 
         # Log the error
-        print(error)
+        log_error(error)
 
         # Notify user for MissingRequiredArgument errors
         if isinstance(error, commands.MissingRequiredArgument):

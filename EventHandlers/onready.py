@@ -1,5 +1,7 @@
 from discord.ext import commands
 
+from Helpers.log import info
+
 
 class OnReady(commands.Cog, name="on_ready"):
     def __init__(self, bot: commands.bot):
@@ -10,7 +12,7 @@ class OnReady(commands.Cog, name="on_ready"):
         """
         This gets executed when the bot connects to discord.
         """
-        print(f'{self.bot.user.name} has connected to Discord!')
+        info(f'{self.bot.user.name} has connected to Discord!')
 
 
 def setup(bot: commands.Bot):
