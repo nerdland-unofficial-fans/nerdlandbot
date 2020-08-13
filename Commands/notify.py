@@ -74,7 +74,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         msg = translate("list_unsubscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
         await ctx.send(msg)
 
-    @commands.command(name="notify")
+    @commands.command(name="notify", usage="notify_notify_usage", brief="notify_notify_brief", help="notify_notify_help")
     async def notify(self, ctx: commands.Context, list_name: str, *, message: typing.Optional[str] = None):
         """
         Notify all subscribers for the given list with the given message.

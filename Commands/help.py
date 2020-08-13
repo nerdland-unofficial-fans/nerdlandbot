@@ -88,10 +88,11 @@ async def subject_help(ctx: commands.Context, subject: str):
     :param subject: The subject to request help on. (str)
     """
     embed = discord.Embed()
-    content = await build_commands_message(ctx.bot.get_cog(subject), await culture(ctx))
+    cog = ctx.bot.get_cog(subject)
+    content = await build_commands_message(cog, await culture(ctx))
 
     # add subject title
-    title = f'**{0}**\n'.format(subject)
+    title = f'**{subject}**\n'
     embed.add_field(name=title, value=content, inline=False)
 
     # add extra info
@@ -149,7 +150,7 @@ class Help(commands.Cog):
 
         for command_name in ctx.bot.commands:
             if str(command_name) == str(subject):
-                return await subject_help(ctx, command_name)
+                return await command_help(ctx, str(command_name))
 
 
 def setup(bot: commands.bot):
