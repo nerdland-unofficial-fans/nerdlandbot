@@ -7,7 +7,7 @@ def parse_channel(channel_input: str) -> str:
     """
 
     # Channels don't contain spaces, remove extra words if necessary
-    channel_name = channel_input.tolower().split(' ')[0]
+    channel_name = channel_input.lower().split(' ')[0]
 
     # Convert to char array
     arr = list(channel_name)
