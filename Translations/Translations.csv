@@ -72,7 +72,7 @@
 "bot_admin_add_success","{0} is now a bot admin.","{0} is nu bot admin."
 "bot_admin_error_not_admin","{0} is not a bot admin, foemp!","{0} is geen bot admin, foemp!"
 "bot_admin_confirm_remove_self","Are you sure you want to remove yourself as a bot admin?","Ben je zeker dat je je eigen bot admin rechten wilt intrekken?"
-"bot_admin_remove_success","{0} is no longer a bot admin.","{0} is niet langer een bot admin."
+"bot_admin_remove_success","{0} is no longer a bot admin.","{0} is niet langer bot admin."
 "bot_admin_remove_cancel","{0} won't be removed as a bot admin.","{0} mag bot admin blijven."
 "bot_admin_confirm_remove","Are you sure you want to remove {0} as a bot admin?","Ben je zeker dat je {0} wilt verwijderen als bot admin?"
 "bot_admin_err_no_admins","There are no bot admins.","Er zijn geen bot admins."

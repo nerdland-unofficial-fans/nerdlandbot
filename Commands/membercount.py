@@ -4,7 +4,7 @@ from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
 
 
-async def count_online_members(ctx) -> int:
+def count_online_members(ctx) -> int:
     """
     Count the amount of online members.
     :param ctx: The current context. (discord.ext.commands.Context)
@@ -54,7 +54,7 @@ class MemberCount(commands.Cog, name="member_count"):
             return await ctx.send(msg)
 
         if len(channel.members) < 1:
-            msg = translate("membercount_empty_channel", await culture(ctx))
+            msg = translate("membercount_empty_channel", await culture(ctx)).format(channel.id)
             return await ctx.send(msg)
 
         if len(channel.members) == 1:

@@ -60,7 +60,7 @@ class RandomUser(commands.Cog, name="random_user"):
 
         # Error if channel empty
         if len(channel.members) < 1:
-            msg = translate("membercount_empty_channel", await culture(ctx)).format(channel_name)
+            msg = translate("membercount_empty_channel", await culture(ctx)).format(channel.id)
             return await ctx.send(msg)
 
         # Pick a random user from channel, and report back to user
