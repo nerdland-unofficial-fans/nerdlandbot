@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
+from Helpers.parser import parse_channel
 
 
 def count_online_members(ctx) -> int:
@@ -42,11 +43,15 @@ class MemberCount(commands.Cog, name="member_count"):
             msg = translate("membercount_online_result", await culture(ctx)).format(online_member_count)
             return await ctx.send(msg)
 
-        if channel_name is None:
+        if not channel_name:
             msg = translate("membercount_server_result", await culture(ctx)).format(len(ctx.guild.members),
                                                                                     ctx.guild.name)
             return await ctx.send(msg)
 
+        # Sanitize channel name
+        channel_name = parse_channel(channel_name)
+
+        # Retrieve channel
         channel = discord.utils.get(ctx.channel.guild.channels, name=channel_name)
 
         if channel is None:

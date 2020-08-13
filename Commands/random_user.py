@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
+from Helpers.parser import parse_channel
 
 
 def pick_random_online_member(ctx: commands.Context) -> discord.Member:
@@ -17,8 +18,6 @@ def pick_random_online_member(ctx: commands.Context) -> discord.Member:
             return True
         elif user.status == discord.Status.idle:
             return True
-        elif user.status == discord.Status.do_not_disturb:
-            return True
         else:
             return False
 
@@ -27,7 +26,7 @@ def pick_random_online_member(ctx: commands.Context) -> discord.Member:
 
 
 class RandomUser(commands.Cog, name="random_user"):
-    def __init__(self, bot:commands.Bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="random_user", aliases=["random"], brief="random_user_brief", usage="random_user_usage",
@@ -49,6 +48,9 @@ class RandomUser(commands.Cog, name="random_user"):
             member = pick_random_online_member(ctx)
             msg = translate("random_user_chosen", await culture(ctx)).format(member.id)
             return await ctx.send(msg)
+
+        # Sanitize channel name
+        channel_name = parse_channel(channel_name)
 
         # Retrieve channel
         channel = discord.utils.get(ctx.channel.guild.channels, name=channel_name)

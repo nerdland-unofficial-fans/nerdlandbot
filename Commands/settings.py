@@ -88,15 +88,15 @@ class Settings(commands.Cog):
         if ctx.author.id == user_id_to_remove:
             # Ask confirmation
             confirmation_text = translate("bot_admin_confirm_remove_self", await culture(ctx))
-            msg = await ctx.send(confirmation_text)
-            await msg.add_reaction(thumbs_up)
-            await msg.add_reaction(thumbs_down)
+            confirmation_ref = await ctx.send(confirmation_text)
+            await confirmation_ref.add_reaction(thumbs_up)
+            await confirmation_ref.add_reaction(thumbs_down)
 
             # Handle user reaction
             try:
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_add",
-                    check=lambda new_reaction, author: new_reaction.message.id == msg.id and author == ctx.message.author,
+                    check=lambda new_reaction, author: new_reaction.message.id == confirmation_ref.id and author == ctx.message.author,
                     timeout=30.0,
                 )
 
@@ -112,27 +112,27 @@ class Settings(commands.Cog):
                     return await ctx.send(msg)
 
                 # If we reach here, an invalid emoji was used
-                await msg.delete()
+                await confirmation_ref.delete()
                 return
 
                 # Handle timeout
             except asyncio.TimeoutError:
-                await msg.delete()
+                await confirmation_ref.delete()
                 msg = translate("snooze_lose", await culture(ctx))
                 return await ctx.send(msg)
 
         # Authorized user wants to remove another bot admin
         # Ask confirmation
         confirmation_text = translate("bot_admin_confirm_remove", await culture(ctx)).format(user_name_to_remove)
-        msg = await ctx.send(confirmation_text)
-        await msg.add_reaction(thumbs_up)
-        await msg.add_reaction(thumbs_down)
+        confirmation_ref = await ctx.send(confirmation_text)
+        await confirmation_ref.add_reaction(thumbs_up)
+        await confirmation_ref.add_reaction(thumbs_down)
 
         # Handle user reaction
         try:
             reaction, user = await ctx.bot.wait_for(
                 "reaction_add",
-                check=lambda new_reaction, author: new_reaction.message.id == msg.id and author == ctx.message.author,
+                check=lambda new_reaction, author: new_reaction.message.id == confirmation_ref.id and author == ctx.message.author,
                 timeout=30.0,
             )
 
@@ -148,12 +148,12 @@ class Settings(commands.Cog):
                 return await ctx.send(msg)
 
             # If we reach here, an invalid emoji was used
-            await msg.delete()
+            await confirmation_ref.delete()
             return
 
         # Handle timeout
         except asyncio.TimeoutError:
-            await msg.delete()
+            await confirmation_ref.delete()
             msg = translate("snooze_lose", await culture(ctx))
             return await ctx.send(msg)
 

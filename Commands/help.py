@@ -81,18 +81,18 @@ async def general_help(ctx: commands.Context):
     await send_embed(ctx, embed)
 
 
-async def subject_help(ctx: commands.Context, subject: str):
+async def subject_help(ctx: commands.Context, cog_name: str):
     """
-    Builds and sends the help info for the given subject to the current context.
+    Builds and sends the help info for the given cog to the current context.
     :param ctx: The current context. (discord.ext.commands.Context)
-    :param subject: The subject to request help on. (str)
+    :param cog_name: The subject to request help on. (str)
     """
     embed = discord.Embed()
-    cog = ctx.bot.get_cog(subject)
+    cog = ctx.bot.get_cog(cog_name)
     content = await build_commands_message(cog, await culture(ctx))
 
     # add subject title
-    title = f'**{subject}**\n'
+    title = f'**{cog_name}**\n'
     embed.add_field(name=title, value=content, inline=False)
 
     # add extra info

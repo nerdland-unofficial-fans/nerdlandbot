@@ -1,38 +1,37 @@
 import pandas
 import codecs
 
-dictionary = {}
+translations = {}
 
 
-def get_text(key: str, language: str) -> str:
+def get_text(translation_key: str, language: str) -> str:
     """
     Gets the translated text for a given key in the provided language.
-    :param key: The key to be translated. (str)
+    :param translation_key: The key to be translated. (str)
     :param language: The language to translate to. (str)
     :return: The translated key. (str)
     """
-    if not dictionary.keys().__contains__(key):
-        return f'[{language}] {key} 1'
+    if not translations.keys().__contains__(translation_key):
+        return f'[{language}] {translation_key} 1'
 
-    translations = dictionary[key]
+    translations_for_key = translations[translation_key]
 
-    if not translations.keys().__contains__(language):
-        return f'[{language}] {key} 2'
+    if not translations_for_key.keys().__contains__(language):
+        return f'[{language}] {translation_key} 2'
 
-    return translations[language]
+    return translations_for_key[language]
 
 
 # Read csv
-df = pandas.read_csv("Translations/Translations.csv")
+translations_dataframe = pandas.read_csv("Translations/Translations.csv")
 
 # Remove artificial index
-df = df.set_index('Key', drop=True)
+translations_dataframe = translations_dataframe.set_index('Key', drop=True)
 
 # Process dataframe
-for row in df.iterrows():
-    tmp = row[1].to_dict()
-    values = {}
-    for culture in tmp.keys():
-        values[culture] = codecs.decode(tmp[culture], 'unicode_escape')
+for key, data in translations_dataframe.iterrows():
+    dict_for_key = {}
+    for culture in data.keys():
+        dict_for_key[culture] = codecs.decode(data[culture], 'unicode_escape')
 
-    dictionary[row[0]] = values
+    translations[key] = dict_for_key

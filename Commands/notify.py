@@ -39,8 +39,8 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         # Subscribe user and error if failed
         if not await guild_data.sub_user(list_name, ctx.author.id):
-            msg = translate("list_err_already_subscribed", await culture(ctx)).format * (str(ctx.author.id), list_name)
-            return ctx.send(msg)
+            msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+            return await ctx.send(msg)
 
         # Subscription successful, show result to user
         msg = translate("list_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
@@ -67,8 +67,8 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         # Unsubscribe user and error if failed
         if not await guild_data.unsub_user(list_name, ctx.author.id):
-            msg = translate("list_err_not_subscribed", await culture(ctx)).format * (str(ctx.author.id), list_name)
-            return ctx.send(msg)
+            msg = translate("list_err_not_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+            return await ctx.send(msg)
 
         # Unsubscribe successful, show result to user
         msg = translate("list_unsubscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
@@ -99,12 +99,14 @@ class Notify(commands.Cog, name="Notification_lists"):
             return await ctx.send(msg)
 
         # build users mentioning string
-        users_str = ""
+        user_tags = []
         for user_id in users:
-            users_str += " <@" + str(user_id) + ">"
+            user_tags.append(f'<@{str(user_id)}>')
+
+        users_str = ', '.join(user_tags)
 
         # Setup the announcement with the subject and caller
-        message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id)
+        message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
 
         # append the message if provided
         if message:
@@ -198,7 +200,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         text = translate("lists", await culture(ctx))
 
         # Loop and append all lists
-        for list_name, list_data in guild_data.notification_lists.items():
+        for list_name, list_data in sorted(guild_data.notification_lists.items()):
             if list_data["is_custom_emoji"]:
                 text += get_custom_emoji(ctx, int(list_data["emoji"]))
             else:
@@ -255,7 +257,7 @@ class Notify(commands.Cog, name="Notification_lists"):
             return await ctx.send(msg)
 
         # Show the user his lists
-        msg = translate("your_lists_title", await culture(ctx)) + "\n - " + "\n - ".join(subbed_lists)
+        msg = translate("your_lists_title", await culture(ctx)) + "\n - " + "\n - ".join(sorted(subbed_lists))
         await ctx.send(msg)
 
     @commands.command(name="add_list", brief="notify_add_list_brief", usage="notify_add_list_usage",
@@ -308,8 +310,8 @@ class Notify(commands.Cog, name="Notification_lists"):
                 custom_emoji = False
 
             # Error if emoji is being used already on this server
-            for list_name, list_data in guild_data.notification_lists.items():
-                if reaction_emoji == list_data["emoji"]:
+            for name, data in guild_data.notification_lists.items():
+                if reaction_emoji == data["emoji"]:
                     msg = translate("emoji_already_in_use", await culture(ctx))
                     return await ctx.send(msg)
 
@@ -350,16 +352,16 @@ class Notify(commands.Cog, name="Notification_lists"):
             return await ctx.send(msg)
 
         # Ask user confirmation
-        confirmation = translate("confirmation_question", await culture(ctx))
-        msg = await ctx.send(confirmation)
-        await msg.add_reaction(thumbs_up)
-        await msg.add_reaction(thumbs_down)
+        msg = translate("confirmation_question", await culture(ctx))
+        confirmation_ref = await ctx.send(msg)
+        await confirmation_ref.add_reaction(thumbs_up)
+        await confirmation_ref.add_reaction(thumbs_down)
 
         # Handle user reaction
         try:
             reaction, user = await ctx.bot.wait_for(
                 "reaction_add",
-                check=lambda emoji, author: emoji.message.id == msg.id and author == ctx.message.author,
+                check=lambda emoji, author: emoji.message.id == confirmation_ref.id and author == ctx.message.author,
                 timeout=30.0,
             )
 
@@ -374,11 +376,11 @@ class Notify(commands.Cog, name="Notification_lists"):
                 await ctx.send(msg)
 
             # Delete message
-            await msg.delete()
+            await confirmation_ref.delete()
 
         # Handle Timeout
         except asyncio.TimeoutError:
-            await msg.delete()
+            await confirmation_ref.delete()
             msg = translate("snooze_lose", await culture(ctx))
             return await ctx.send(msg)
 
