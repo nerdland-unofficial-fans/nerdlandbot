@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "nerdlandbot"
+version = "0.1.0"
+description = ""
+authors = ["Autom"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+discord-py = "^1.4.1"
+python-dotenv = "^0.14.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
