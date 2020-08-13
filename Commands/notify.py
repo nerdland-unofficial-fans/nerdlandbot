@@ -310,7 +310,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 custom_emoji = False
 
             # Error if emoji is being used already on this server
-            for name, data in guild_data.notification_lists.items():
+            for data in guild_data.notification_lists.values():
                 if reaction_emoji == data["emoji"]:
                     msg = translate("emoji_already_in_use", await culture(ctx))
                     return await ctx.send(msg)
