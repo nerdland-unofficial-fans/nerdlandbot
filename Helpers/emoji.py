@@ -3,6 +3,11 @@ from discord.ext import commands
 thumbs_up = "👍"
 thumbs_down = "👎"
 
+flags = {
+    "nl": "🇳🇱",
+    "en": "🇬🇧"
+}
+
 
 def get_custom_emoji(ctx: commands.Context, emoji_id: int) -> str:
     """

@@ -85,4 +85,10 @@
 "random_user_brief","Select a random user.","Selecteer een willekeurige gebruiker."
 "random_user_chosen","<@{0}> was chosen! Congratulations!","<@{0}> werd gekozen! proficiat!"
 "random_user_no_channel","Please provide a channel name, foemp!","Gelieve een kanaal te kiezen, foemp!"
-
+"settings_language_brief","Change the bot language.","Verander de ingestelde taal voor de bot."
+"settings_language_help","Show the current language and suggest changes.","Toon de huidig ingestelde taal, en geef de optie om deze aan te passen."
+"current_language","The current language is: {0}.","De huidige taal is: {0}."
+"pick_new_language","Choose a new language:","Kies een nieuwe taal:"
+"picked_new_language","The new language is: {0}.","De nieuwe taal is: {0}."
+"nl","Dutch","Nederlands"
+"en","English","Engels"

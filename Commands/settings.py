@@ -1,10 +1,10 @@
 import asyncio
 
 from discord.ext import commands
-from Helpers.TranslationHelper import get_culture_from_context as culture
-from Translations.Translations import get_text as translate
-from Helpers.emoji import thumbs_up, thumbs_down
 
+from Helpers.TranslationHelper import get_culture_from_context as culture
+from Helpers.emoji import thumbs_up, thumbs_down, flags
+from Translations.Translations import get_text as translate
 from .GuildData import get_guild_data
 
 
@@ -179,6 +179,56 @@ class Settings(commands.Cog):
 
         # Show list
         await ctx.send(message)
+
+    @commands.command(name="language", aliases=["translate"], brief="settings_language_brief",
+                      help="settings_language_help")
+    async def set_language(self, ctx: commands.Context):
+        """
+        Show the current language, and allow for updates.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        """
+
+        # Get current language
+        current_culture = await culture(ctx)
+
+        # Show current language
+        msg = translate("current_language", current_culture).format(translate(current_culture, current_culture))
+        await ctx.send(msg)
+
+        # Request new language
+        confirmation_message = translate("pick_new_language", current_culture)
+        confirmation_ref = await ctx.send(confirmation_message)
+        for emoji in flags.values():
+            await confirmation_ref.add_reaction(emoji)
+
+        # Handle user reaction
+        try:
+            reaction, user = await ctx.bot.wait_for(
+                "reaction_add",
+                check=lambda new_reaction, author: new_reaction.message.id == confirmation_ref.id and author == ctx.message.author,
+                timeout=30.0,
+            )
+
+            # Parse reaction
+            new_language = None
+            for lan in flags.keys():
+                if flags[lan] == reaction.emoji:
+                    new_language = lan
+                    break
+
+            # Update language if found
+            if new_language:
+                guild_data = await get_guild_data(ctx.guild.id)
+                await guild_data.update_language(new_language)
+                await confirmation_ref.delete()
+                msg = translate("picked_new_language", new_language).format(translate(new_language, new_language))
+                return await ctx.send(msg)
+
+        # Handle timeout
+        except asyncio.TimeoutError:
+            await confirmation_ref.delete()
+            msg = translate("snooze_lose", await culture(ctx))
+            return await ctx.send(msg)
 
 
 def setup(bot: commands.Bot):

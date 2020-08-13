@@ -28,7 +28,7 @@ translations_dataframe = pandas.read_csv("Translations/Translations.csv")
 # Remove artificial index
 translations_dataframe = translations_dataframe.set_index('Key', drop=True)
 
-# Process dataframe
+# Process dataframe data
 for key, data in translations_dataframe.iterrows():
     dict_for_key = {}
     for culture in data.keys():

@@ -138,6 +138,15 @@ class GuildData:
         # returns False if the user is neither a server admin or a bot admin
         return user_to_check.guild_permissions.administrator or user_to_check.id in self.bot_admins
 
+    async def update_language(self, language: str):
+        """
+        Updates the language and saves the guild
+        :param language: The new language. (str)
+        """
+        if language != self.culture:
+            self.culture = language
+            await self.save()
+
 
 async def get_guild_data(guild_id: int) -> GuildData:
     """
