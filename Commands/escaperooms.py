@@ -1,6 +1,8 @@
 import discord
 import pandas as pd
 import re
+import time
+import asyncio
 
 from datetime import datetime
 from discord.ext import commands
@@ -90,6 +92,49 @@ class Escaperooms(commands.Cog):
             columns=['Naam', 'Heeft tabletop', 'Discord ID'])
         escaperooms = list(tracking_table.columns.values)
         return escaperooms
+    
+    async def wait_for_added_reactions(self, ctx, msg, guild_data, timeout):
+        while True:
+            try:
+                reaction, register_user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda reaction, user: reaction.message.id == msg.id
+                    and not user.bot,
+                    timeout=30.0,
+                )
+
+                if reaction.emoji == "✅":
+                    is_new_register = await guild_data.register_user_escape(register_user.id)
+                    if is_new_register:
+                        await ctx.send("OK {} You've registered for the session".format(ctx.guild.get_member(register_user.id).display_name))
+                    else:
+                        await ctx.send("Already registered {}, dear Foemp".format(ctx.guild.get_member(register_user.id).display_name))
+
+            except asyncio.TimeoutError:
+                pass
+
+            if time.time() > timeout:
+                break
+    
+    async def wait_for_removed_reactions(self, ctx, msg, guild_data, timeout):
+        while True:
+            try:
+                reaction, deregister_user = await ctx.bot.wait_for(
+                    "reaction_remove",
+                    check=lambda reaction, user: reaction.message.id == msg.id
+                    and not user.bot,
+                    timeout=30.0,
+                )
+                if reaction.emoji == "✅":
+                    is_deregister = await guild_data.deregister_user_escape(deregister_user.id)
+                    if is_deregister:
+                        await ctx.send("OK {}, You are no longer registered for the session".format(ctx.guild.get_member(deregister_user.id).display_name))
+
+            except asyncio.TimeoutError:
+                pass
+
+            if time.time() > timeout:
+                break
 
     @commands.command(name="i_escaped", brief="Register that you played an escaperoom", usage="<escaperoom>", help="Register that you played escaperoom <escaperoom>")
     async def cmd_iescaped(self, ctx, *, escaperoom_name=None):
@@ -108,7 +153,7 @@ class Escaperooms(commands.Cog):
         await ctx.send(message)
 
     @commands.command(name="where_escaped", brief="Check which escaperooms a user has played", usage="[mentioned user]", help="Without @-mention: list the escaperooms you have played.\nWith @-mention: list the escaperooms the mentioned user has played. This has to be a mention, not just a name or ID")
-    async def cmd_userescaped(self, ctx, user_id=None):
+    async def cmd_where_escaped(self, ctx, user_id=None):
         if not user_id:
             # No user mentioned, therefor set user_id to the command sender
             user_id = str(ctx.author.id)
@@ -198,20 +243,20 @@ class Escaperooms(commands.Cog):
                 else:
                     message += ", no players registered yet.\n\nRegister by clicking the ✅ below"
 
+                timeout = time.time() + 60*5
                 msg = await ctx.send(message)
                 await msg.add_reaction("✅")
-                reaction, register_user = await ctx.bot.wait_for(
-                    "reaction_add",
-                    check=lambda reaction, user: reaction.message.id == msg.id
-                    and user == ctx.message.author,
-                    timeout=60.0
+                reaction_added_task = asyncio.create_task(
+                    self.wait_for_added_reactions(ctx, msg, guild_data, timeout)
                 )
-                if reaction.emoji == "✅":
-                    is_new_register = await guild_data.register_user_escape(register_user.id)
-                    if is_new_register:
-                        await ctx.send("You've registered for the session")
-                    else:
-                        await ctx.send("Already registered, dear Foemp")
+                reaction_removed_task = asyncio.create_task(
+                    self.wait_for_removed_reactions(ctx, msg, guild_data, timeout)
+                )   
+
+                await reaction_added_task
+                await reaction_removed_task
+                await msg.delete()
+                
             else:
                 await guild_data.clear_escaperoom_users()
                 await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`')
