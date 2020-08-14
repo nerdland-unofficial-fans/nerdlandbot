@@ -215,7 +215,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                             + ctx.bot.get_emoji(reaction_emoji).name
                             + ":"
                             + str(reaction_emoji)
-                            + ">"s
+                            + ">"
                         )
                         custom_emoji = True
                     except AttributeError:
