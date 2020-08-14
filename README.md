@@ -15,7 +15,7 @@ Once you have these installed (you can check by running 'python --version' and '
 pip install -r requirements.txt -y
 ```
 
-You will also need to acquire a DISCORD_TOKEN for this to work. You can get a new token by creating a new developer account on github.
+You will also need to acquire a DISCORD_TOKEN for this to work. It is possible to obtain one with a developer account on Discord.
 
 You can now run the bot by running the following command with the src folder active
 ```
