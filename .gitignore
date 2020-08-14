@@ -1,5 +1,15 @@
+# ignore IDE files
 **/.idea
 **/.vscode
+**/__pycache__
 *.pyc
-.env
+
+# ignore virtual environments
 venv
+
+# ignore config env
+.env
+
+# ignore guildconfigs (only json files, keep the foler)
+# GuildConfigs/*.json
+bot.log
