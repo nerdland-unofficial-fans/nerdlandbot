@@ -12,3 +12,4 @@ venv
 
 # ignore guildconfigs (only json files, keep the foler)
 GuildConfigs/*.json
+bot.log
