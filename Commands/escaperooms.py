@@ -6,7 +6,7 @@ import asyncio
 
 from datetime import datetime
 from discord.ext import commands
-from .GuildData import get_guild_data, save_configs
+from .GuildData import get_guild_data
 import constants
 from common_functions import *
 
@@ -53,7 +53,7 @@ class Escaperooms(commands.Cog):
             tracking_table.iloc[-1,
                                 tracking_table.columns.get_loc('Discord ID')] = discord_id
             tracking_table.iloc[-1, tracking_table.columns.get_loc(
-                'Naam')] = ctx.guild.get_member(int(user_id)).display_name
+                'Naam')] = ctx.guild.get_member(int(discord_id)).display_name
             # fill room columns with 0
             tracking_table = tracking_table.fillna(0.0)
             user_row_index = tracking_table.index[tracking_table['Discord ID'] == discord_id]

@@ -149,7 +149,8 @@ class GuildData:
         if language != self.culture:
             self.culture = language
             await self.save()
-        async def register_user_escape(self, user_id: int) -> bool:
+
+    async def register_user_escape(self, user_id: int) -> bool:
         if 'users' not in self.escaperoom_game.keys():
             self.escaperoom_game['users'] = []
 
@@ -252,7 +253,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
 
         guildData.bot_admins = data.get("bot_admins", [])
         guildData.notification_lists = data.get("notification_lists", [])
-        guildDate.escaperoom_game = data.get("escaperoom_game", [])
+        guildData.escaperoom_game = data.get("escaperoom_game", [])
         guildData.culture = data.get("culture", "en")
 
         return guildData
