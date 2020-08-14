@@ -11,5 +11,8 @@ venv
 .env
 
 # ignore guildconfigs (only json files, keep the foler)
-# GuildConfigs/*.json
+GuildConfigs/*.json
 bot.log
+
+# ignore escaperooms csv, keep the folder
+EscaperoomsCSV/*.csv
