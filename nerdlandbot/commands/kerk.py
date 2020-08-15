@@ -17,7 +17,7 @@ class Kerk(commands.Cog, name="kerk"):
         #check if message in lounge
         if ctx.channel.name == ("testbot"):
             #check if user mentioned  
-            if mention:
+            if mention and mention[:2] == "<@":
                 #set a task to check if it's 16:00 and posts message
                 while not (datetime.now().hour == 16 and datetime.now().minute == 00):
                     await asyncio.sleep(59)
