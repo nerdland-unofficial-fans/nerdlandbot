@@ -156,7 +156,6 @@ class GuildData:
 
         if user_id not in self.escaperoom_game['users']:
             self.escaperoom_game['users'].append(user_id)
-            self.guild_changed = True
             await self.save()
             return True
         else:
@@ -166,7 +165,6 @@ class GuildData:
         if 'users' in self.escaperoom_game.keys():
             if user_id in self.escaperoom_game['users']:
                 self.escaperoom_game['users'].remove(user_id)
-                self.guild_changed = True
                 await self.save()
                 return True
             else:
@@ -180,14 +178,12 @@ class GuildData:
             print(escape_time.timestamp())
             self.escaperoom_game['datetime'] = escape_time.timestamp()
             self.escaperoom_game['users'] = []
-            self.guild_changed = True
             await self.save()
             return True
         elif self.escaperoom_game['datetime'] < datetime.now().timestamp() or overwrite:
             # set time has passed or is to be overwritten, set new time and clear userlist
             self.escaperoom_game['datetime'] = escape_time.timestamp()
             self.escaperoom_game['users'] = []
-            self.guild_changed = True
             await self.save()
             return True
         else:
