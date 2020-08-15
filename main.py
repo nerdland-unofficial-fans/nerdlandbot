@@ -41,6 +41,7 @@ bot.load_extension("Commands.help")
 bot.load_extension("Commands.settings")
 bot.load_extension("Commands.membercount")
 bot.load_extension("Commands.random_user")
+bot.load_extension("Commands.kerk")
 
 bot.run(TOKEN)
 
