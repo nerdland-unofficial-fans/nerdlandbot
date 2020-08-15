@@ -86,6 +86,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         guild_data = await get_guild_data(ctx.message.guild.id)
 
         # Error if list does not exist
+        list_name = list_name.lower()
         if not guild_data.does_list_exist(list_name):
             msg = translate("list_err_does_not_exit", await culture(ctx))
             return await ctx.send(msg)
