@@ -8,7 +8,7 @@ from datetime import datetime
 from discord.ext import commands
 from .GuildData import get_guild_data
 from Helpers.constants import *
-from Helpers.common_functions import *
+from Helpers.common_functions import usernames_from_ids
 from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
 from Helpers.emoji import white_check_mark
@@ -152,7 +152,8 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
             if time.time() > timeout:
                 break
 
-    @commands.command(name="i_escaped", brief="esc_i_escaped_brief", usage="esc_i_escaped_usage", help="esc_i_escaped_help")
+    @commands.command(name="i_escaped", brief="esc_i_escaped_brief", usage="esc_i_escaped_usage",
+                      help="esc_i_escaped_help")
     async def cmd_iescaped(self, ctx, *, escaperoom_name=None):
         cult = await culture(ctx)
         if escaperoom_name:
@@ -169,7 +170,8 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                 "\n - ".join(escaperooms))
         await ctx.send(message)
 
-    @commands.command(name="where_escaped", brief="esc_where_escaped_brief", usage="esc_where_escaped_usage", help="esc_where_escaped_help")
+    @commands.command(name="where_escaped", brief="esc_where_escaped_brief", usage="esc_where_escaped_usage",
+                      help="esc_where_escaped_help")
     async def cmd_where_escaped(self, ctx, user_id=None):
         cult = await culture(ctx)
         if not user_id:
@@ -193,38 +195,46 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                 )
                 await ctx.send(message)
             else:
-                await ctx.send(translate("esc_no_rooms_played",cult))
+                await ctx.send(translate("esc_no_rooms_played", cult))
         except KeyError:
             # user does not appear in dataframe, therefor hasn't played
-            await ctx.send(translate("esc_no_rooms_played",cult))
+            await ctx.send(translate("esc_no_rooms_played", cult))
 
-    @commands.command(name="who_escaped", brief="List the people that played the escaperoom", usage="[escaperoom name]", help="With an argument: list the people that played that escaperoom. \nWithout an argument: list all the available escaperooms.")
-    async def cmd_escaperoom(self, ctx, *, escaperoom_name=None):
+    @commands.command(name="who_escaped", brief="esc_who_escaped_brief", usage="esc_who_escaped_usage",
+                      help="esc_where_escaped_help")
+    async def cmd_who_escaped(self, ctx, *, escaperoom_name=None):
+        cult = await culture(ctx)
         if escaperoom_name:
             # escaperoom name provided, list users and report back
             try:
                 list_users = self.list_users_escaperoom(escaperoom_name)
                 if len(list_users) > 0:
                     usernames = usernames_from_ids(ctx, list_users)
-                    message = escaperoom_name + " has been played by: " + \
-                        ", ".join(usernames[:-1]) + ", and " + usernames[-1]
+                    message = translate("esc_room_played", cult).format(
+                        escaperoom_name,
+                        ", ".join(usernames)
+                    )
                 else:
-                    message = "No-one has played " + escaperoom_name + " yet."
+                    message = translate(
+                        "esc_room_not_played", cult
+                    ).format(escaperoom_name)
                 await ctx.send(message)
 
             except KeyError:
                 # room does not exist in dataframe, send Foemp
-                await ctx.send("This escaperoom does not exist, foemp!")
+                await ctx.send(translate("esc_no_such_room", cult))
         else:
             # no escaperoom name provided, send back list of available rooms
             escaperooms = sorted(self.list_escaperooms())
-            message = "These are the available escaperooms: \n- " + \
-                "\n- ".join(escaperooms)
+            message = translate("esc_list_escaperooms", cult).format(
+                "\n - ".join(escaperooms))
             await ctx.send(message)
 
-    @commands.command(name="lets_escape", brief="set up a new escape session or get the current one", usage="[escaperoom time hh:mm]", help="With an argument: sets up a new escaperoom game at given time. \nWithout an argument: let's you know when the game is taking place.")
+    @commands.command(name="lets_escape", brief="esc_lets_escape_brief", usage="esc_lets_escape_usage", 
+                      help="esc_lets_escape_help")
     async def cmd_lets_escape(self, ctx, escaperoom_time=None):
         guild_data = await get_guild_data(ctx.message.guild.id)
+        cult = await culture(ctx)
 
         # escaperoom_time provided, register new game time for today
         if escaperoom_time:
@@ -235,11 +245,11 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                     year=now.year, month=now.month, day=now.day)
                 is_new_time = await guild_data.new_escaproom_game_time(escaperoom_datetime)
                 if is_new_time:
-                    await ctx.send("Registering game at: " + escaperoom_time + " today")
+                    await ctx.send(translate("esc_confirm_newtime", cult).format(escaperoom_time))
                 else:
-                    await ctx.send("Sorry, There's already a game scheduled today")
+                    await ctx.send(translate("esc_already_scheduled",cult))
             else:
-                await ctx.send("That's not a valid time, Foemp!")
+                await ctx.send(translate("invalid_time",cult))
 
         # no escaperoom_time provided, call when_escape
         else:
