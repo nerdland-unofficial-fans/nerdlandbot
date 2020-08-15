@@ -7,12 +7,15 @@ import asyncio
 from datetime import datetime
 from discord.ext import commands
 from .GuildData import get_guild_data
-import constants
-from common_functions import *
+from Helpers.constants import *
+from Helpers.common_functions import *
+from Translations.Translations import get_text as translate
+from Helpers.TranslationHelper import get_culture_from_context as culture
+from Helpers.emoji import white_check_mark
 
 
-class Escaperooms(commands.Cog):
-    def __init__(self, bot):
+class Escaperooms(commands.Cog, name="Escaperooms"):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     def read_tracking_table(self) -> pd.DataFrame:
@@ -92,8 +95,9 @@ class Escaperooms(commands.Cog):
             columns=['Naam', 'Heeft tabletop', 'Discord ID'])
         escaperooms = list(tracking_table.columns.values)
         return escaperooms
-    
+
     async def wait_for_added_reactions(self, ctx, msg, guild_data, timeout):
+        cult = await culture(ctx)
         while True:
             try:
                 reaction, register_user = await ctx.bot.wait_for(
@@ -103,20 +107,27 @@ class Escaperooms(commands.Cog):
                     timeout=30.0,
                 )
 
-                if reaction.emoji == "✅":
+                if reaction.emoji == white_check_mark:
                     is_new_register = await guild_data.register_user_escape(register_user.id)
                     if is_new_register:
-                        await ctx.send("OK {} You've registered for the session".format(ctx.guild.get_member(register_user.id).display_name))
+                        await ctx.send(
+                            translate("esc_registered", cult)
+                            .format(ctx.guild.get_member(register_user.id).display_name)
+                        )
                     else:
-                        await ctx.send("Already registered {}, dear Foemp".format(ctx.guild.get_member(register_user.id).display_name))
+                        await ctx.send(
+                            translate("esc_already_registered", cult)
+                            .format(ctx.guild.get_member(register_user.id).display_name)
+                        )
 
             except asyncio.TimeoutError:
                 pass
 
             if time.time() > timeout:
                 break
-    
+
     async def wait_for_removed_reactions(self, ctx, msg, guild_data, timeout):
+        cult = culture(ctx)
         while True:
             try:
                 reaction, deregister_user = await ctx.bot.wait_for(
@@ -125,10 +136,15 @@ class Escaperooms(commands.Cog):
                     and not user.bot,
                     timeout=30.0,
                 )
-                if reaction.emoji == "✅":
-                    is_deregister = await guild_data.deregister_user_escape(deregister_user.id)
+                if reaction.emoji == white_check_mark:
+                    is_deregister = await guild_data.deregister_user_escape(
+                        deregister_user.id
+                    )
                     if is_deregister:
-                        await ctx.send("OK {}, You are no longer registered for the session".format(ctx.guild.get_member(deregister_user.id).display_name))
+                        await ctx.send(
+                            translate("esc_confirm_deregister")
+                            .format(ctx.guild.get_member(deregister_user.id).display_name)
+                        )
 
             except asyncio.TimeoutError:
                 pass
@@ -136,24 +152,26 @@ class Escaperooms(commands.Cog):
             if time.time() > timeout:
                 break
 
-    @commands.command(name="i_escaped", brief="Register that you played an escaperoom", usage="<escaperoom>", help="Register that you played escaperoom <escaperoom>")
+    @commands.command(name="i_escaped", brief="esc_i_escaped_brief", usage="esc_i_escaped_usage", help="esc_i_escaped_help")
     async def cmd_iescaped(self, ctx, *, escaperoom_name=None):
+        cult = await culture(ctx)
         if escaperoom_name:
             if escaperoom_name in self.list_escaperooms():
                 self.register_room_play(
                     ctx, str(ctx.author.id), escaperoom_name)
-                message = "Congratulation you escaped " + \
-                    escaperoom_name + " and we have noted this"
+                message = translate("esc_congratulations",
+                                    cult).format(escaperoom_name)
             else:
-                message = "but Foemp, that room does not exist!"
+                message = translate("esc_no_such_room", cult)
         else:
             escaperooms = sorted(self.list_escaperooms())
-            message = "Foemp, you didn't tell me which escaperoom, here's a list:\n - " + \
-                "\n- ".join(escaperooms)
+            message = translate("esc_noroom_give_list", cult).format(
+                "\n - ".join(escaperooms))
         await ctx.send(message)
 
-    @commands.command(name="where_escaped", brief="Check which escaperooms a user has played", usage="[mentioned user]", help="Without @-mention: list the escaperooms you have played.\nWith @-mention: list the escaperooms the mentioned user has played. This has to be a mention, not just a name or ID")
+    @commands.command(name="where_escaped", brief="esc_where_escaped_brief", usage="esc_where_escaped_usage", help="esc_where_escaped_help")
     async def cmd_where_escaped(self, ctx, user_id=None):
+        cult = await culture(ctx)
         if not user_id:
             # No user mentioned, therefor set user_id to the command sender
             user_id = str(ctx.author.id)
@@ -162,21 +180,23 @@ class Escaperooms(commands.Cog):
             user_id = re.sub("[^0-9]", "", user_id)
         else:
             # No valid user mentioned, report foemp
-            await ctx.send("Please @-mention a user, Foemp.")
+            await ctx.send(translate("mention_required", cult))
             return
 
         try:
             # collect and sort escaperooms for user and send message
             escaperooms = sorted(self.list_escaperooms_user(user_id))
             if len(escaperooms) != 0:
-                message = ctx.guild.get_member(
-                    int(user_id)).display_name + " has played:\n- "
-                await ctx.send(message + "\n- ".join(escaperooms))
+                message = translate("esc_user_has_played", cult).format(
+                    ctx.guild.get_member(int(user_id)).display_name,
+                    "\n - ".join(escaperooms)
+                )
+                await ctx.send(message)
             else:
-                await ctx.send("This Foemp has not played any rooms yet.")
+                await ctx.send(translate("esc_no_rooms_played",cult))
         except KeyError:
             # user does not appear in dataframe, therefor hasn't played
-            await ctx.send("This Foemp has not played any rooms yet.")
+            await ctx.send(translate("esc_no_rooms_played",cult))
 
     @commands.command(name="who_escaped", brief="List the people that played the escaperoom", usage="[escaperoom name]", help="With an argument: list the people that played that escaperoom. \nWithout an argument: list all the available escaperooms.")
     async def cmd_escaperoom(self, ctx, *, escaperoom_name=None):
@@ -245,18 +265,20 @@ class Escaperooms(commands.Cog):
 
                 timeout = time.time() + 60*5
                 msg = await ctx.send(message)
-                await msg.add_reaction("✅")
+                await msg.add_reaction(white_check_mark)
                 reaction_added_task = asyncio.create_task(
-                    self.wait_for_added_reactions(ctx, msg, guild_data, timeout)
+                    self.wait_for_added_reactions(
+                        ctx, msg, guild_data, timeout)
                 )
                 reaction_removed_task = asyncio.create_task(
-                    self.wait_for_removed_reactions(ctx, msg, guild_data, timeout)
-                )   
+                    self.wait_for_removed_reactions(
+                        ctx, msg, guild_data, timeout)
+                )
 
                 await reaction_added_task
                 await reaction_removed_task
                 await msg.delete()
-                
+
             else:
                 await guild_data.clear_escaperoom_users()
                 await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`')
@@ -334,7 +356,7 @@ class Escaperooms(commands.Cog):
 
         if escape_time and escape_users:
             number_of_users = len(escape_users)
-            if number_of_users > constants.ESCAPE_MIN_GROUPSIZE:
+            if number_of_users > ESCAPE_MIN_GROUPSIZE:
                 # we have enough information to start
                 embed = discord.Embed(
                     title="Escaperoom Start", description="the bot recommends the following rooms", color=0x004080)
@@ -343,7 +365,7 @@ class Escaperooms(commands.Cog):
 
                 await ctx.send("OK, let's see how what we can do with this group: " + ", ".join(usernames_from_ids(ctx, escape_users)))
                 groups = []
-                if number_of_users > constants.ESCAPE_MAX_GROUPZIZE:
+                if number_of_users > ESCAPE_MAX_GROUPSIZE:
                     # too many users for one game, split groups
                     msg = await ctx.send('The group is too large and needs to be split, would you like a balanced split (⚖️) or one based on experience (🏆)?')
                     await msg.add_reaction("⚖️")
