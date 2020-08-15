@@ -1,5 +1,6 @@
 from .log import *
 
+
 def usernames_from_ids(ctx, list_users) -> list:
     usernames = []
     for user_id in list_users:
@@ -9,6 +10,6 @@ def usernames_from_ids(ctx, list_users) -> list:
             usernames.append(user.display_name)
         except AttributeError:
             # if user not known on server, handle here
-            warn("could not find user with ID: " + user_id)
+            warn("usernames_from_ids() could not find user with ID: " + user_id)
             pass
     return sorted(usernames)

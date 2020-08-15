@@ -127,7 +127,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                 break
 
     async def wait_for_removed_reactions(self, ctx, msg, guild_data, timeout):
-        cult = culture(ctx)
+        cult = await culture(ctx)
         while True:
             try:
                 reaction, deregister_user = await ctx.bot.wait_for(
@@ -142,7 +142,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                     )
                     if is_deregister:
                         await ctx.send(
-                            translate("esc_confirm_deregister")
+                            translate("esc_confirm_deregister", cult)
                             .format(ctx.guild.get_member(deregister_user.id).display_name)
                         )
 
@@ -230,7 +230,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                 "\n - ".join(escaperooms))
             await ctx.send(message)
 
-    @commands.command(name="lets_escape", brief="esc_lets_escape_brief", usage="esc_lets_escape_usage", 
+    @commands.command(name="lets_escape", brief="esc_lets_escape_brief", usage="esc_lets_escape_usage",
                       help="esc_lets_escape_help")
     async def cmd_lets_escape(self, ctx, escaperoom_time=None):
         guild_data = await get_guild_data(ctx.message.guild.id)
@@ -247,33 +247,37 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                 if is_new_time:
                     await ctx.send(translate("esc_confirm_newtime", cult).format(escaperoom_time))
                 else:
-                    await ctx.send(translate("esc_already_scheduled",cult))
+                    await ctx.send(translate("esc_already_scheduled", cult))
             else:
-                await ctx.send(translate("invalid_time",cult))
+                await ctx.send(translate("invalid_time", cult))
 
         # no escaperoom_time provided, call when_escape
         else:
             await self.cmd_when_escape(ctx)
 
-    @commands.command(name="when_escape", brief="check when there is an escaperoom session today", help="check when there is an escaperoom session today and register using emoji reaction")
+    @commands.command(name="when_escape", brief="esc_when_escape_brief", help="esc_when_escape_help")
     async def cmd_when_escape(self, ctx):
         guild_data = await get_guild_data(ctx.message.guild.id)
+        cult = await culture(ctx)
 
         if guild_data.get_datetime_escaperoom_game():
             escape_datetime = guild_data.get_datetime_escaperoom_game()
             if escape_datetime > datetime.now():
                 str_escapetime = escape_datetime.strftime('%H:%M')
                 escapeusers = guild_data.get_users_escaperoom_game()
-                message = "Escaperoom today at: **" + str_escapetime + "**"
+                message = translate("esc_room_today_at",
+                                    cult).format(str_escapetime)
                 if len(escapeusers) > 0:
                     escapeusernames = usernames_from_ids(ctx, escapeusers)
-                    message += "\n\nThe following players are taking part: " + \
-                        ", ".join(escapeusernames)
-                    message += "\n\nRegister by clicking the ✅ below"
+                    message += translate("esc_room_today_players", cult).format(
+                        ", ".join(escapeusernames),
+                        white_check_mark
+                    )
                 else:
-                    message += ", no players registered yet.\n\nRegister by clicking the ✅ below"
+                    message += translate("esc_room_today_nolayers",
+                                         cult).format(white_check_mark)
 
-                timeout = time.time() + 60*5
+                timeout = time.time() + TIMEOUT
                 msg = await ctx.send(message)
                 await msg.add_reaction(white_check_mark)
                 reaction_added_task = asyncio.create_task(
@@ -291,9 +295,9 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
 
             else:
                 await guild_data.clear_escaperoom_users()
-                await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`')
+                await ctx.send(translate("esc_not_scheduled", cult))
         else:
-            await ctx.send('No escaperoom session has been scheduled today. Schedule one with `lets_escape HH:MM`')
+            await ctx.send(translate("esc_not_scheduled", cult))
 
     def calculate_room(self, user_list) -> str:
         """ Calculates the best room available for the users in list"""
