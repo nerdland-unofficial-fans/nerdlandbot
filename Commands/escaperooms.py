@@ -11,7 +11,7 @@ from Helpers.constants import *
 from Helpers.common_functions import usernames_from_ids
 from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
-from Helpers.emoji import white_check_mark, scales, trophy
+from Helpers.emoji import white_check_mark, scales, trophy, thumbs_down, thumbs_up
 from Helpers.log import *
 
 
@@ -96,6 +96,24 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
             columns=['Naam', 'Heeft tabletop', 'Discord ID'])
         escaperooms = list(tracking_table.columns.values)
         return escaperooms
+
+    def add_escaperoom(self, escaperoom_name: str) -> bool:
+        if escaperoom_name not in self.list_escaperooms():
+            tracking_table = self.read_tracking_table()
+            tracking_table[escaperoom_name] = 0.0
+            self.write_tracking_table(tracking_table)
+            return True
+        else:
+            return False
+
+    def rm_escaperoom(self, escaperoom_name: str) -> bool:
+        if escaperoom_name in self.list_escaperooms():
+            tracking_table = self.read_tracking_table()
+            tracking_table = tracking_table.drop(columns=[escaperoom_name])
+            self.write_tracking_table(tracking_table)
+            return True
+        else:
+            return False
 
     async def wait_for_added_reactions(self, ctx, msg, guild_data, timeout):
         cult = await culture(ctx)
@@ -415,19 +433,116 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                         inline=False
                     )
 
-                embed.set_footer(text=translate("esc_start_footer",cult))
+                embed.set_footer(text=translate("esc_start_footer", cult))
                 await ctx.channel.send(embed=embed)
             else:
                 # group is too small
-                await ctx.send(translate("esc_start_smallgroup",cult))
+                await ctx.send(translate("esc_start_smallgroup", cult))
                 await self.cmd_when_escape(ctx)
         elif not escape_users:
             # no users registered for the game
-            await ctx.send(translate("esc_start_noplayers",cult))
+            await ctx.send(translate("esc_start_noplayers", cult))
         else:
             # no time is set for the game
-            await ctx.send(translate("esc_start_nogame",cult))
+            await ctx.send(translate("esc_start_nogame", cult))
 
+    @commands.command(name="add_escaperoom", brief="esc_add_room_brief", usage="esc_add_room_usage", 
+                      help="esc_add_room_help")
+    async def cmd_add_escaperoom(self, ctx, *, escaperoom_name=None):
+        guild_data = await get_guild_data(ctx.message.guild.id)
+        cult = await culture(ctx)
+
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", await culture(ctx))
+            return await ctx.send(gif)
+
+        # make room lower case and strip any special characters
+        escaperoom_name = escaperoom_name.lower()
+        escaperoom_name = re.sub('[^A-Za-z0-9 ]+', '', escaperoom_name)
+
+        # check if room already exists
+        if escaperoom_name in self.list_escaperooms():
+            message = translate("esc_err_room_exists",
+                                cult).format(escaperoom_name)
+            return await ctx.send(message)
+
+        # aks user confirmation
+        message = translate("esc_confirm_add_room",
+                            cult).format(escaperoom_name)
+        confirmation_ref = await ctx.send(message)
+        await confirmation_ref.add_reaction(thumbs_up)
+        await confirmation_ref.add_reaction(thumbs_down)
+
+        # handle user reaction
+        try:
+            reaction, user = await ctx.bot.wait_for(
+                "reaction_add",
+                check=lambda emoji, author: emoji.message.id == confirmation_ref.id
+                and author == ctx.message.author,
+                timeout=30.0,
+            )
+
+            if reaction.emoji == thumbs_up:
+                self.add_escaperoom(escaperoom_name)
+                message = translate(
+                    "esc_room_added", cult).format(escaperoom_name)
+                await ctx.send(message)
+            elif reaction.emoji == thumbs_down:
+                message = translate("esc_room_not_added", cult)
+                await ctx.send(message)
+
+            await confirmation_ref.delete()
+
+        except asyncio.TimeoutError:
+            await confirmation_ref.delete()
+            msg = translate("snooze_lose", await culture(ctx))
+            return await ctx.send(msg)
+
+    @commands.command(name="remove_escaperoom")
+    async def cmd_rm_escaperoom(self, ctx, *, escaperoom_name=None):
+        guild_data = await get_guild_data(ctx.message.guild.id)
+        cult = await culture(ctx)
+
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", await culture(ctx))
+            return await ctx.send(gif)
+
+        # check if room already exists
+        if escaperoom_name not in self.list_escaperooms():
+            message = translate("esc_no_such_room",cult)
+            return await ctx.send(message)
+        
+        # aks user confirmation
+        message = translate("esc_confirm_rm_room",
+                            cult).format(escaperoom_name)
+        confirmation_ref = await ctx.send(message)
+        await confirmation_ref.add_reaction(thumbs_up)
+        await confirmation_ref.add_reaction(thumbs_down)
+
+        # handle user reaction
+        try:
+            reaction, user = await ctx.bot.wait_for(
+                "reaction_add",
+                check=lambda emoji, author: emoji.message.id == confirmation_ref.id
+                and author == ctx.message.author,
+                timeout=30.0,
+            )
+
+            if reaction.emoji == thumbs_up:
+                self.rm_escaperoom(escaperoom_name)
+                message = translate(
+                    "esc_room_rmed", cult).format(escaperoom_name)
+                await ctx.send(message)
+            elif reaction.emoji == thumbs_down:
+                message = translate("esc_room_not_rmed", cult)
+                await ctx.send(message)
+
+            await confirmation_ref.delete()
+
+        except asyncio.TimeoutError:
+            await confirmation_ref.delete()
+            msg = translate("snooze_lose", await culture(ctx))
+            return await ctx.send(msg)
 
 def setup(bot):
     bot.add_cog(Escaperooms(bot))
