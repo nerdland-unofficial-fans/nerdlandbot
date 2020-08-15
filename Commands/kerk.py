@@ -20,7 +20,7 @@ class Kerk(commands.Cog, name="kerk"):
             if mention:
                 #set a task to check if it's 16:00 and posts message
                 while not (datetime.now().hour == 16 and datetime.now().minute == 00):
-                    await asyncio.sleep(55)
+                    await asyncio.sleep(59)
                 msg = "⛪ Hey {0} het is 4u en <@{1}> wil met u vechten aan de kerk in Hamont! 👊".format(mention,ctx.author.id)
                 return await ctx.send(msg)
 
