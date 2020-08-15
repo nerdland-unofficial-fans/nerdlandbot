@@ -11,7 +11,8 @@ from Helpers.constants import *
 from Helpers.common_functions import usernames_from_ids
 from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
-from Helpers.emoji import white_check_mark
+from Helpers.emoji import white_check_mark, scales, trophy
+from Helpers.log import *
 
 
 class Escaperooms(commands.Cog, name="Escaperooms"):
@@ -338,8 +339,8 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
         # Clean table and transpose
         subset = tracking_table.loc[tracking_table['Discord ID'].isin(
             user_list)]
-        print(user_list)
-        print(subset)
+        debug(user_list)
+        debug(subset)
         subset = pd.DataFrame(subset.drop(columns=['Naam', 'Heeft tabletop']))
         subset = self.transpose_tracking_table(subset)
 
@@ -365,6 +366,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
     @commands.command(name="start_escape", brief="Start the escaperoom group and room selection", help="let the bot figure out which room to play with the registered players")
     async def cmd_start_escape(self, ctx):
         guild_data = await get_guild_data(ctx.message.guild.id)
+        cult = await culture(ctx)
         escape_time = guild_data.get_datetime_escaperoom_game()
         escape_users = guild_data.get_users_escaperoom_game()
 
@@ -373,24 +375,30 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
             if number_of_users > ESCAPE_MIN_GROUPSIZE:
                 # we have enough information to start
                 embed = discord.Embed(
-                    title="Escaperoom Start", description="the bot recommends the following rooms", color=0x004080)
-                embed.set_thumbnail(
-                    url="https://previews.123rf.com/images/arcady31/arcady311810/arcady31181000064/109268325-escape-room-vector-icon.jpg")
+                    title=translate("esc_start_title", cult),
+                    description=translate("esc_start_desc", cult),
+                    color=ESCAPE_COLOUR
+                )
+                embed.set_thumbnail(url=ESCAPE_THUMB)
 
-                await ctx.send("OK, let's see how what we can do with this group: " + ", ".join(usernames_from_ids(ctx, escape_users)))
+                await ctx.send(translate("esc_start_announce", cult).format(
+                    ", ".join(usernames_from_ids(ctx, escape_users))))
                 groups = []
                 if number_of_users > ESCAPE_MAX_GROUPSIZE:
                     # too many users for one game, split groups
-                    msg = await ctx.send('The group is too large and needs to be split, would you like a balanced split (⚖️) or one based on experience (🏆)?')
-                    await msg.add_reaction("⚖️")
-                    await msg.add_reaction("🏆")
+                    msg = await ctx.send(translate("esc_start_toolarge", cult).format(
+                        scales,
+                        trophy
+                    ))
+                    await msg.add_reaction(scales)
+                    await msg.add_reaction(trophy)
                     reaction, reaction_user = await ctx.bot.wait_for(
                         "reaction_add",
                         check=lambda reaction, user: reaction.message.id == msg.id
                         and user == ctx.message.author,
                         timeout=60.0
                     )
-                    balanced = reaction.emoji == '⚖️'
+                    balanced = reaction.emoji == scales
                     groups = self.split_group(escape_users, balanced)
                 else:
                     groups = [escape_users]
@@ -404,21 +412,21 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                     embed.add_field(
                         name=room,
                         value=" ".join(mentions),
-                        inline=False)
+                        inline=False
+                    )
 
-                embed.set_footer(
-                    text="Please register your play with the i_escaped command afterwards")
+                embed.set_footer(text=translate("esc_start_footer",cult))
                 await ctx.channel.send(embed=embed)
             else:
                 # group is too small
-                await ctx.send('Sorry, the group is too small. Please get more players.')
+                await ctx.send(translate("esc_start_smallgroup",cult))
                 await self.cmd_when_escape(ctx)
         elif not escape_users:
             # no users registered for the game
-            await ctx.send('Sorry no players registered at the moment')
+            await ctx.send(translate("esc_start_noplayers",cult))
         else:
             # no time is set for the game
-            await ctx.send('Sorry no game planned yet')
+            await ctx.send(translate("esc_start_nogame",cult))
 
 
 def setup(bot):

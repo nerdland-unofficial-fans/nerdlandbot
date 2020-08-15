@@ -3,6 +3,8 @@ from discord.ext import commands
 thumbs_up = "👍"
 thumbs_down = "👎"
 white_check_mark = "✅"
+scales = "⚖️"
+trophy = "🏆"
 
 flags = {
     "nl": "🇳🇱",
