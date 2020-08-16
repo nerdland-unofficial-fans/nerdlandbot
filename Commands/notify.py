@@ -15,13 +15,16 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="sub", aliases=["subscribe"], brief="notify_sub_brief", usage="notify_sub_usage",
                       help="notify_sub_help")
-    async def subscribe(self, ctx: commands.Context, list_name: typing.Optional[str] = None):
+    async def subscribe(self, ctx: commands.Context, list_name: typing.Optional[str] = None, user_id=None):
         """
         If used with list_name, subscribes the user to that list if possible.
         If used without parameter it prints the existing lists, and allows users to subscribe by adding reactions.
         :param ctx: The current context (discord.ext.commands.Context)
         :param list_name: The list to subscribe to. (optional - str - default = None)
         """
+
+        if not user_id:
+            user_id = ctx.author.id
 
         # Execute 'show_lists' if no parameter provided
         if not list_name:
@@ -38,23 +41,25 @@ class Notify(commands.Cog, name="Notification_lists"):
             return await ctx.send(msg)
 
         # Subscribe user and error if failed
-        if not await guild_data.sub_user(list_name, ctx.author.id):
-            msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+        if not await guild_data.sub_user(list_name, user_id):
+            msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(user_id), list_name)
             return await ctx.send(msg)
 
         # Subscription successful, show result to user
-        msg = translate("list_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+        msg = translate("list_subscribed", await culture(ctx)).format(str(user_id), list_name)
         await ctx.send(msg)
 
     @commands.command(name="unsub", aliases=["unsubscribe"], brief="notify_unsub_brief", usage="notify_unsub_usage",
                       help="notify_unsub_help")
-    async def unsubscribe(self, ctx: commands.Context, list_name: str):
+    async def unsubscribe(self, ctx: commands.Context, list_name: str, user_id=None):
         """
         Unsubscribes the user from the provided list
         :param ctx: The current context. (discord.ext.commands.Context)
         :param list_name: The list to unsubscribe from. (str)
         """
-
+        if not user_id:
+            user_id = ctx.author.id
+        
         # make sure list is lowercase
         list_name = list_name.lower()
 
@@ -66,12 +71,12 @@ class Notify(commands.Cog, name="Notification_lists"):
             return await ctx.send(msg)
 
         # Unsubscribe user and error if failed
-        if not await guild_data.unsub_user(list_name, ctx.author.id):
-            msg = translate("list_err_not_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+        if not await guild_data.unsub_user(list_name, user_id):
+            msg = translate("list_err_not_subscribed", await culture(ctx)).format(str(user_id), list_name)
             return await ctx.send(msg)
 
         # Unsubscribe successful, show result to user
-        msg = translate("list_unsubscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+        msg = translate("list_unsubscribed", await culture(ctx)).format(str(user_id), list_name)
         await ctx.send(msg)
 
     @commands.command(name="notify", usage="notify_notify_usage", brief="notify_notify_brief", help="notify_notify_help")
@@ -142,7 +147,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 for key, v in guild_data.notification_lists.items():
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.subscribe(ctx, list_name)
+                        await self.subscribe(ctx, list_name,user.id)
 
             except asyncio.TimeoutError:
                 pass
@@ -175,7 +180,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.unsubscribe(ctx, list_name)
+                        await self.unsubscribe(ctx, list_name,user.id)
 
             except asyncio.TimeoutError:
                 pass
