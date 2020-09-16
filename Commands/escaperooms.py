@@ -3,6 +3,8 @@ import pandas as pd
 import re
 import time
 import asyncio
+import os
+import math
 
 from datetime import datetime
 from discord.ext import commands
@@ -21,19 +23,22 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
 
     def read_tracking_table(self) -> pd.DataFrame:
         """ Reads the Tracking Table from CSV and returns it as Pandas DF"""
+        #Naam,Discord ID,Heeft tabletop,DummyRoom
         convert_dict = {'Naam': str}
-        tracking_table = pd.read_csv(
-            'EscaperoomsCSV/tracking_table.csv', dtype=convert_dict)
-
-        tracking_table['Discord ID'] = tracking_table['Discord ID'].astype(
-            "Int64").astype(str)
-        tracking_table = tracking_table.fillna(0)
-
+        if os.path.exists(ESCAPE_PATH):
+            tracking_table = pd.read_csv(
+                ESCAPE_PATH, dtype=convert_dict)
+            tracking_table['Discord ID'] = tracking_table['Discord ID'].astype(
+                "Int64").astype(str)
+            tracking_table = tracking_table.fillna(0)
+        else:
+            tracking_table = pd.DataFrame(columns=['Naam','Discord ID','Heeft tabletop','DummyRoom'])
+            self.write_tracking_table(tracking_table)
         return tracking_table
 
     def write_tracking_table(self, tracking_table):
         """ Writes the Tracking Table into CSV from Pandas DF"""
-        tracking_table.to_csv('EscaperoomsCSV/tracking_table.csv', index=False)
+        tracking_table.to_csv(ESCAPE_PATH, index=False)
 
     def transpose_tracking_table(self, tracking_table) -> pd.DataFrame:
         """Returns transposed tracking table with Usernames as columns and Rooms as rows"""
@@ -66,7 +71,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
 
         self.write_tracking_table(tracking_table)
 
-    def list_users_escaperoom(self, escaperoom) -> list:
+    def list_users_for_escaperoom(self, escaperoom) -> list:
         """ Returns list of users who have played the room"""
         tracking_table = self.read_tracking_table()
 
@@ -75,8 +80,8 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
 
         return users_list
 
-    def list_escaperooms_user(self, discord_id) -> list:
-        """ Returns list of room that the user has played"""
+    def list_escaperooms_for_user(self, discord_id) -> list:
+        """ Returns list of rooms that the user has played"""
         tracking_table = self.read_tracking_table()
         tracking_table = tracking_table.drop(
             columns=['Naam', 'Heeft tabletop'])
@@ -98,6 +103,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
         return escaperooms
 
     def add_escaperoom(self, escaperoom_name: str) -> bool:
+        """ adds escaperoom with to the tracking table and writes it """
         if escaperoom_name not in self.list_escaperooms():
             tracking_table = self.read_tracking_table()
             tracking_table[escaperoom_name] = 0.0
@@ -107,6 +113,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
             return False
 
     def rm_escaperoom(self, escaperoom_name: str) -> bool:
+        """ removes an escaperoom from the tracking table and writes it """
         if escaperoom_name in self.list_escaperooms():
             tracking_table = self.read_tracking_table()
             tracking_table = tracking_table.drop(columns=[escaperoom_name])
@@ -116,6 +123,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
             return False
 
     async def wait_for_added_reactions(self, ctx, msg, guild_data, timeout):
+        """ waits for reactions on message then adds a new registration for escaperoom to guild data """
         cult = await culture(ctx)
         while True:
             try:
@@ -146,6 +154,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                 break
 
     async def wait_for_removed_reactions(self, ctx, msg, guild_data, timeout):
+        """ waits for removal of reaction to message then unregisters user from escaperoom in guild date """
         cult = await culture(ctx)
         while True:
             try:
@@ -206,7 +215,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
 
         try:
             # collect and sort escaperooms for user and send message
-            escaperooms = sorted(self.list_escaperooms_user(user_id))
+            escaperooms = sorted(self.list_escaperooms_for_user(user_id))
             if len(escaperooms) != 0:
                 message = translate("esc_user_has_played", cult).format(
                     ctx.guild.get_member(int(user_id)).display_name,
@@ -226,7 +235,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
         if escaperoom_name:
             # escaperoom name provided, list users and report back
             try:
-                list_users = self.list_users_escaperoom(escaperoom_name)
+                list_users = self.list_users_for_escaperoom(escaperoom_name)
                 if len(list_users) > 0:
                     usernames = usernames_from_ids(ctx, list_users)
                     message = translate("esc_room_played", cult).format(
@@ -279,8 +288,9 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
         guild_data = await get_guild_data(ctx.message.guild.id)
         cult = await culture(ctx)
 
-        if guild_data.get_datetime_escaperoom_game():
-            escape_datetime = guild_data.get_datetime_escaperoom_game()
+        escape_datetime = guild_data.get_datetime_escaperoom_game()
+
+        if escape_datetime:
             if escape_datetime > datetime.now():
                 str_escapetime = escape_datetime.strftime('%H:%M')
                 escapeusers = guild_data.get_users_escaperoom_game()
@@ -293,7 +303,7 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
                         white_check_mark
                     )
                 else:
-                    message += translate("esc_room_today_nolayers",
+                    message += translate("esc_room_today_noplayers",
                                          cult).format(white_check_mark)
 
                 timeout = time.time() + TIMEOUT
@@ -357,31 +367,35 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
         # Clean table and transpose
         subset = tracking_table.loc[tracking_table['Discord ID'].isin(
             user_list)]
-        debug(user_list)
-        debug(subset)
         subset = pd.DataFrame(subset.drop(columns=['Naam', 'Heeft tabletop']))
         subset = self.transpose_tracking_table(subset)
 
-        # Calculate sum of games per user and sort
-        sums = pd.DataFrame(subset.sum(axis=0, skipna=True))
-        sums.columns = ['sum']
-        sums.sort_values(by=['sum'], ascending=False, inplace=True)
+        # Calculate sum of games per user and sort by number of games played
+        sorted_users = pd.DataFrame(subset.sum(axis=0, skipna=True))
+        sorted_users.columns = ['sum']
+        sorted_users.sort_values(by=['sum'], ascending=False, inplace=True)
 
-        # split groups unbalanced (in order of experience)
-        groupsize = int(len(user_list) / 2)
-        group1 = sums[:groupsize]
-        group2 = sums[groupsize:]
+        no_groups = math.ceil(len(user_list)/ESCAPE_MAX_GROUPSIZE)
+        groupsize = int(len(user_list) / no_groups)
+        groups = []
+        if not is_balanced:
+            for group in range(0,no_groups-1):
+                groups.append(sorted_users[group*groupsize:(group+1)*groupsize].index.values)
+            groups.append(sorted_users[(no_groups-1)*groupsize:].index.values)
 
-        if is_balanced:
-            # split groups balanced by rebuildig dataframe with alternating selection
-            alternated_groups = pd.concat(
-                [group1, group2]).sort_index(kind='merge')
-            group1 = alternated_groups[:groupsize]
-            group2 = alternated_groups[groupsize:]
+        elif is_balanced:
+            groups = [[] for i in range(no_groups)]
+            groupnumber = 0
+            for user in sorted_users.index.values:
+                groups[groupnumber].append(user)
+                if groupnumber < no_groups-1:
+                    groupnumber += 1
+                else:
+                    groupnumber = 0
 
-        return [group1.index.values, group2.index.values]
+        return groups
 
-    @commands.command(name="start_escape", brief="Start the escaperoom group and room selection", help="let the bot figure out which room to play with the registered players")
+    @commands.command(name="start_escape", brief="esc_start_brief", help="esc_start_help")
     async def cmd_start_escape(self, ctx):
         guild_data = await get_guild_data(ctx.message.guild.id)
         cult = await culture(ctx)
@@ -498,7 +512,8 @@ class Escaperooms(commands.Cog, name="Escaperooms"):
             msg = translate("snooze_lose", await culture(ctx))
             return await ctx.send(msg)
 
-    @commands.command(name="remove_escaperoom")
+    @commands.command(name="remove_escaperoom", brief="esc_rm_room_brief", usage="esc_rm_room_usage", 
+                      help="esc_rm_room_help")
     async def cmd_rm_escaperoom(self, ctx, *, escaperoom_name=None):
         guild_data = await get_guild_data(ctx.message.guild.id)
         cult = await culture(ctx)

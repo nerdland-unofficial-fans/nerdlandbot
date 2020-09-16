@@ -151,6 +151,11 @@ class GuildData:
             await self.save()
 
     async def register_user_escape(self, user_id: int) -> bool:
+        """
+        Registers a user for the upcoming escaperoom session
+        :param user_id: The user to register
+        :return: True if the user was not previously registered
+        """
         if 'users' not in self.escaperoom_game.keys():
             self.escaperoom_game['users'] = []
 
@@ -162,6 +167,11 @@ class GuildData:
             return False
     
     async def deregister_user_escape(self,user_id: int) -> bool:
+        """
+        Deregisters a user for the upcoming escaperoom session
+        :param user_id: The user to deregister
+        :return: True if the user was previously registered and has been removed
+        """
         if 'users' in self.escaperoom_game.keys():
             if user_id in self.escaperoom_game['users']:
                 self.escaperoom_game['users'].remove(user_id)
@@ -173,6 +183,12 @@ class GuildData:
             return False
 
     async def new_escaproom_game_time(self, escape_time: datetime, overwrite=False) -> bool:
+        """
+        Sets a new date and time for the escaperoom session
+        :param escape_time: the new datetime to register
+        :param overwrite: boolean that determines if an existing datetime should be overwritten
+        :return: True if the new datatime has been set
+        """
         if not 'datetime' in self.escaperoom_game.keys():
             # not time has been set yet, set time and clear userlist
             print(escape_time.timestamp())
@@ -191,16 +207,27 @@ class GuildData:
             return False
 
     async def clear_escaperoom_users(self):
+        """
+        Removes all registered users from an escaperoom session
+        """
         self.escaperoom_game['users'] = []
         await self.save()
 
     def get_users_escaperoom_game(self) -> list:
+        """
+        returns all registered users for the escaperoom session
+        :return: list of user_ids
+        """
         if 'users' in self.escaperoom_game.keys():
             return self.escaperoom_game['users']
         else:
             return []
 
     def get_datetime_escaperoom_game(self) -> datetime:
+        """
+        returnss the date and time for the escaperoom session if one is scheduled
+        :return: datetime of the escaperoom session
+        """
         if 'datetime' in self.escaperoom_game.keys():
             escaperoom_datetime = datetime.fromtimestamp(self.escaperoom_game['datetime'])
             return escaperoom_datetime
