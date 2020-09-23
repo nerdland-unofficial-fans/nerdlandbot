@@ -27,7 +27,7 @@ class OnMemberJoin(commands.Cog, name="on_member_join"):
             return
 
         # Send message to dedicated channel
-        channel = self.bot.get_channel(discord.utils.get(guild.channels, name=notification_channel_name).id)
+        channel = discord.utils.get(guild.channels, name=notification_channel_name)
         culture = (await get_guild_data(member.guild.id)).culture
         msg = translate("member_join_count", culture).format(member.guild, member_count)
         await channel.send(msg)
