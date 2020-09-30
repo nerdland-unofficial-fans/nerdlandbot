@@ -78,7 +78,7 @@
 "bot_admin_err_no_admins","There are no bot admins.","Er zijn geen bot admins."
 "bot_admin_list_prefix","The bot admins are:","De bot admins zijn:"
 "err_missing_parameter","Command {0} requires more arguments. {1} is missing.","Commando {0} heeft meer parameters nodig. Je bent {1} vergeten."
-"err_unrecognized_command","Unrecognized command!","Onbekend commando!"
+"err_unrecognized_command","Unrecognized command!","Da kennek nie, Foemp!"
 "member_join_count","{0} now has {1} members! Congratulations!","{0} heeft nu {1} leden! Proficiat!"
 "random_user_help","Select a random user.\n\nWith a channel name: Select a random user from the given channel.\n\n With parameter 'online': Select a random online user from the server.","Selecteer een willekeurige gebruiker.\n\nIndien je een kanaal aangeeft, wordt de gebruiker uit dat kanaal gekozen.\n\nIndien je als parameter 'online' meegeeft, wordt er een online gebruiker geselecteerd."
 "random_user_usage","<channel name>","<kanaal naam>"
