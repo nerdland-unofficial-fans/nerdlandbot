@@ -304,8 +304,8 @@ class Notify(commands.Cog, name="Notification_lists"):
             # Process emoji
             if reaction.custom_emoji:
                 try:
-                    reaction_emoji = reaction.emoji.id
-                    emoji_to_print = get_custom_emoji(ctx, reaction_emoji)
+                    reaction_emoji = str(reaction.emoji.id)
+                    emoji_to_print = get_custom_emoji(ctx, int(reaction_emoji))
                     custom_emoji = True
                 except AttributeError:
                     msg = translate("unknown_emoji", await culture(ctx))
