@@ -145,3 +145,7 @@ dmypy.json
 .pytype/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+# ignore guildconfigs (only json files, keep the foler)
+GuildConfigs/*.json
+bot.log
