@@ -92,3 +92,4 @@
 "picked_new_language","The new language is: {0}.","De nieuwe taal is: {0}."
 "nl","Dutch","Nederlands"
 "en","English","Engels"
+"notif_too_long","Your message is {0} characters too long for the Discord bot","Je bericht is {0} tekens te lang, probeer met een korter bericht."
