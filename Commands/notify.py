@@ -104,6 +104,9 @@ class Notify(commands.Cog, name="Notification_lists"):
             msg = translate("list_err_empty", await culture(ctx))
             return await ctx.send(msg)
 
+        # Setup the announcement with the subject and caller
+        message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
+
         # build users mentioning string
         user_tags = []
         for user_id in users:
@@ -111,15 +114,18 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         users_str = ', '.join(user_tags)
 
-        # Setup the announcement with the subject and caller
-        message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
-
         # append the message if provided
         if message:
+            # If message too long, tell user to write shorter message
+            excess = -1999 + len(message) + len(message_text)
+            if excess > 0:
+                msg = translate("notif_too_long", await culture(ctx)).format(excess)
+                return await ctx.send(msg)
             second_line = translate("notify_message", await culture(ctx)).format(message) + '\n'
             message_text += second_line
 
-        await ctx.send(message_text + '\n' + users_str)
+        await ctx.send(message_text)
+        await ctx.send(users_str)
 
     async def wait_for_added_reactions(self, ctx: commands.Context, msg_id: int, guild_data: GuildData,
                                        timeout: int = 300):
