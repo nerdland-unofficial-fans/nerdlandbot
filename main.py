@@ -3,6 +3,7 @@ import sys
 
 from Bot.nerdlandbot import NerdlandBot
 from dotenv import load_dotenv
+import discord
 
 from Helpers.log import info, fatal
 from Translations.Translations import get_text as _
@@ -24,8 +25,10 @@ else:
     fatal("Please provide a PREFIX in your .env file")
     sys.exit()
 
+# load up intents
+intents = discord.Intents.all()
 
-bot = NerdlandBot(PREFIX)
+bot = NerdlandBot(PREFIX, intents)
 
 # remove default help command
 bot.remove_command('help')
