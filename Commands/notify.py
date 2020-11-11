@@ -142,7 +142,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_add",
                     check=lambda emoji, author: emoji.message.id == msg_id and not author.bot,
-                    timeout=30.0,
+                    timeout=timeout,
                 )
 
                 if reaction.custom_emoji:
@@ -176,7 +176,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_remove",
                     check=lambda emoji, author: emoji.message.id == msg_id and not author.bot,
-                    timeout=30.0,
+                    timeout=timeout,
                 )
                 if reaction.custom_emoji:
                     reaction_emoji = str(reaction.emoji.id)
