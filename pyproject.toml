@@ -6,7 +6,7 @@ authors = ["Autom"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-discord-py = "^1.4.1"
+discord-py = "^1.5.1"
 python-dotenv = "^0.14.0"
 
 [tool.poetry.dev-dependencies]
