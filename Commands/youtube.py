@@ -93,7 +93,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         """
 
         guild_data = await get_guild_data(ctx.message.guild.id)
-        msg = translate("youtube_list_title", await culture(ctx)) + "\n - " + "\n - "
+        msg = translate("youtube_list_title", await culture(ctx))
         print(
             str(
                 guild_data.youtube_channels["UCPjHlmSGP-rMg5PR-PyaJug"][
@@ -101,11 +101,11 @@ class Youtube(commands.Cog, name="Youtube_lists"):
                 ]
             )
         )
-        # for channel_id, channel_data in guild_data.youtube_channels:
-        #     print(str(channel_id))
-        #     print(str(channel_data))
-        #     print(str(channel["text_channel_id"]))
-        #     msg = msg + str(channel["text_channel_id"])
+        for channel_id, channel_data in guild_data.youtube_channels.items():
+            msg = (
+                msg
+                + f"\n - Channel `channel_id` posts in <#{channel_data['text_channel_id']}>, last video ID: `{channel_data['latest_video_id']}`"
+            )
         await ctx.send(msg)
 
     async def get_latest_video(self, youtube_channel_id: str):
