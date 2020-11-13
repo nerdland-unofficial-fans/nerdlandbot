@@ -2,6 +2,8 @@ from discord.ext import commands
 from .GuildData import get_guild_data, GuildData
 from Helpers.parser import parse_channel
 from Helpers.log import info, fatal
+from Translations.Translations import get_text as translate
+from Helpers.TranslationHelper import get_culture_from_context as culture
 import discord
 import requests
 import os
@@ -44,12 +46,13 @@ class Youtube(commands.Cog, name="Youtube_lists"):
             youtube_channel_id, channel, latest_video["video_id"]
         )
 
+        msg = ""
         if add_response:
-            info(
-                f"Added a notifier for {youtube_channel_id} to be posted in text channel #{channel}"
-            )
+            msg = f"Added a notifier for `{youtube_channel_id}` to be posted in text channel #{channel}"
         else:
-            info(f"Notifier for {youtube_channel_id} already exists")
+            msg = f"Notifier for `{youtube_channel_id}` already exists"
+        info(msg)
+        await ctx.send(msg)
 
     @commands.command(
         name="youtube_remove",
@@ -69,10 +72,41 @@ class Youtube(commands.Cog, name="Youtube_lists"):
 
         guild_data = await get_guild_data(ctx.message.guild.id)
         remove_response = await guild_data.remove_youtube_channel(youtube_channel_id)
+        msg = ""
         if remove_response:
-            info(f"Removed notifier for {youtube_channel_id}")
+            msg = f"Removed notifier for `{youtube_channel_id}`"
         else:
-            info(f"There is no notifier for {youtube_channel_id}")
+            msg = f"There is no notifier for `{youtube_channel_id}`"
+        info(msg)
+        await ctx.send(msg)
+
+    @commands.command(
+        name="youtube_list",
+        aliases=[],
+        brief="youtube_list_brief",
+        usage="youtube_list_usage",
+        help="youtube_list_help",
+    )
+    async def list_youtube_channels(self, ctx: commands.Context):
+        """
+        List all Youtube channels that are being monitored
+        """
+
+        guild_data = await get_guild_data(ctx.message.guild.id)
+        msg = translate("youtube_list_title", await culture(ctx)) + "\n - " + "\n - "
+        print(
+            str(
+                guild_data.youtube_channels["UCPjHlmSGP-rMg5PR-PyaJug"][
+                    "text_channel_id"
+                ]
+            )
+        )
+        # for channel_id, channel_data in guild_data.youtube_channels:
+        #     print(str(channel_id))
+        #     print(str(channel_data))
+        #     print(str(channel["text_channel_id"]))
+        #     msg = msg + str(channel["text_channel_id"])
+        await ctx.send(msg)
 
     async def get_latest_video(self, youtube_channel_id: str):
         TOKEN = os.getenv("YOUTUBE_TOKEN")
