@@ -31,7 +31,7 @@ intents = discord.Intents.all()
 bot = NerdlandBot(PREFIX, intents)
 
 # remove default help command
-bot.remove_command('help')
+bot.remove_command("help")
 
 # load event handlers
 bot.load_extension("EventHandlers.onmemberjoin")
@@ -44,6 +44,7 @@ bot.load_extension("Commands.help")
 bot.load_extension("Commands.settings")
 bot.load_extension("Commands.membercount")
 bot.load_extension("Commands.random_user")
+bot.load_extension("Commands.youtube")
 
 bot.run(TOKEN)
 
