@@ -1,5 +1,5 @@
 import json
-from os import path
+from os import path, listdir
 import typing
 
 from discord import Member
@@ -195,6 +195,40 @@ class GuildData:
         else:
             # youtube channel does not exist in list, return False
             return False
+    
+async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
+    """
+    Sets the video ID of a channel. This is needed so that only a notification is posted
+    when a new video is uploaded.
+    :param guild_id: The Guild ID of the youtube list (int)
+    :param youtube_channel_id: The Youtube channel to be notified for (str)
+    :param latest_video_id: ID of the latest video (str)
+    :return: True if updated successfully, False if the channel doesn't exist yet. (bool)
+    """
+    print("update_youtube_channel_video_id")
+    guild_data = await get_guild_data(guild_id)
+    if youtube_channel_id in guild_data.youtube_channels.keys():
+        # youtube channel in list, update video ID and return True
+        guild_data.youtube_channels[youtube_channel_id]["latest_video_id"] = latest_video_id
+        # TODO: check if file is already being saved?
+        await guild_data.save()
+
+    else:
+        # youtube channel not in list, return false
+        return False
+
+async def get_all_guilds_data() -> [GuildData]:
+    """
+    Retrieves the guild data for all guilds.
+    :returns: List of GuildData objects ([GuildData])
+    """
+    guilds_data = []
+    for file in listdir(_configFolder):
+        split_file = path.splitext(file)
+        if split_file[1] == ".json":
+            guild_data = await get_guild_data(int(split_file[0]))
+            guilds_data.append(guild_data)
+    return guilds_data
 
 
 async def get_guild_data(guild_id: int) -> GuildData:
