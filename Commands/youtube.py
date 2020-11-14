@@ -57,9 +57,9 @@ class Youtube(commands.Cog, name="Youtube_lists"):
 
         msg = ""
         if add_response:
-            msg = f"Added a notifier for `{youtube_channel_id}` to be posted in text channel #{channel}"
+            msg = translate("youtube_added", await culture(ctx)).format(youtube_channel_id,channel)
         else:
-            msg = f"Notifier for `{youtube_channel_id}` already exists"
+            msg = translate("youtube_exists", await culture(ctx)).format(youtube_channel_id)
         info(msg)
         await ctx.send(msg)
 
@@ -72,7 +72,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         self, ctx: commands.Context, youtube_channel_id: str, text_channel: str
     ):
         """
-        Add a Youtube channel to be notified
+        Remove a Youtube channel that was being notified
         :param ctx: The current context. (discord.ext.commands.Context)
         :param youtube_channel_id: The Youtube channel to be notified of (str)
         """
@@ -86,9 +86,9 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         remove_response = await guild_data.remove_youtube_channel(youtube_channel_id)
         msg = ""
         if remove_response:
-            msg = f"Removed notifier for `{youtube_channel_id}`"
+            msg = translate("youtube_removed", await culture(ctx)).format(youtube_channel_id)
         else:
-            msg = f"There is no notifier for `{youtube_channel_id}`"
+            msg = translate("youtube_no_exists", await culture(ctx)).format(youtube_channel_id)
         info(msg)
         await ctx.send(msg)
 
