@@ -1,3 +1,4 @@
+import math
 import asyncio
 import time
 import typing
@@ -142,7 +143,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_add",
                     check=lambda emoji, author: emoji.message.id == msg_id and not author.bot,
-                    timeout=30.0,
+                    timeout=timeout,
                 )
 
                 if reaction.custom_emoji:
@@ -176,7 +177,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_remove",
                     check=lambda emoji, author: emoji.message.id == msg_id and not author.bot,
-                    timeout=30.0,
+                    timeout=timeout,
                 )
                 if reaction.custom_emoji:
                     reaction_emoji = str(reaction.emoji.id)
@@ -208,40 +209,61 @@ class Notify(commands.Cog, name="Notification_lists"):
             msg = translate("no_existing_lists", await culture(ctx))
             return await ctx.send(msg)
 
-        # Init text with title
-        text = translate("lists", await culture(ctx))
+        # Check list count (max 20 per message)
+        # TODO: maybe make this configurable in case it changes?
+        max_per_page = 20
+        page_count = math.ceil(len(guild_data.notification_lists)/max_per_page)
+        sorted_lists = sorted(guild_data.notification_lists.items())
 
-        # Loop and append all lists
-        for list_name, list_data in sorted(guild_data.notification_lists.items()):
-            if list_data["is_custom_emoji"]:
-                text += get_custom_emoji(ctx, int(list_data["emoji"]))
-            else:
-                text += list_data["emoji"]
+        messages = []
+        for page in range(1, page_count+1):
+            # Init text with title
+            text = translate("lists", await culture(ctx))
 
-            text += " - " + list_name + "\n"
+            if page_count > 1:
+                text += " " + translate("lists_page_count", await culture(ctx)).format(page, page_count)
 
-        # Send lists to context
-        msg = await ctx.send(text)
+            text += ":\n"
 
-        # Add reactions
-        for list_data in guild_data.notification_lists.values():
-            await msg.add_reaction(
-                list_data["emoji"] if not list_data["is_custom_emoji"] else ctx.bot.get_emoji(int(list_data["emoji"])))
+            # Loop and append all lists
+            first_index = (page-1)*max_per_page
+            last_index = (page*max_per_page)
+
+            for list_name, list_data in sorted_lists[first_index:last_index]:
+                if list_data["is_custom_emoji"]:
+                    text += get_custom_emoji(ctx, int(list_data["emoji"]))
+                else:
+                    text += list_data["emoji"]
+
+                text += " - " + list_name + "\n"
+
+            # Send lists to context
+            msg = await ctx.send(text)
+            messages.append(msg)
+
+            # Add reactions
+            for _, list_data in sorted_lists[first_index:last_index]:
+                await msg.add_reaction(
+                    list_data["emoji"] if not list_data["is_custom_emoji"] else ctx.bot.get_emoji(int(list_data["emoji"])))
 
         # Setup listeners
         # TODO make reaction time configurable
-        timeout = 60 * 5  # 5 minutes
-        reaction_added_task = asyncio.create_task(
-            self.wait_for_added_reactions(ctx, msg.id, guild_data, timeout))
-        reaction_removed_task = asyncio.create_task(
-            self.wait_for_removed_reactions(ctx, msg.id, guild_data, timeout))
+        timeout = 60*5  # 5 minutes
+        reaction_tasks = []
+        for message in messages:
+            reaction_added_task = asyncio.create_task(
+                self.wait_for_added_reactions(ctx, message.id, guild_data, timeout))
+            reaction_tasks.append(reaction_added_task)
+            reaction_removed_task = asyncio.create_task(
+                self.wait_for_removed_reactions(ctx, message.id, guild_data, timeout))
+            reaction_tasks.append(reaction_removed_task)
 
         # Listen for reactions
-        await reaction_added_task
-        await reaction_removed_task
+        await asyncio.gather(*reaction_tasks, return_exceptions=True)
 
-        # Delete message
-        await msg.delete()
+        # Delete messages
+        for message in messages:
+            await message.delete()
 
     @commands.command(name="my_lists", help="notify_my_lists_help")
     async def my_lists(self, ctx: commands.Context):
