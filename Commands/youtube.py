@@ -29,7 +29,12 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         :param youtube_channel_id: The Youtube channel to be notified of (str)
         :param text_channel: The text channel that will receive the notification (str)
         """
-        # guild_data = await get_guild_data(ctx.message.guild.id)
+        guild_data = await get_guild_data(ctx.message.guild.id)
+        # Error if not admin
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", await culture(ctx))
+            return await ctx.send(gif)
+
         text_channel = text_channel.lower()
 
         # Sanitize channel name
@@ -44,7 +49,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         if not channel:
             raise Exception("Invalid text channel provided")
 
-        guild_data = await get_guild_data(ctx.message.guild.id)
+    
         add_response = await guild_data.add_youtube_channel(
             youtube_channel_id, channel, latest_video["video_id"]
         )
@@ -74,6 +79,11 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         """
 
         guild_data = await get_guild_data(ctx.message.guild.id)
+        # Error if not admin
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", await culture(ctx))
+            return await ctx.send(gif)
+
         remove_response = await guild_data.remove_youtube_channel(youtube_channel_id)
         msg = ""
         if remove_response:
