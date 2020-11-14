@@ -39,10 +39,13 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         text_channel = parse_channel(text_channel)
 
         # TODO: throw specific error with message when channel ID is wrong
-        latest_video = await self.get_latest_video(youtube_channel_id)
+        latest_video = await get_latest_video(youtube_channel_id)
 
         # Retrieve channel
-        channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
+        channel = ctx.bot.get_channel(int(text_channel))
+        if not channel:
+            channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
+        
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
             raise Exception("Invalid text channel provided")
