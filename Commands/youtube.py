@@ -14,11 +14,9 @@ from Scheduler.Scheduler import get_latest_video
 class Youtube(commands.Cog, name="Youtube_lists"):
 
     @commands.command(
-        name="youtube_add",
-        aliases=[],
-        brief="youtube_add_brief",
-        usage="youtube_add_usage",
-        help="youtube_add_help",
+        name="add_youtube",
+        usage="add_youtube_usage",
+        help="add_youtube_help",
     )
     async def add_youtube_channel(
         self, ctx: commands.Context, youtube_channel_id: str, text_channel: str
@@ -63,11 +61,9 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         await ctx.send(msg)
 
     @commands.command(
-        name="youtube_remove",
-        aliases=[],
-        brief="youtube_remove_brief",
-        usage="youtube_remove_usage",
-        help="youtube_remove_help",
+        name="remove_youtube",
+        usage="remove_youtube_usage",
+        help="remove_youtube_help",
     )
     async def remove_youtube_channel(
         self, ctx: commands.Context, youtube_channel_id: str, text_channel: str
@@ -94,11 +90,8 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         await ctx.send(msg)
 
     @commands.command(
-        name="youtube_list",
-        aliases=[],
-        brief="youtube_list_brief",
-        usage="youtube_list_usage",
-        help="youtube_list_help",
+        name="list_youtube",
+        help="list_youtube_help",
     )
     async def list_youtube_channels(self, ctx: commands.Context):
         """
