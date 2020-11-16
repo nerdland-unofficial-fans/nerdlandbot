@@ -12,12 +12,14 @@ To get this project up and running, make sure you have the following installed:
 
 Once you have these installed (you can check by running 'python --version' and 'pip -V' in a commandline) run the following command to install the required packages:
 ```
-pip install -r requirements.txt -y
+pip install -r requirements.txt
 ```
 
-You will also need to acquire a DISCORD_TOKEN for this to work. It is possible to obtain one with a developer account on Discord.
+You will also need to acquire a `DISCORD_TOKEN` for this to work. It is possible to obtain one with a developer account on Discord.
 
-You can now run the bot by running the following command with the src folder active
+For using the YouTube notifications functionality you'll need to set the `YOUTUBE TOKEN` in your `.env` file. Follow the instructions [here](https://developers.google.com/youtube/registering_an_application) to create an API key.
+
+You can now run the bot by running the following command with the `src` folder active
 ```
 python main.py
 ```
