@@ -107,7 +107,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         for channel_id, channel_data in guild_data.youtube_channels.items():
             msg = (
                 msg
-                + f"\n - Channel `channel_id` posts in <#{channel_data['text_channel_id']}>, last video ID: `{channel_data['latest_video_id']}`"
+                + f"\n - Channel `{channel_id}` posts in <#{channel_data['text_channel_id']}>, last video ID: `{channel_data['latest_video_id']}`"
             )
         await ctx.send(msg)
 
