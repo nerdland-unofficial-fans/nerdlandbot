@@ -72,7 +72,7 @@ class GuildData:
         """
         Return the emoji for the given list
         :param list_name: The list to fetch. (str)
-        :return: the emoji to use (str),(bool)
+        :return: the emoji to use (str), if the emoji is a custom emoji(bool)
         """
         return self.notification_lists[list_name]["emoji"],self.notification_lists[list_name]["is_custom_emoji"]
 
