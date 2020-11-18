@@ -68,6 +68,14 @@ class GuildData:
         """
         return self.notification_lists[list_name]["users"]
 
+    def get_emoji(self, list_name: str) -> (str,bool):
+        """
+        Return the emoji for the given list
+        :param list_name: The list to fetch. (str)
+        :return: the emoji to use (str),(bool)
+        """
+        return self.notification_lists[list_name]["emoji"],self.notification_lists[list_name]["is_custom_emoji"]
+
     def does_list_exist(self, list_name: str) -> bool:
         """
         Checks whether or not a list exists.

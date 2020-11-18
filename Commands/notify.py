@@ -2,6 +2,7 @@ import math
 import asyncio
 import time
 import typing
+import discord
 
 from discord.ext import commands
 from .GuildData import get_guild_data, GuildData
@@ -99,6 +100,9 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         # Fetch users to notify
         users = guild_data.get_users_list(list_name)
+        emoji,is_custom_emoji = guild_data.get_emoji(list_name)
+        if is_custom_emoji:
+            emoji = get_custom_emoji(ctx, int(emoji))
 
         # Error if no users were found
         if len(users) < 1:
@@ -115,17 +119,25 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         users_str = ', '.join(user_tags)
 
+        embed = discord.Embed(
+                    title=emoji + "\t" + list_name.capitalize() + "\t" + emoji,
+                    description=message_text,
+                    color=0x0a5bf3,
+                )
+
         # append the message if provided
         if message:
             # If message too long, tell user to write shorter message
-            excess = -1999 + len(message) + len(message_text)
+            excess = -1024 + len(message)
             if excess > 0:
                 msg = translate("notif_too_long", await culture(ctx)).format(excess)
                 return await ctx.send(msg)
-            second_line = translate("notify_message", await culture(ctx)).format(message) + '\n'
-            message_text += second_line
+            embed.add_field(
+                    name=translate("message", await culture(ctx)),
+                    value=message
+            )
 
-        await ctx.send(message_text)
+        await ctx.channel.send(embed=embed)
         await ctx.send(users_str)
 
     async def wait_for_added_reactions(self, ctx: commands.Context, msg_id: int, guild_data: GuildData,

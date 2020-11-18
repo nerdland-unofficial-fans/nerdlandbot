@@ -104,3 +104,4 @@
 "youtube_removed","Removed notifier for `{0}`","Notificaties voor `{0}` werden verwijderd"
 "youtube_no_exists","There is no notifier for `{0}`","Er zijn momenteel geen notificaties voor `{0}`"
 "lists_page_count","({0} of {1})","({0} van {1})"
+"message","Message:","Bericht:"
