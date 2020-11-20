@@ -9,6 +9,7 @@ from Helpers.log import info, fatal
 from Translations.Translations import get_text as _
 
 from Scheduler.YoutubeScheduler import check_and_post_latest_videos
+from Scheduler.PurgeScheduler import purge_messages
 
 # Set working directory
 abspath = os.path.abspath(__file__)
@@ -64,4 +65,5 @@ async def on_ready():
         )
 
 
+purge_messages.start(bot)
 bot.run(TOKEN)
