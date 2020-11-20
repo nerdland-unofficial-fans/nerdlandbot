@@ -14,12 +14,14 @@ class GuildData:
     guild_id: int
     notification_lists: dict
     youtube_channels: dict
+    purgers: dict
     culture: str
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
         self.notification_lists = dict()
         self.youtube_channels = dict()
+        self.purgers = dict()
         self.bot_admins = []
         self.culture = "en"
 
@@ -195,8 +197,45 @@ class GuildData:
         else:
             # youtube channel does not exist in list, return False
             return False
-    
-async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
+
+    async def add_purger(self, text_channel, max_age: int) -> bool:
+        """
+            Adds a purger channel if not already there.
+            :param text_channel: The text channel that will be purged (Discord Channel)
+            :param max_age: The max age of messages in minutes (int)
+            :return: True if added successfully, False if already in list. (bool)
+            """
+
+        if text_channel.id not in self.purgers.keys():
+            # purger text channel not in list, add to list and return True
+            self.purgers[text_channel.id] = max_age
+            await self.save()
+            return True
+
+        else:
+            # purger text channel already in list, return false
+            return False
+
+    async def remove_purger(self, text_channel) -> bool:
+        """
+        Remove a purger channel
+        :param text_channel: The text channel with attached purger to be removed (Discord Channel)
+        :return: True if added successfully, False if already in list. (bool)
+        """
+
+        if text_channel.id in self.purgers.keys():
+            # purger text channel exists in list, remove and return True
+            self.purgers.pop(text_channel.id, None)
+            await self.save()
+            return True
+        else:
+            # purger text channel does not exist in list, return False
+            return False
+
+
+async def update_youtube_channel_video_id(
+    guild_id: int, youtube_channel_id, latest_video_id
+):
     """
     Sets the video ID of a channel. This is needed so that only a notification is posted
     when a new video is uploaded.
@@ -209,13 +248,16 @@ async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, lat
     guild_data = await get_guild_data(guild_id)
     if youtube_channel_id in guild_data.youtube_channels.keys():
         # youtube channel in list, update video ID and return True
-        guild_data.youtube_channels[youtube_channel_id]["latest_video_id"] = latest_video_id
+        guild_data.youtube_channels[youtube_channel_id][
+            "latest_video_id"
+        ] = latest_video_id
         # TODO: check if file is already being saved?
         await guild_data.save()
 
     else:
         # youtube channel not in list, return false
         return False
+
 
 async def get_all_guilds_data() -> [GuildData]:
     """
@@ -274,6 +316,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.notification_lists = data.get("notification_lists", [])
         guildData.culture = data.get("culture", "en")
         guildData.youtube_channels = data.get("youtube_channels", {})
+        guildData.purgers = data.get("purgers", {})
 
         return guildData
 
