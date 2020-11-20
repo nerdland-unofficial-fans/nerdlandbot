@@ -8,15 +8,12 @@ import discord
 import requests
 import os
 
-from Scheduler.Scheduler import get_latest_video
+from Scheduler.YoutubeScheduler import get_latest_video
 
 
 class Youtube(commands.Cog, name="Youtube_lists"):
-
     @commands.command(
-        name="add_youtube",
-        usage="add_youtube_usage",
-        help="add_youtube_help",
+        name="add_youtube", usage="add_youtube_usage", help="add_youtube_help",
     )
     async def add_youtube_channel(
         self, ctx: commands.Context, youtube_channel_id: str, text_channel: str
@@ -45,28 +42,29 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         channel = ctx.bot.get_channel(int(text_channel))
         if not channel:
             channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
-        
+
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
             raise Exception("Invalid text channel provided")
 
-    
         add_response = await guild_data.add_youtube_channel(
             youtube_channel_id, channel, latest_video["video_id"]
         )
 
         msg = ""
         if add_response:
-            msg = translate("youtube_added", await culture(ctx)).format(youtube_channel_id,channel)
+            msg = translate("youtube_added", await culture(ctx)).format(
+                youtube_channel_id, channel
+            )
         else:
-            msg = translate("youtube_exists", await culture(ctx)).format(youtube_channel_id)
+            msg = translate("youtube_exists", await culture(ctx)).format(
+                youtube_channel_id
+            )
         info(msg)
         await ctx.send(msg)
 
     @commands.command(
-        name="remove_youtube",
-        usage="remove_youtube_usage",
-        help="remove_youtube_help",
+        name="remove_youtube", usage="remove_youtube_usage", help="remove_youtube_help",
     )
     async def remove_youtube_channel(
         self, ctx: commands.Context, youtube_channel_id: str, text_channel: str
@@ -86,15 +84,18 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         remove_response = await guild_data.remove_youtube_channel(youtube_channel_id)
         msg = ""
         if remove_response:
-            msg = translate("youtube_removed", await culture(ctx)).format(youtube_channel_id)
+            msg = translate("youtube_removed", await culture(ctx)).format(
+                youtube_channel_id
+            )
         else:
-            msg = translate("youtube_no_exists", await culture(ctx)).format(youtube_channel_id)
+            msg = translate("youtube_no_exists", await culture(ctx)).format(
+                youtube_channel_id
+            )
         info(msg)
         await ctx.send(msg)
 
     @commands.command(
-        name="list_youtube",
-        help="list_youtube_help",
+        name="list_youtube", help="list_youtube_help",
     )
     async def list_youtube_channels(self, ctx: commands.Context):
         """
@@ -110,6 +111,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
                 + f"\n - Channel `channel_id` posts in <#{channel_data['text_channel_id']}>, last video ID: `{channel_data['latest_video_id']}`"
             )
         await ctx.send(msg)
+
 
 def setup(bot: commands.bot):
     bot.add_cog(Youtube(bot))

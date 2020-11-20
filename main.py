@@ -8,7 +8,7 @@ import discord
 from Helpers.log import info, fatal
 from Translations.Translations import get_text as _
 
-from Scheduler.Scheduler import check_and_post_latest_videos
+from Scheduler.YoutubeScheduler import check_and_post_latest_videos
 
 # Set working directory
 abspath = os.path.abspath(__file__)

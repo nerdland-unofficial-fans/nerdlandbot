@@ -17,9 +17,12 @@ async def check_and_post_latest_videos(bot):
             channel = bot.get_channel(channel_data["text_channel_id"])
             latest_video = await get_latest_video(channel_id)
             if latest_video["video_id"] != channel_data["latest_video_id"]:
-                await update_youtube_channel_video_id(guild_data.guild_id, channel_id, latest_video["video_id"])
-                msg = latest_video['link']  
+                await update_youtube_channel_video_id(
+                    guild_data.guild_id, channel_id, latest_video["video_id"]
+                )
+                msg = latest_video["link"]
                 await channel.send(msg)
+
 
 async def get_latest_video(youtube_channel_id: str):
     # TODO don't get the token on each request
