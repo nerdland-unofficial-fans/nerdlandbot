@@ -39,9 +39,9 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         latest_video = await get_latest_video(youtube_channel_id)
 
         # Retrieve channel
-        channel = ctx.bot.get_channel(int(text_channel))
+        channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
         if not channel:
-            channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
+            channel = ctx.bot.get_channel(int(text_channel))
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
