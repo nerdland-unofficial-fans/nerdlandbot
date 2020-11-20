@@ -15,8 +15,13 @@ async def purge_messages(bot):
         for text_channel, max_age in guild_data.purgers.items():
             before = datetime.today() - timedelta(minutes=max_age)
             channel = bot.get_channel(int(text_channel))
-            if channel:
-                await channel.purge(check=check, before=before)
+            try:
+                if channel:
+                    await channel.purge(check=check, before=before)
+            except:
+                fatal(
+                    f"Failed to purge messages for channel {channel.name} in guild {guild_data.guild_id}. Does the bot have appropriate permissions on that channel?"
+                )
 
 
 def check(message):
