@@ -1,6 +1,8 @@
+import math
 import asyncio
 import time
 import typing
+import discord
 
 from discord.ext import commands
 from .GuildData import get_guild_data, GuildData
@@ -15,13 +17,16 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="sub", aliases=["subscribe"], brief="notify_sub_brief", usage="notify_sub_usage",
                       help="notify_sub_help")
-    async def subscribe(self, ctx: commands.Context, list_name: typing.Optional[str] = None):
+    async def subscribe(self, ctx: commands.Context, list_name: typing.Optional[str] = None, user_id=None):
         """
         If used with list_name, subscribes the user to that list if possible.
         If used without parameter it prints the existing lists, and allows users to subscribe by adding reactions.
         :param ctx: The current context (discord.ext.commands.Context)
         :param list_name: The list to subscribe to. (optional - str - default = None)
         """
+
+        if not user_id:
+            user_id = ctx.author.id
 
         # Execute 'show_lists' if no parameter provided
         if not list_name:
@@ -38,23 +43,25 @@ class Notify(commands.Cog, name="Notification_lists"):
             return await ctx.send(msg)
 
         # Subscribe user and error if failed
-        if not await guild_data.sub_user(list_name, ctx.author.id):
-            msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+        if not await guild_data.sub_user(list_name, user_id):
+            msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(user_id), list_name)
             return await ctx.send(msg)
 
         # Subscription successful, show result to user
-        msg = translate("list_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+        msg = translate("list_subscribed", await culture(ctx)).format(str(user_id), list_name)
         await ctx.send(msg)
 
     @commands.command(name="unsub", aliases=["unsubscribe"], brief="notify_unsub_brief", usage="notify_unsub_usage",
                       help="notify_unsub_help")
-    async def unsubscribe(self, ctx: commands.Context, list_name: str):
+    async def unsubscribe(self, ctx: commands.Context, list_name: str, user_id=None):
         """
         Unsubscribes the user from the provided list
         :param ctx: The current context. (discord.ext.commands.Context)
         :param list_name: The list to unsubscribe from. (str)
         """
-
+        if not user_id:
+            user_id = ctx.author.id
+        
         # make sure list is lowercase
         list_name = list_name.lower()
 
@@ -66,12 +73,12 @@ class Notify(commands.Cog, name="Notification_lists"):
             return await ctx.send(msg)
 
         # Unsubscribe user and error if failed
-        if not await guild_data.unsub_user(list_name, ctx.author.id):
-            msg = translate("list_err_not_subscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+        if not await guild_data.unsub_user(list_name, user_id):
+            msg = translate("list_err_not_subscribed", await culture(ctx)).format(str(user_id), list_name)
             return await ctx.send(msg)
 
         # Unsubscribe successful, show result to user
-        msg = translate("list_unsubscribed", await culture(ctx)).format(str(ctx.author.id), list_name)
+        msg = translate("list_unsubscribed", await culture(ctx)).format(str(user_id), list_name)
         await ctx.send(msg)
 
     @commands.command(name="notify", usage="notify_notify_usage", brief="notify_notify_brief", help="notify_notify_help")
@@ -93,11 +100,17 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         # Fetch users to notify
         users = guild_data.get_users_list(list_name)
+        emoji,is_custom_emoji = guild_data.get_emoji(list_name)
+        if is_custom_emoji:
+            emoji = get_custom_emoji(ctx, int(emoji))
 
         # Error if no users were found
         if len(users) < 1:
             msg = translate("list_err_empty", await culture(ctx))
             return await ctx.send(msg)
+
+        # Setup the announcement with the subject and caller
+        message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
 
         # build users mentioning string
         user_tags = []
@@ -106,15 +119,26 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         users_str = ', '.join(user_tags)
 
-        # Setup the announcement with the subject and caller
-        message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
+        embed = discord.Embed(
+                    title=emoji + "\t" + list_name.capitalize() + "\t" + emoji,
+                    description=message_text,
+                    color=0x0a5bf3,
+                )
 
         # append the message if provided
         if message:
-            second_line = translate("notify_message", await culture(ctx)).format(message) + '\n'
-            message_text += second_line
+            # If message too long, tell user to write shorter message
+            excess = -1024 + len(message)
+            if excess > 0:
+                msg = translate("notif_too_long", await culture(ctx)).format(excess)
+                return await ctx.send(msg)
+            embed.add_field(
+                    name=translate("message", await culture(ctx)),
+                    value=message
+            )
 
-        await ctx.send(message_text + '\n' + users_str)
+        await ctx.channel.send(embed=embed)
+        await ctx.send(users_str)
 
     async def wait_for_added_reactions(self, ctx: commands.Context, msg_id: int, guild_data: GuildData,
                                        timeout: int = 300):
@@ -131,7 +155,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_add",
                     check=lambda emoji, author: emoji.message.id == msg_id and not author.bot,
-                    timeout=30.0,
+                    timeout=timeout,
                 )
 
                 if reaction.custom_emoji:
@@ -142,7 +166,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 for key, v in guild_data.notification_lists.items():
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.subscribe(ctx, list_name)
+                        await self.subscribe(ctx, list_name,user.id)
 
             except asyncio.TimeoutError:
                 pass
@@ -165,7 +189,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_remove",
                     check=lambda emoji, author: emoji.message.id == msg_id and not author.bot,
-                    timeout=30.0,
+                    timeout=timeout,
                 )
                 if reaction.custom_emoji:
                     reaction_emoji = str(reaction.emoji.id)
@@ -175,7 +199,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.unsubscribe(ctx, list_name)
+                        await self.unsubscribe(ctx, list_name,user.id)
 
             except asyncio.TimeoutError:
                 pass
@@ -197,40 +221,61 @@ class Notify(commands.Cog, name="Notification_lists"):
             msg = translate("no_existing_lists", await culture(ctx))
             return await ctx.send(msg)
 
-        # Init text with title
-        text = translate("lists", await culture(ctx))
+        # Check list count (max 20 per message)
+        # TODO: maybe make this configurable in case it changes?
+        max_per_page = 20
+        page_count = math.ceil(len(guild_data.notification_lists)/max_per_page)
+        sorted_lists = sorted(guild_data.notification_lists.items())
 
-        # Loop and append all lists
-        for list_name, list_data in sorted(guild_data.notification_lists.items()):
-            if list_data["is_custom_emoji"]:
-                text += get_custom_emoji(ctx, int(list_data["emoji"]))
-            else:
-                text += list_data["emoji"]
+        messages = []
+        for page in range(1, page_count+1):
+            # Init text with title
+            text = translate("lists", await culture(ctx))
 
-            text += " - " + list_name + "\n"
+            if page_count > 1:
+                text += " " + translate("lists_page_count", await culture(ctx)).format(page, page_count)
 
-        # Send lists to context
-        msg = await ctx.send(text)
+            text += ":\n"
 
-        # Add reactions
-        for list_data in guild_data.notification_lists.values():
-            await msg.add_reaction(
-                list_data["emoji"] if not list_data["is_custom_emoji"] else ctx.bot.get_emoji(int(list_data["emoji"])))
+            # Loop and append all lists
+            first_index = (page-1)*max_per_page
+            last_index = (page*max_per_page)
+
+            for list_name, list_data in sorted_lists[first_index:last_index]:
+                if list_data["is_custom_emoji"]:
+                    text += get_custom_emoji(ctx, int(list_data["emoji"]))
+                else:
+                    text += list_data["emoji"]
+
+                text += " - " + list_name + "\n"
+
+            # Send lists to context
+            msg = await ctx.send(text)
+            messages.append(msg)
+
+            # Add reactions
+            for _, list_data in sorted_lists[first_index:last_index]:
+                await msg.add_reaction(
+                    list_data["emoji"] if not list_data["is_custom_emoji"] else ctx.bot.get_emoji(int(list_data["emoji"])))
 
         # Setup listeners
         # TODO make reaction time configurable
-        timeout = 60 * 5  # 5 minutes
-        reaction_added_task = asyncio.create_task(
-            self.wait_for_added_reactions(ctx, msg.id, guild_data, timeout))
-        reaction_removed_task = asyncio.create_task(
-            self.wait_for_removed_reactions(ctx, msg.id, guild_data, timeout))
+        timeout = 60*5  # 5 minutes
+        reaction_tasks = []
+        for message in messages:
+            reaction_added_task = asyncio.create_task(
+                self.wait_for_added_reactions(ctx, message.id, guild_data, timeout))
+            reaction_tasks.append(reaction_added_task)
+            reaction_removed_task = asyncio.create_task(
+                self.wait_for_removed_reactions(ctx, message.id, guild_data, timeout))
+            reaction_tasks.append(reaction_removed_task)
 
         # Listen for reactions
-        await reaction_added_task
-        await reaction_removed_task
+        await asyncio.gather(*reaction_tasks, return_exceptions=True)
 
-        # Delete message
-        await msg.delete()
+        # Delete messages
+        for message in messages:
+            await message.delete()
 
     @commands.command(name="my_lists", help="notify_my_lists_help")
     async def my_lists(self, ctx: commands.Context):
@@ -299,8 +344,8 @@ class Notify(commands.Cog, name="Notification_lists"):
             # Process emoji
             if reaction.custom_emoji:
                 try:
-                    reaction_emoji = reaction.emoji.id
-                    emoji_to_print = get_custom_emoji(ctx, reaction_emoji)
+                    reaction_emoji = str(reaction.emoji.id)
+                    emoji_to_print = get_custom_emoji(ctx, int(reaction_emoji))
                     custom_emoji = True
                 except AttributeError:
                     msg = translate("unknown_emoji", await culture(ctx))

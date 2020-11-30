@@ -188,6 +188,14 @@ class Settings(commands.Cog):
         :param ctx: The current context. (discord.ext.commands.Context)
         """
 
+        # Get guild data
+        guild_data = await get_guild_data(ctx.guild.id)
+
+        # Error if not admin
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", await culture(ctx))
+            return await ctx.send(gif)
+
         # Get current language
         current_culture = await culture(ctx)
 
@@ -218,7 +226,6 @@ class Settings(commands.Cog):
 
             # Update language if found
             if new_language:
-                guild_data = await get_guild_data(ctx.guild.id)
                 await guild_data.update_language(new_language)
                 await confirmation_ref.delete()
                 msg = translate("picked_new_language", new_language).format(translate(new_language, new_language))
