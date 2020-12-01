@@ -6,9 +6,9 @@ from Helpers.log import info, fatal
 import os
 
 from Commands.GuildData import update_youtube_channel_video_id
+from Helpers.constants import SCHEDULER_INTERVAL
 
-# TODO make interval configurable
-@tasks.loop(minutes=10.0)
+@tasks.loop(minutes=SCHEDULER_INTERVAL)
 async def check_and_post_latest_videos(bot):
     print("check_and_post_latest_videos")
     guilds_data = await get_all_guilds_data()
