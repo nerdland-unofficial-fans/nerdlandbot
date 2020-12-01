@@ -15,7 +15,7 @@ class Kerk(commands.Cog, name="kerk"):
     @commands.command(name="16ukerk", hidden=True)
     async def cmd_kerk16(self, ctx: commands.Context, mention:typing.Optional[str] = None, *, message:typing.Optional[str] = None):
         #check if message in lounge
-        if ctx.channel.name == ("testbot"):
+        if ctx.channel.name == ("lounge"):
             #check if user mentioned  
             if mention and mention[:2] == "<@":
                 #set a task to check if it's 16:00 and posts message
