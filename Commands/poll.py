@@ -97,9 +97,13 @@ class Poll(commands.Cog, name="poll"):
         #TODO: replace with an embed
         txt = "The results of the Poll are:\n\n"
         for reaction in reactions_sorted:
-            option_str = options_dict[reaction[0]].strip()
-            count = reaction[1] - 1
-            txt += "{} - {} votes\n".format(option_str,count)
+            try:
+                option_str = options_dict[reaction[0]].strip()
+                count = reaction[1] - 1
+                txt += "{} - {} votes\n".format(option_str,count)
+                pass
+            except:
+                pass
 
         # send message with results
         await ctx.send(txt)
