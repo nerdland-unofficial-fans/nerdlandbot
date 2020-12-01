@@ -3,6 +3,7 @@ import discord
 import random
 
 from discord.ext import commands
+from Helpers.constants import WOMBATS_DIR_NAME
 
 class Wombat(commands.Cog, name="Wombat"):
 
@@ -13,7 +14,7 @@ class Wombat(commands.Cog, name="Wombat"):
     async def cmd_wombat_pic(self, ctx):
 
         parent_dir = os.path.join(os.path.dirname(__file__), os.pardir)
-        wombats_dir = os.path.join(parent_dir, "wombats")
+        wombats_dir = os.path.join(parent_dir, WOMBATS_DIR_NAME)
 
         wombat_list = [os.path.join(wombats_dir, w) for w in os.listdir(wombats_dir)]
 
