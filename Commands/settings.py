@@ -2,6 +2,7 @@ import asyncio
 
 from discord.ext import commands
 
+from Helpers.constants import INTERACT_TIMEOUT
 from Helpers.TranslationHelper import get_culture_from_context as culture
 from Helpers.emoji import thumbs_up, thumbs_down, flags
 from Translations.Translations import get_text as translate
@@ -97,7 +98,7 @@ class Settings(commands.Cog):
                 reaction, user = await ctx.bot.wait_for(
                     "reaction_add",
                     check=lambda new_reaction, author: new_reaction.message.id == confirmation_ref.id and author == ctx.message.author,
-                    timeout=30.0,
+                    timeout=INTERACT_TIMEOUT,
                 )
 
                 # Process thumbs up
@@ -133,7 +134,7 @@ class Settings(commands.Cog):
             reaction, user = await ctx.bot.wait_for(
                 "reaction_add",
                 check=lambda new_reaction, author: new_reaction.message.id == confirmation_ref.id and author == ctx.message.author,
-                timeout=30.0,
+                timeout=INTERACT_TIMEOUT,
             )
 
             # Process thumbs up
@@ -214,7 +215,7 @@ class Settings(commands.Cog):
             reaction, user = await ctx.bot.wait_for(
                 "reaction_add",
                 check=lambda new_reaction, author: new_reaction.message.id == confirmation_ref.id and author == ctx.message.author,
-                timeout=30.0,
+                timeout=INTERACT_TIMEOUT,
             )
 
             # Parse reaction
