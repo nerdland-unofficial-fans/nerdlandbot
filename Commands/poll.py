@@ -17,7 +17,7 @@ class Poll(commands.Cog, name="Simple Poll"):
     @commands.command(name="poll", brief="poll_brief", usage="poll_usage", help="poll_help")
     async def poll(self, ctx: commands.Context, *, input_str: str):
         """
-        Create a poll with either yes or no asn an answer of self submitted options.
+        Create a poll with either yes or no as an answer or self submitted options.
         Poll will be open for an amount of time determined by the user.
 
         Syntax: question (multiple words) timeout (numerals) <options> (words split by ;)
@@ -38,19 +38,21 @@ class Poll(commands.Cog, name="Simple Poll"):
         numbers_and_options = input_split[1].strip()
         
         # parse timeout
-        numbers = [int(s) for s in numbers_and_options.split() if s.isdigit()]
-        if len(numbers) < 1:
+        first_word = numbers_and_options.split()[0]
+        if not first_word.isdigit():
             await ctx.send(translate("poll_no_timeout", await culture(ctx)))
             return
-        timeout_s = int(numbers[0]) * 60
+        
+        timeout_s = int(first_word)*60
+        
         if timeout_s > POLL_MAX_TIMEOUT:
             await ctx.send(translate("poll_max_timeout", await culture(ctx)))
             return
 
         # parse options
-        options = numbers_and_options.split(str(numbers[0]),1)[1].strip()
+        options = numbers_and_options.split(first_word,1)[1].strip()
         if len(options) > 0:
-            options = options.split(';')
+            options_list = options.split(';')
             is_yes_no = False
         else:
             is_yes_no = True
@@ -66,7 +68,7 @@ class Poll(commands.Cog, name="Simple Poll"):
             options_dict[no] = translate("no", await culture(ctx))
         else:
             i = 1
-            for option in options:
+            for option in options_list:
                 txt += "{} - {}\n".format(number_emojis[i],option)
                 options_dict[number_emojis[i]] = option
                 i += 1
@@ -79,7 +81,7 @@ class Poll(commands.Cog, name="Simple Poll"):
             await msg.add_reaction(no)
         else:
             i = 1
-            for option in options:
+            for option in options_list:
                 await msg.add_reaction(number_emojis[i])
                 i += 1
 
@@ -103,7 +105,6 @@ class Poll(commands.Cog, name="Simple Poll"):
                 option_str = options_dict[reaction[0]].strip()
                 count = reaction[1] - 1
                 txt += translate("poll_votes", await culture(ctx)).format(option_str,count)
-                pass
             except:
                 pass
 
