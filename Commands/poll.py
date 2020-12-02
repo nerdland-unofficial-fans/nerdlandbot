@@ -8,6 +8,7 @@ from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
 from Helpers.TranslationHelper import get_culture_from_context as get_culture_from_context
 from Helpers.emoji import number_emojis, yes, no, drum
+from Helpers.constants import POLL_MAX_TIMEOUT
 
 class Poll(commands.Cog, name="Simple Poll"):
     def __init__(self, bot: commands.Bot):
@@ -42,7 +43,7 @@ class Poll(commands.Cog, name="Simple Poll"):
             await ctx.send(translate("poll_no_timeout", await culture(ctx)))
             return
         timeout_s = int(numbers[0]) * 60
-        if timeout_s > 3600:
+        if timeout_s > POLL_MAX_TIMEOUT:
             await ctx.send(translate("poll_max_timeout", await culture(ctx)))
             return
 
@@ -50,11 +51,9 @@ class Poll(commands.Cog, name="Simple Poll"):
         options = numbers_and_options.split(str(numbers[0]),1)[1].strip()
         if len(options) > 0:
             options = options.split(';')
-            no_options = len(options)
             is_yes_no = False
         else:
             is_yes_no = True
-            no_options = 2
         
         # create message to send to channel
         txt = translate("poll_start", await culture(ctx)).format(poller_id,question)
@@ -73,6 +72,8 @@ class Poll(commands.Cog, name="Simple Poll"):
                 i += 1
         
         msg = await ctx.send(txt)
+
+        # add reactions to message
         if is_yes_no:
             await msg.add_reaction(yes)
             await msg.add_reaction(no)
@@ -85,7 +86,7 @@ class Poll(commands.Cog, name="Simple Poll"):
         # wait until timeout
         await asyncio.sleep(timeout_s)
 
-        #refresh message
+        # refresh message
         msg = await ctx.fetch_message(msg.id)
         
         # get the reactions
@@ -95,7 +96,7 @@ class Poll(commands.Cog, name="Simple Poll"):
             reactions_dict[reaction.emoji] = reaction.count
         reactions_sorted = sorted(reactions_dict.items(), key=lambda x: x[1], reverse=True)
 
-        #TODO: replace with an embed
+        # send poll results
         txt = translate("poll_results", await culture(ctx)).format(drum,poller_id,question)
         for reaction in reactions_sorted:
             try:
