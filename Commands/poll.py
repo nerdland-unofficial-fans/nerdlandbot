@@ -7,9 +7,9 @@ from discord.ext import commands
 from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
 from Helpers.TranslationHelper import get_culture_from_context as get_culture_from_context
-from Helpers.emoji import number_emojis, yes, no
+from Helpers.emoji import number_emojis, yes, no, drum
 
-class Poll(commands.Cog, name="poll"):
+class Poll(commands.Cog, name="Simple Poll"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
     
@@ -96,7 +96,7 @@ class Poll(commands.Cog, name="poll"):
         reactions_sorted = sorted(reactions_dict.items(), key=lambda x: x[1], reverse=True)
 
         #TODO: replace with an embed
-        txt = translate("poll_results", await culture(ctx)).format(poller_id,question)
+        txt = translate("poll_results", await culture(ctx)).format(drum,poller_id,question)
         for reaction in reactions_sorted:
             try:
                 option_str = options_dict[reaction[0]].strip()

@@ -4,6 +4,7 @@ thumbs_up = "👍"
 thumbs_down = "👎"
 yes = "✅"
 no = "❌"
+drum = "🥁"
 
 flags = {
     "nl": "🇳🇱",
