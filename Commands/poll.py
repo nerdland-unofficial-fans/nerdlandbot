@@ -5,6 +5,7 @@ import time
 
 from discord.ext import commands
 from Translations.Translations import get_text as translate
+from Helpers.TranslationHelper import get_culture_from_context as culture
 from Helpers.TranslationHelper import get_culture_from_context as get_culture_from_context
 from Helpers.emoji import number_emojis, yes, no
 
@@ -28,7 +29,7 @@ class Poll(commands.Cog, name="poll"):
 
         #check if there is a question
         if '?' not in input_str:
-            await ctx.send("No Questionmark in your input, sorry")
+            await ctx.send(translate("poll_no_questionmark", await culture(ctx)))
             return
 
         input_split = input_str.split('?',1)
@@ -38,11 +39,11 @@ class Poll(commands.Cog, name="poll"):
         # parse timeout
         numbers = [int(s) for s in numbers_and_options.split() if s.isdigit()]
         if len(numbers) < 1:
-            await ctx.send("No timeout provided")
+            await ctx.send(translate("poll_no_timeout", await culture(ctx)))
             return
-        timeout_s = int(numbers[0]) * 5
+        timeout_s = int(numbers[0]) * 60
         if timeout_s > 3600:
-            await ctx.send("Timeout should not be longer than 60 minutes")
+            await ctx.send(translate("poll_max_timeout", await culture(ctx)))
             return
 
         # parse options
@@ -56,14 +57,14 @@ class Poll(commands.Cog, name="poll"):
             no_options = 2
         
         # create message to send to channel
-        txt = "<@{}> is starting a poll with the following question:\n\n**{}?**\n".format(poller_id,question)
+        txt = translate("poll_start", await culture(ctx)).format(poller_id,question)
 
         # add options to message
         options_dict = dict()
         if is_yes_no:
-            txt += "{} - Yes\n{} - No".format(yes,no)
-            options_dict[yes] = "Yes"
-            options_dict[no] = "No"
+            txt += translate("poll_yes_no", await culture(ctx)).format(yes,no)
+            options_dict[yes] = translate("yes", await culture(ctx))
+            options_dict[no] = translate("no", await culture(ctx))
         else:
             i = 1
             for option in options:
@@ -95,12 +96,12 @@ class Poll(commands.Cog, name="poll"):
         reactions_sorted = sorted(reactions_dict.items(), key=lambda x: x[1], reverse=True)
 
         #TODO: replace with an embed
-        txt = "The results of the Poll are:\n\n"
+        txt = translate("poll_results", await culture(ctx)).format(poller_id,question)
         for reaction in reactions_sorted:
             try:
                 option_str = options_dict[reaction[0]].strip()
                 count = reaction[1] - 1
-                txt += "{} - {} votes\n".format(option_str,count)
+                txt += translate("poll_votes", await culture(ctx)).format(option_str,count)
                 pass
             except:
                 pass
