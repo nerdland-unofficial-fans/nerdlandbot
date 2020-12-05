@@ -48,6 +48,7 @@ bot.load_extension("Commands.membercount")
 bot.load_extension("Commands.random_user")
 bot.load_extension("Commands.wombat")
 bot.load_extension("Commands.youtube")
+bot.load_extension("Commands.poll")
 
 # Initialize and start YouTube scheduler
 YOUTUBE_TOKEN = os.getenv("YOUTUBE_TOKEN")

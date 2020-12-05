@@ -12,3 +12,6 @@ INTERACT_TIMEOUT = 30 #seconds
 WOMBATS_DIR_NAME = "wombats"
 
 SCHEDULER_INTERVAL = 10.0 #minutes
+
+POLL_MAX_TIMEOUT = 60 #minutes
+POLL_DEFAULT_TIMEOUT = 5 #minutes
