@@ -8,7 +8,7 @@ from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
 from Helpers.TranslationHelper import get_culture_from_context as get_culture_from_context
 from Helpers.emoji import number_emojis, yes, no, drum
-from Helpers.constants import POLL_MAX_TIMEOUT
+from Helpers.constants import POLL_MAX_TIMEOUT, POLL_DEFAULT_TIMEOUT
 
 class Poll(commands.Cog, name="Simple Poll"):
     def __init__(self, bot: commands.Bot):
@@ -40,14 +40,14 @@ class Poll(commands.Cog, name="Simple Poll"):
         # parse timeout
         first_word = numbers_and_options.split()[0]
         if not first_word.isdigit():
-            await ctx.send(translate("poll_no_timeout", await culture(ctx)))
-            return
+            await ctx.send(translate("poll_no_timeout", await culture(ctx)).format(POLL_DEFAULT_TIMEOUT))
+            timeout_s = POLL_DEFAULT_TIMEOUT * 60
+        else:
+            timeout_s = int(first_word) * 60
         
-        timeout_s = int(first_word)*60
-        
-        if timeout_s > POLL_MAX_TIMEOUT:
-            await ctx.send(translate("poll_max_timeout", await culture(ctx)))
-            return
+        if timeout_s > POLL_MAX_TIMEOUT * 60:
+            await ctx.send(translate("poll_max_timeout", await culture(ctx)).format(POLL_MAX_TIMEOUT))
+            timeout_s = POLL_MAX_TIMEOUT * 60
 
         # parse options
         options = numbers_and_options.split(first_word,1)[1].strip()
