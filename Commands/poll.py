@@ -37,25 +37,30 @@ class Poll(commands.Cog, name="Simple Poll"):
         question = input_split[0]
         numbers_and_options = input_split[1].strip()
         
-        # parse timeout
-        first_word = numbers_and_options.split()[0]
-        if not first_word.isdigit():
-            await ctx.send(translate("poll_no_timeout", await culture(ctx)).format(POLL_DEFAULT_TIMEOUT))
-            timeout_s = POLL_DEFAULT_TIMEOUT * 60
-        else:
-            timeout_s = int(first_word) * 60
-        
-        if timeout_s > POLL_MAX_TIMEOUT * 60:
-            await ctx.send(translate("poll_max_timeout", await culture(ctx)).format(POLL_MAX_TIMEOUT))
-            timeout_s = POLL_MAX_TIMEOUT * 60
+        # parse timeout and options
+        if len(numbers_and_options) > 0:
+            first_word = numbers_and_options.split()[0]
+            if not first_word.isdigit():
+                await ctx.send(translate("poll_no_timeout", await culture(ctx)).format(POLL_DEFAULT_TIMEOUT))
+                timeout_s = POLL_DEFAULT_TIMEOUT * 60
+            else:
+                timeout_s = int(first_word) * 60
+            
+            if timeout_s > POLL_MAX_TIMEOUT * 60:
+                await ctx.send(translate("poll_max_timeout", await culture(ctx)).format(POLL_MAX_TIMEOUT))
+                timeout_s = POLL_MAX_TIMEOUT * 60
 
-        # parse options
-        options = numbers_and_options.split(first_word,1)[1].strip()
-        if len(options) > 0:
-            options_list = options.split(';')
-            is_yes_no = False
+            # parse options
+            options = numbers_and_options.split(first_word,1)[1].strip()
+            if len(options) > 0:
+                options_list = options.split(';')
+                is_yes_no = False
+            else:
+                is_yes_no = True
         else:
             is_yes_no = True
+            await ctx.send(translate("poll_no_timeout", await culture(ctx)).format(POLL_DEFAULT_TIMEOUT))
+            timeout_s = POLL_DEFAULT_TIMEOUT * 60
         
         # create message to send to channel
         txt = translate("poll_start", await culture(ctx)).format(poller_id,question)
@@ -105,7 +110,7 @@ class Poll(commands.Cog, name="Simple Poll"):
                 option_str = options_dict[reaction[0]].strip()
                 count = reaction[1] - 1
                 txt += translate("poll_votes", await culture(ctx)).format(option_str,count)
-            except:
+            except KeyError:
                 pass
 
         # send message with results
