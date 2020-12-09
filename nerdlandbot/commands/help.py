@@ -1,8 +1,9 @@
-from discord.ext import commands
-from Translations.Translations import get_text as translate
-from Helpers.TranslationHelper import get_culture_from_context as culture
-
 import discord
+
+from discord.ext import commands
+
+from nerdlandbot.translations.Translations import get_text as translate
+from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 
 empty = '\u200b'
 

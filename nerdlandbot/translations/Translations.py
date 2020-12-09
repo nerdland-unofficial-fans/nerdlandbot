@@ -23,7 +23,7 @@ def get_text(translation_key: str, language: str) -> str:
 
 
 # Read csv
-translations_dataframe = pandas.read_csv("Translations/Translations.csv")
+translations_dataframe = pandas.read_csv("nerdlandbot/translations/Translations.csv")
 
 # Remove artificial index
 translations_dataframe = translations_dataframe.set_index('Key', drop=True)

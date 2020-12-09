@@ -1,9 +1,9 @@
 import random
 import discord
 from discord.ext import commands
-from Translations.Translations import get_text as translate
-from Helpers.TranslationHelper import get_culture_from_context as culture
-from Helpers.parser import parse_channel
+from nerdlandbot.translations.Translations import get_text as translate
+from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
+from nerdlandbot.helpers.parser import parse_channel
 
 
 def pick_random_online_member(ctx: commands.Context) -> discord.Member:

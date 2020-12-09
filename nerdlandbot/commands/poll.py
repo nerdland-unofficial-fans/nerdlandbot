@@ -4,16 +4,16 @@ import asyncio
 import time
 
 from discord.ext import commands
-from Translations.Translations import get_text as translate
-from Helpers.TranslationHelper import get_culture_from_context as culture
-from Helpers.TranslationHelper import get_culture_from_context as get_culture_from_context
-from Helpers.emoji import number_emojis, yes, no, drum
-from Helpers.constants import POLL_MAX_TIMEOUT, POLL_DEFAULT_TIMEOUT
+from nerdlandbot.translations.Translations import get_text as translate
+from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
+from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as get_culture_from_context
+from nerdlandbot.helpers.emoji import number_emojis, yes, no, drum
+from nerdlandbot.helpers.constants import POLL_MAX_TIMEOUT, POLL_DEFAULT_TIMEOUT
 
 class Poll(commands.Cog, name="Simple Poll"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-    
+
     @commands.command(name="poll", brief="poll_brief", usage="poll_usage", help="poll_help")
     async def poll(self, ctx: commands.Context, *, input_str: str):
         """
@@ -36,7 +36,7 @@ class Poll(commands.Cog, name="Simple Poll"):
         input_split = input_str.split('?',1)
         question = input_split[0]
         numbers_and_options = input_split[1].strip()
-        
+
         # parse timeout and options
         if len(numbers_and_options) > 0:
             first_word = numbers_and_options.split()[0]
@@ -45,7 +45,7 @@ class Poll(commands.Cog, name="Simple Poll"):
                 timeout_s = POLL_DEFAULT_TIMEOUT * 60
             else:
                 timeout_s = int(first_word) * 60
-            
+
             if timeout_s > POLL_MAX_TIMEOUT * 60:
                 await ctx.send(translate("poll_max_timeout", await culture(ctx)).format(POLL_MAX_TIMEOUT))
                 timeout_s = POLL_MAX_TIMEOUT * 60
@@ -61,7 +61,7 @@ class Poll(commands.Cog, name="Simple Poll"):
             is_yes_no = True
             await ctx.send(translate("poll_no_timeout", await culture(ctx)).format(POLL_DEFAULT_TIMEOUT))
             timeout_s = POLL_DEFAULT_TIMEOUT * 60
-        
+
         # create message to send to channel
         txt = translate("poll_start", await culture(ctx)).format(poller_id,question)
 
@@ -77,7 +77,7 @@ class Poll(commands.Cog, name="Simple Poll"):
                 txt += "{} - {}\n".format(number_emojis[i],option)
                 options_dict[number_emojis[i]] = option
                 i += 1
-        
+
         msg = await ctx.send(txt)
 
         # add reactions to message
@@ -95,7 +95,7 @@ class Poll(commands.Cog, name="Simple Poll"):
 
         # refresh message
         msg = await ctx.fetch_message(msg.id)
-        
+
         # get the reactions
         reactions = msg.reactions
         reactions_dict = dict()

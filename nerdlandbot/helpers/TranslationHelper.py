@@ -1,5 +1,6 @@
 from discord.ext import commands
-from Commands.GuildData import get_guild_data
+
+from nerdlandbot.commands.GuildData import get_guild_data
 
 
 async def get_culture_from_context(ctx: commands.Context) -> str:

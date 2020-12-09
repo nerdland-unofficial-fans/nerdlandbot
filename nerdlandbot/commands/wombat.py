@@ -3,7 +3,7 @@ import discord
 import random
 
 from discord.ext import commands
-from Helpers.constants import WOMBATS_DIR_NAME
+from nerdlandbot.helpers.constants import WOMBATS_DIR_NAME
 
 class Wombat(commands.Cog, name="Wombat"):
 

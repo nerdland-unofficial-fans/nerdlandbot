@@ -5,11 +5,12 @@ import typing
 import discord
 
 from discord.ext import commands
-from .GuildData import get_guild_data, GuildData
-from Translations.Translations import get_text as translate
-from Helpers.TranslationHelper import get_culture_from_context as culture
-from Helpers.emoji import get_custom_emoji, thumbs_up, thumbs_down
-from Helpers.constants import *
+
+from nerdlandbot.commands.GuildData import get_guild_data, GuildData
+from nerdlandbot.translations.Translations import get_text as translate
+from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
+from nerdlandbot.helpers.emoji import get_custom_emoji, thumbs_up, thumbs_down
+from nerdlandbot.helpers.constants import *
 
 class Notify(commands.Cog, name="Notification_lists"):
     def __init__(self, bot: commands.Bot):
@@ -61,7 +62,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         """
         if not user_id:
             user_id = ctx.author.id
-        
+
         # make sure list is lowercase
         list_name = list_name.lower()
 

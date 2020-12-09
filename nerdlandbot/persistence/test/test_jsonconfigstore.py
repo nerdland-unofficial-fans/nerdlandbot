@@ -1,8 +1,7 @@
 import os
-
 import pytest
 
-from Persistence.json.jsonconfigstore import JsonConfigStore
+from nerdlandbot.persistence.json.jsonconfigstore import JsonConfigStore
 
 JSON = 'test_config.json'
 DATA = {'key': 'value'}

@@ -1,7 +1,10 @@
 import discord
+
 from discord.ext import commands
-from Translations.Translations import get_text as translate
-from Commands.GuildData import get_guild_data
+
+from nerdlandbot.translations.Translations import get_text as translate
+from nerdlandbot.commands.GuildData import get_guild_data
+
 notification_channel_name = 'botplayground'
 member_notification_trigger = 100
 

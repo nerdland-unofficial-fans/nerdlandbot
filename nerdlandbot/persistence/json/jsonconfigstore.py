@@ -2,7 +2,7 @@ import json
 import os
 from abc import ABC
 
-from Persistence.abstractconfigstore import ConfigStore
+from nerdlandbot.persistence.abstractconfigstore import ConfigStore
 
 
 class JsonConfigStore(ConfigStore, ABC):

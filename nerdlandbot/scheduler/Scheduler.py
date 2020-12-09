@@ -1,12 +1,13 @@
-from discord.ext import tasks
+import os
 import discord
 import requests
-from Commands.GuildData import get_all_guilds_data, GuildData
-from Helpers.log import info, fatal
-import os
 
-from Commands.GuildData import update_youtube_channel_video_id
-from Helpers.constants import SCHEDULER_INTERVAL
+from discord.ext import tasks
+
+from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData, update_youtube_channel_video_id
+from nerdlandbot.helpers.constants import SCHEDULER_INTERVAL
+from nerdlandbot.helpers.log import info, fatal
+
 
 @tasks.loop(minutes=SCHEDULER_INTERVAL)
 async def check_and_post_latest_videos(bot):
@@ -18,7 +19,7 @@ async def check_and_post_latest_videos(bot):
             latest_video = await get_latest_video(channel_id)
             if latest_video["video_id"] != channel_data["latest_video_id"]:
                 await update_youtube_channel_video_id(guild_data.guild_id, channel_id, latest_video["video_id"])
-                msg = latest_video['link']  
+                msg = latest_video['link']
                 await channel.send(msg)
 
 async def get_latest_video(youtube_channel_id: str):

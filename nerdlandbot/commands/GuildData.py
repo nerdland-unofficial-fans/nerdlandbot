@@ -1,11 +1,10 @@
 import json
+
 from os import path, listdir
-import typing
-
+from typing import List, Optional
 from discord import Member
-from typing import List
 
-_configFolder = "./GuildConfigs/"
+_configFolder = "guildconfigs/"
 _guildConfigCache = dict()
 
 
@@ -165,7 +164,7 @@ class GuildData:
         self,
         youtube_channel_id: str,
         text_channel: str,
-        latest_video_id: typing.Optional[str] = None,
+        latest_video_id: Optional[str] = None,
     ) -> bool:
         """
         Adds a youtube channel if not already there.
@@ -203,7 +202,7 @@ class GuildData:
         else:
             # youtube channel does not exist in list, return False
             return False
-    
+
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
     """
     Sets the video ID of a channel. This is needed so that only a notification is posted

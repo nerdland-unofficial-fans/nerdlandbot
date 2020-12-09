@@ -1,4 +1,4 @@
-from Persistence.abstractconfigstore import ConfigStore
+from nerdlandbot.persistence.abstractconfigstore import ConfigStore
 
 
 class Configuration:

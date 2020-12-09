@@ -2,11 +2,11 @@ import asyncio
 
 from discord.ext import commands
 
-from Helpers.constants import INTERACT_TIMEOUT
-from Helpers.TranslationHelper import get_culture_from_context as culture
-from Helpers.emoji import thumbs_up, thumbs_down, flags
-from Translations.Translations import get_text as translate
-from .GuildData import get_guild_data
+from nerdlandbot.helpers.constants import INTERACT_TIMEOUT
+from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
+from nerdlandbot.helpers.emoji import thumbs_up, thumbs_down, flags
+from nerdlandbot.translations.Translations import get_text as translate
+from nerdlandbot.commands.GuildData import get_guild_data
 
 
 class Settings(commands.Cog):

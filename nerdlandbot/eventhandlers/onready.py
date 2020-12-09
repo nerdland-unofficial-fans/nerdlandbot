@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from Helpers.log import info
+from nerdlandbot.helpers.log import info
 
 
 class OnReady(commands.Cog, name="on_ready"):

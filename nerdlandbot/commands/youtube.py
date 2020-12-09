@@ -1,14 +1,15 @@
-from discord.ext import commands, tasks
-from .GuildData import get_all_guilds_data, get_guild_data, GuildData
-from Helpers.parser import parse_channel
-from Helpers.log import info, fatal
-from Translations.Translations import get_text as translate
-from Helpers.TranslationHelper import get_culture_from_context as culture
 import discord
 import requests
 import os
 
-from Scheduler.Scheduler import get_latest_video
+from discord.ext import commands, tasks
+
+from nerdlandbot.commands.GuildData import get_all_guilds_data, get_guild_data, GuildData
+from nerdlandbot.helpers.parser import parse_channel
+from nerdlandbot.helpers.log import info, fatal
+from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
+from nerdlandbot.scheduler.Scheduler import get_latest_video
+from nerdlandbot.translations.Translations import get_text as translate
 
 
 class Youtube(commands.Cog, name="Youtube_lists"):
@@ -45,12 +46,12 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         channel = ctx.bot.get_channel(int(text_channel))
         if not channel:
             channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
-        
+
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
             raise Exception("Invalid text channel provided")
 
-    
+
         add_response = await guild_data.add_youtube_channel(
             youtube_channel_id, channel, latest_video["video_id"]
         )
