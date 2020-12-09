@@ -4,8 +4,6 @@ ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
     PYTHONUNBUFFERED=1
 
-WORKDIR /app
-
 FROM base as builder
 
 ENV VIRTUAL_ENV=/venv \
@@ -26,5 +24,9 @@ RUN poetry build && pip install dist/*.whl
 
 FROM base as final
 
-COPY --from=builder /venv /venv
-CMD ["python", "nerdlandbot"]
+ENV VIRTUAL_ENV=/venv
+
+COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
+
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+CMD ["python", "-m", "nerdlandbot"]
