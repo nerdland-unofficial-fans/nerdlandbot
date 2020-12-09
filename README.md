@@ -35,7 +35,7 @@ python nerdlandbot
 docker run -itd --restart="unless-stopped" --name nerdlandbot \
  -e PREFIX=<Your prefix here> \
  -e DISCORD_TOKEN=<Your discord token here> \
- -v /bind/mount/path/for/guild/configs:/GuildConfigs \
+ -v <Your bind mount path for guild configs>:/GuildConfigs \
  nerdlandbot
 ```
 
