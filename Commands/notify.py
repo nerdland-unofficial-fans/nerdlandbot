@@ -2,13 +2,14 @@ import math
 import asyncio
 import time
 import typing
+import discord
 
 from discord.ext import commands
 from .GuildData import get_guild_data, GuildData
 from Translations.Translations import get_text as translate
 from Helpers.TranslationHelper import get_culture_from_context as culture
 from Helpers.emoji import get_custom_emoji, thumbs_up, thumbs_down
-
+from Helpers.constants import *
 
 class Notify(commands.Cog, name="Notification_lists"):
     def __init__(self, bot: commands.Bot):
@@ -99,6 +100,9 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         # Fetch users to notify
         users = guild_data.get_users_list(list_name)
+        emoji,is_custom_emoji = guild_data.get_emoji(list_name)
+        if is_custom_emoji:
+            emoji = get_custom_emoji(ctx, int(emoji))
 
         # Error if no users were found
         if len(users) < 1:
@@ -115,21 +119,29 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         users_str = ', '.join(user_tags)
 
+        embed = discord.Embed(
+                    title=emoji + "\t" + list_name.capitalize() + "\t" + emoji,
+                    description=message_text,
+                    color=NOTIFY_EMBED_COLOR,
+                )
+
         # append the message if provided
         if message:
             # If message too long, tell user to write shorter message
-            excess = -1999 + len(message) + len(message_text)
+            excess = (-1 * NOTIFY_MAX_MSG_LENGTH) + len(message)
             if excess > 0:
                 msg = translate("notif_too_long", await culture(ctx)).format(excess)
                 return await ctx.send(msg)
-            second_line = translate("notify_message", await culture(ctx)).format(message) + '\n'
-            message_text += second_line
+            embed.add_field(
+                    name=translate("message", await culture(ctx)),
+                    value=message
+            )
 
-        await ctx.send(message_text)
+        await ctx.channel.send(embed=embed)
         await ctx.send(users_str)
 
     async def wait_for_added_reactions(self, ctx: commands.Context, msg_id: int, guild_data: GuildData,
-                                       timeout: int = 300):
+                                       timeout: int = REACTION_TIMEOUT):
         """
         Wait for new reactions on the provided message.
         :param ctx: The current context. (discord.ext.commands.Context)
@@ -163,7 +175,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 break
 
     async def wait_for_removed_reactions(self, ctx: commands.Context, msg_id: int, guild_data: GuildData,
-                                         timeout: int = 300):
+                                         timeout: int = REACTION_TIMEOUT):
         """
         Wait for removed reactions on the provided message.
         :param ctx: The current context. (discord.ext.commands.Context)
@@ -209,9 +221,8 @@ class Notify(commands.Cog, name="Notification_lists"):
             msg = translate("no_existing_lists", await culture(ctx))
             return await ctx.send(msg)
 
-        # Check list count (max 20 per message)
-        # TODO: maybe make this configurable in case it changes?
-        max_per_page = 20
+        # Check list count
+        max_per_page = NOTIFY_MAX_PER_PAGE
         page_count = math.ceil(len(guild_data.notification_lists)/max_per_page)
         sorted_lists = sorted(guild_data.notification_lists.items())
 
@@ -246,16 +257,13 @@ class Notify(commands.Cog, name="Notification_lists"):
                 await msg.add_reaction(
                     list_data["emoji"] if not list_data["is_custom_emoji"] else ctx.bot.get_emoji(int(list_data["emoji"])))
 
-        # Setup listeners
-        # TODO make reaction time configurable
-        timeout = 60*5  # 5 minutes
         reaction_tasks = []
         for message in messages:
             reaction_added_task = asyncio.create_task(
-                self.wait_for_added_reactions(ctx, message.id, guild_data, timeout))
+                self.wait_for_added_reactions(ctx, message.id, guild_data))
             reaction_tasks.append(reaction_added_task)
             reaction_removed_task = asyncio.create_task(
-                self.wait_for_removed_reactions(ctx, message.id, guild_data, timeout))
+                self.wait_for_removed_reactions(ctx, message.id, guild_data))
             reaction_tasks.append(reaction_removed_task)
 
         # Listen for reactions
@@ -326,7 +334,7 @@ class Notify(commands.Cog, name="Notification_lists"):
             reaction, user = await ctx.bot.wait_for(
                 "reaction_add",
                 check=lambda emoji, author: emoji.message.id == msg.id and author == ctx.message.author,
-                timeout=30.0,
+                timeout=INTERACT_TIMEOUT,
             )
 
             # Process emoji
@@ -396,7 +404,7 @@ class Notify(commands.Cog, name="Notification_lists"):
             reaction, user = await ctx.bot.wait_for(
                 "reaction_add",
                 check=lambda emoji, author: emoji.message.id == confirmation_ref.id and author == ctx.message.author,
-                timeout=30.0,
+                timeout=INTERACT_TIMEOUT,
             )
 
             # Process emoji
