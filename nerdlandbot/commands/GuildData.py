@@ -1,11 +1,14 @@
 import json
 
-from os import path, listdir
+from os import path, listdir, makedirs
 from typing import List, Optional
 from discord import Member
 
-_configFolder = "guildconfigs/"
+_configFolder = "GuildConfigs"
 _guildConfigCache = dict()
+
+if not path.exists(_configFolder):
+    makedirs(_configFolder)
 
 
 class GuildData:
@@ -291,4 +294,4 @@ def get_config_file_path(guild_id: int) -> str:
     :param guild_id: Guild Id (int)
     :return: filepath (str)
     """
-    return _configFolder + str(guild_id) + ".json"
+    return path.join(_configFolder, str(guild_id) + ".json")
