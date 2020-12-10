@@ -2,7 +2,7 @@
 name = "nerdlandbot"
 version = "0.1.0"
 description = ""
-authors = ["Autom"]
+authors = ["Arno989", "Autom", "Bob van der Vleuten", "Eva Smeets", "flor01", "Sebastiaan Jansen", "Senne De Vocht", "Thunderb1rdOne", "TsjipTsjip", "Wouter Hermans", "Wouter Meuwis"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
