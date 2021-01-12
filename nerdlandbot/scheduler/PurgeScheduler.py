@@ -9,7 +9,7 @@ from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
 from nerdlandbot.helpers.log import info, fatal
 
 # TODO make interval configurable
-@tasks.loop(days=1.0)
+@tasks.loop(hours=24.0)
 async def purge_messages(bot):
     info("Purging messages")
     guilds_data = await get_all_guilds_data()
