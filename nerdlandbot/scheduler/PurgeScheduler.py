@@ -9,13 +9,13 @@ from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
 from nerdlandbot.helpers.log import info, fatal
 
 # TODO make interval configurable
-@tasks.loop(minutes=1.0)
+@tasks.loop(days=1.0)
 async def purge_messages(bot):
     info("Purging messages")
     guilds_data = await get_all_guilds_data()
     for guild_data in guilds_data:
         for text_channel, max_age in guild_data.purgers.items():
-            before = datetime.today() - timedelta(minutes=max_age)
+            before = datetime.today() - timedelta(days=max_age)
             channel = bot.get_channel(int(text_channel))
             try:
                 if channel:

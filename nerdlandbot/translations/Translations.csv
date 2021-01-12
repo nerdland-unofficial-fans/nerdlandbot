@@ -116,3 +116,8 @@
 "poll_brief","Put a poll out for people to vote","Maak een peiling waarin mensen kunnen stemmen"
 "poll_help","Start a poll, with minimal arguments this will be a yes/no poll, if you provide options seperated by semicolons you can add up to 9 options.","Start een peiling, met minimale opties wordt dit een Ja/Nee peiling die <timeout> minuten duurt. Indien je zelf opties meegeeft door puntkomma gescheiden kunnen dat er maximaal 9 zijn."
 "empty_wombat_list","No wombat pictures were found...","Er werden geen foto's van wombats gevonden..."
+"add_purger_usage","",<Channel ID> <Max message age (in days)>","<Kanaal ID> <Max leeftijd bericht (in dagen)>"
+"add_purger_help","**admin-only** \n \u2003 Automatically remove messages older than the configured amount of days in the channel.","**admin-functie** \n \u2003 Verwijder automatisch berichten die ouder zijn dan het opgegeven aantal dagen in het kanaal."
+"remove_purger_usage","<Channel ID>","<Kanaal ID>"
+"remove_purger_help","**admin-only** \n \u2003 Stop the automatic removal of messages in the channel.","**admin-functie** \n \u2003 Stop het automatisch verwijderen van berichten in het kanaal."
+"list_purger_help","List all channels with automatic message removal.","Lijst alle kanalen op waar berichten automatisch worden verwijderd."

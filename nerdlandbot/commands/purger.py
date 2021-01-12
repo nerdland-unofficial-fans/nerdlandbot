@@ -19,7 +19,7 @@ class purger(commands.Cog, name="Purger_lists"):
         Add a channel to be regularly purged.
         :param ctx: The current context. (discord.ext.commands.Context)
         :param text_channel: The text channel that will be purged (str)
-        :param max_age: The max age of messages in minutes (int)
+        :param max_age: The max age of messages in days (int)
         """
         guild_data = await get_guild_data(ctx.message.guild.id)
         # Error if not admin
