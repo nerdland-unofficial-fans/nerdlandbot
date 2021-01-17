@@ -116,7 +116,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         user_tags = ""
         user_messages = []
         for user_id in users:
-            if len(user_tags) + len(str(user_id)) + 3 < DISCORD_MAX_MSG_LENGTH:
+            if len(user_tags) + len(str(user_id)) + 5 < DISCORD_MAX_MSG_LENGTH:
                 user_tags += (f'<@{str(user_id)}>') + ', '
             else:
                 user_messages.append(user_tags)
