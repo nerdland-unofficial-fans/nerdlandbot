@@ -114,14 +114,14 @@ class Notify(commands.Cog, name="Notification_lists"):
         message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
 
         # build users mentioning strings
-        user_tags = ""
+        user_tags = f'<@{str(users[0])}>'
         user_messages = []
-        for user_id in users:
+        for user_id in users[1:]:
             if len(user_tags) + len(str(user_id)) + 5 < DISCORD_MAX_MSG_LENGTH:
-                user_tags += (f'<@{str(user_id)}>') + ', '
+                user_tags += ', ' + (f'<@{str(user_id)}>')
             else:
                 user_messages.append(user_tags)
-                user_tags = (f'<@{str(user_id)}>') + ', '
+                user_tags = (f'<@{str(user_id)}>')
         user_messages.append(user_tags)
 
         embed = discord.Embed(
