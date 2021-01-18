@@ -113,12 +113,16 @@ class Notify(commands.Cog, name="Notification_lists"):
         # Setup the announcement with the subject and caller
         message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
 
-        # build users mentioning string
-        user_tags = []
+        # build users mentioning strings
+        user_tags = ""
+        user_messages = []
         for user_id in users:
-            user_tags.append(f'<@{str(user_id)}>')
-
-        users_str = ', '.join(user_tags)
+            if len(user_tags) + len(str(user_id)) + 5 < DISCORD_MAX_MSG_LENGTH:
+                user_tags += (f'<@{str(user_id)}>') + ', '
+            else:
+                user_messages.append(user_tags)
+                user_tags = (f'<@{str(user_id)}>') + ', '
+        user_messages.append(user_tags)
 
         embed = discord.Embed(
                     title=emoji + "\t" + list_name.capitalize() + "\t" + emoji,
@@ -139,7 +143,8 @@ class Notify(commands.Cog, name="Notification_lists"):
             )
 
         await ctx.channel.send(embed=embed)
-        await ctx.send(users_str)
+        for users_str in user_messages:
+            await ctx.send(users_str)
 
     async def wait_for_added_reactions(self, ctx: commands.Context, msg_id: int, guild_data: GuildData,
                                        timeout: int = REACTION_TIMEOUT):
