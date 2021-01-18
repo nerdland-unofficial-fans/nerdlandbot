@@ -120,7 +120,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 user_tags += ', ' + (f'<@{str(user_id)}>')
             else:
                 user_messages.append(user_tags)
-                user_tags = (f'<@{str(user_id)}>') + ', '
+                user_tags = (f'<@{str(user_id)}>')
         user_messages.append(user_tags)
 
         embed = discord.Embed(
