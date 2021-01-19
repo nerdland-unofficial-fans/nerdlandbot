@@ -27,16 +27,12 @@ python nerdlandbot
 
 # Running this bot with docker
 
-- clone this repo
-- change directory to the new folder
-- run `docker build -t nerdlandbot:latest .`
-- run this command (with filled in variables):
 ```
 docker run -itd --restart="unless-stopped" --name nerdlandbot \
  -e PREFIX=<Your prefix here> \
  -e DISCORD_TOKEN=<Your discord token here> \
  -v <Your bind mount path for guild configs>:/GuildConfigs \
- nerdlandbot
+ nerdlandfansunofficial/nerdlandbot:latest
 ```
 
 # Links
