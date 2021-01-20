@@ -101,11 +101,10 @@ class purger(commands.Cog, name="Purger_lists"):
         msg = translate("purger_list_title", await culture(ctx))
 
         for text_channel, max_age in guild_data.purgers.items():
-            # TODO translate
             msg = (
                 msg
                 + "\n"
-                + translate("purget_list_item", await culture(ctx)).format(
+                + translate("purger_list_item", await culture(ctx)).format(
                     text_channel, max_age
                 )
             )
