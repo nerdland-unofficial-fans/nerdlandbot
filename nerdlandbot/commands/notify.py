@@ -26,7 +26,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         :param list_name: The list to subscribe to. (optional - str - default = None)
         """
 
-        if not user_id or not is_reaction:
+        if not is_reaction:
             user_id = ctx.author.id
 
         # Execute 'show_lists' if no parameter provided
@@ -60,7 +60,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         :param ctx: The current context. (discord.ext.commands.Context)
         :param list_name: The list to unsubscribe from. (str)
         """
-        if not user_id or not is_reaction:
+        if not is_reaction:
             user_id = ctx.author.id
 
         # make sure list is lowercase
