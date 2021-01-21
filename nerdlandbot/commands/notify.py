@@ -18,7 +18,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="sub", aliases=["subscribe"], brief="notify_sub_brief", usage="notify_sub_usage",
                       help="notify_sub_help")
-    async def subscribe(self, ctx: commands.Context, list_name: typing.Optional[str] = None, user_id=None):
+    async def subscribe(self, ctx: commands.Context, list_name: typing.Optional[str] = None, user_id=None, is_reaction=False):
         """
         If used with list_name, subscribes the user to that list if possible.
         If used without parameter it prints the existing lists, and allows users to subscribe by adding reactions.
@@ -26,7 +26,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         :param list_name: The list to subscribe to. (optional - str - default = None)
         """
 
-        if not user_id:
+        if not user_id or not is_reaction:
             user_id = ctx.author.id
 
         # Execute 'show_lists' if no parameter provided
@@ -54,13 +54,13 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="unsub", aliases=["unsubscribe"], brief="notify_unsub_brief", usage="notify_unsub_usage",
                       help="notify_unsub_help")
-    async def unsubscribe(self, ctx: commands.Context, list_name: str, user_id=None):
+    async def unsubscribe(self, ctx: commands.Context, list_name: str, user_id=None, is_reaction=False):
         """
         Unsubscribes the user from the provided list
         :param ctx: The current context. (discord.ext.commands.Context)
         :param list_name: The list to unsubscribe from. (str)
         """
-        if not user_id:
+        if not user_id or not is_reaction:
             user_id = ctx.author.id
 
         # make sure list is lowercase
@@ -172,7 +172,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 for key, v in guild_data.notification_lists.items():
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.subscribe(ctx, list_name,user.id)
+                        await self.subscribe(ctx, list_name,user.id,True)
 
             except asyncio.TimeoutError:
                 pass
@@ -205,7 +205,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.unsubscribe(ctx, list_name,user.id)
+                        await self.unsubscribe(ctx, list_name,user.id,True)
 
             except asyncio.TimeoutError:
                 pass
