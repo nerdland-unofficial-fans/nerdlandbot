@@ -44,6 +44,7 @@ bot.load_extension("nerdlandbot.commands.wombat")
 bot.load_extension("nerdlandbot.commands.youtube")
 bot.load_extension("nerdlandbot.commands.poll")
 bot.load_extension("nerdlandbot.commands.purger")
+bot.load_extension("nerdlandbot.commands.kerk")
 
 # Initialize and start YouTube scheduler
 YOUTUBE_TOKEN = os.getenv("YOUTUBE_TOKEN")
