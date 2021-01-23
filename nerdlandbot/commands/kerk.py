@@ -2,9 +2,9 @@ import typing
 import asyncio
 import discord
 from discord.ext import commands
-from nerdlandbot.translations.Translations import get_text as translate
-from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
-from nerdlandbot.helpers.parser import parse_channel
+from Translations.Translations import get_text as translate
+from Helpers.TranslationHelper import get_culture_from_context as culture
+from Helpers.parser import parse_channel
 
 from datetime import datetime
 
@@ -19,9 +19,9 @@ class Kerk(commands.Cog, name="kerk"):
             #check if user mentioned  
             if mention and mention[:2] == "<@":
                 #set a task to check if it's 16:00 and posts message
-                while not (datetime.now().hour == 16 and datetime.now().minute == 0):
+                while not (datetime.now().hour == 16 and datetime.now().minute == 00):
                     await asyncio.sleep(59)
-                msg = "⛪ Hey {0} het is 4u en <@{1}> wil u zien aan de kerk! 👊".format(mention,ctx.author.id)
+                msg = "⛪ Hey {0} het is 4u en <@{1}> wil met u vechten aan de kerk in Hamont! 👊".format(mention,ctx.author.id)
                 if message:
                     msg += "\n\t\"{0}\"".format(message)
                 return await ctx.send(msg)
