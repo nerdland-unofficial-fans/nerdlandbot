@@ -21,7 +21,7 @@ class Kerk(commands.Cog, name="kerk"):
                 #set a task to check if it's 16:00 and posts message
                 while not (datetime.now().hour == 16 and datetime.now().minute == 00):
                     await asyncio.sleep(59)
-                msg = "⛪ Hey {0} het is 4u en <@{1}> wil met u vechten aan de kerk in Hamont! 👊".format(mention,ctx.author.id)
+                msg = "⛪ Hey {0} het is 4u en <@{1}> wil u zien aan de kerk! 👊".format(mention,ctx.author.id)
                 if message:
                     msg += "\n\t\"{0}\"".format(message)
                 return await ctx.send(msg)
