@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
-from nerdlandbot.helpers.parser import parse_channel
 
 
 def pick_random_online_member(ctx: commands.Context) -> discord.Member:
@@ -31,7 +30,7 @@ class RandomUser(commands.Cog, name="random_user"):
 
     @commands.command(name="random_user", aliases=["random"], brief="random_user_brief", usage="random_user_usage",
                       help="random_user_help")
-    async def select_random_user(self, ctx: commands.Context, channel_name: str = None):
+    async def select_random_user(self, ctx: commands.Context, *, channel_name: str = None):
         """
         Selects a random user from the server, channel, or online members.
         :param ctx: The current context. (discord.ext.commands.Context)
@@ -48,9 +47,6 @@ class RandomUser(commands.Cog, name="random_user"):
             member = pick_random_online_member(ctx)
             msg = translate("random_user_chosen", await culture(ctx)).format(member.id)
             return await ctx.send(msg)
-
-        # Sanitize channel name
-        channel_name = parse_channel(channel_name)
 
         # Retrieve channel
         channel = discord.utils.get(ctx.channel.guild.channels, name=channel_name)

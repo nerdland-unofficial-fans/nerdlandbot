@@ -4,7 +4,6 @@ from discord.ext import commands
 
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
-from nerdlandbot.helpers.parser import parse_channel
 
 
 def count_online_members(ctx) -> int:
@@ -34,7 +33,7 @@ class MemberCount(commands.Cog, name="member_count"):
 
     @commands.command(name="member_count", aliases=["count", "membercount"], brief="membercount_brief",
                       usage="membercount_usage", help="membercount_help")
-    async def count(self, ctx, channel_name=None):
+    async def count(self, ctx, *, channel_name=None):
         """
         Count the members in a given channel, the members in the current server, or the online members in the current server.
         :param ctx: The current context. (discord.ext.commands.Context)
@@ -49,9 +48,6 @@ class MemberCount(commands.Cog, name="member_count"):
             msg = translate("membercount_server_result", await culture(ctx)).format(len(ctx.guild.members),
                                                                                     ctx.guild.name)
             return await ctx.send(msg)
-
-        # Sanitize channel name
-        channel_name = parse_channel(channel_name)
 
         # Retrieve channel
         channel = discord.utils.get(ctx.channel.guild.channels, name=channel_name)
