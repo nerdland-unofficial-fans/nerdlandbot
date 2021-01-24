@@ -127,5 +127,5 @@
 "purger_removed","No longer automatically removing messages in <#{0}>.","Berichten worden niet meer automatisch verwijderd in <#{0}>."
 "purger_no_exists","There's no automatic message removal in <#{0}>.","Er worden geen berichten verwijderd in <#{0}>."
 "purger_list_title","List of channels with automatic removal of messages and max age:","Lijst van kanalen waar berichten automatisch worden verwijderd en de maximale leeftijd:"
-"purger_list_item","  · <#{0}>: {1} day(s)","  · <#{0}>: {1} dag(en)"
+"purger_list_item","  - <#{0}>: {1} day(s)","  - <#{0}>: {1} dag(en)"
 "channel_is_voice","You should provide a text channel, not a voice channel","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
