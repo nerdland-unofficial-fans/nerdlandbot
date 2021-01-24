@@ -16,7 +16,7 @@ class Notify(commands.Cog, name="Notification_lists"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    async def act_subscribe(self,ctx: commands.Context,list_name: str,user_id: int):
+    async def act_subscribe(self, ctx: commands.Context, list_name: str, user_id: int):
         """
         Subscribes user to a list and confirms with message
         :param ctx: The current context. (discord.ext.commands.Context)
@@ -42,7 +42,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         msg = translate("list_subscribed", await culture(ctx)).format(str(user_id), list_name)
         await ctx.send(msg)
 
-    async def act_unsubscribe(self,ctx: commands.Context, list_name: str, user_id: int):
+    async def act_unsubscribe(self, ctx: commands.Context, list_name: str, user_id: int):
         """
         Unsubscribes the user from the provided list
         :param ctx: The current context. (discord.ext.commands.Context)
@@ -185,7 +185,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 for key, v in guild_data.notification_lists.items():
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.act_subscribe(ctx, list_name,user.id,)
+                        await self.act_subscribe(ctx, list_name,user.id)
 
             except asyncio.TimeoutError:
                 pass
