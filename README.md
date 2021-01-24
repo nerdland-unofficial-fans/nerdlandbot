@@ -22,7 +22,7 @@ For using the YouTube notifications functionality you'll need to set the `YOUTUB
 
 You can now run the bot by running the following command:
 ```
-python nerdlandbot
+python -m nerdlandbot
 ```
 
 # Running this bot with docker
