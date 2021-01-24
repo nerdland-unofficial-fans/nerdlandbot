@@ -5,7 +5,7 @@ import requests
 from discord.ext import commands, tasks
 
 from nerdlandbot.commands.GuildData import get_all_guilds_data, get_guild_data, GuildData
-from nerdlandbot.helpers.parser import parse_channel
+from nerdlandbot.helpers.channel import get_channel
 from nerdlandbot.helpers.log import info, fatal
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 from nerdlandbot.scheduler.YoutubeScheduler import get_latest_video
@@ -31,22 +31,20 @@ class Youtube(commands.Cog, name="Youtube_lists"):
             gif = translate("not_admin_gif", await culture(ctx))
             return await ctx.send(gif)
 
-        text_channel = text_channel.lower()
-
-        # Sanitize channel name
-        text_channel = parse_channel(text_channel)
-
         # TODO: throw specific error with message when channel ID is wrong
         latest_video = await get_latest_video(youtube_channel_id)
 
-        # Retrieve channel
-        channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
-        if not channel:
-            channel = ctx.bot.get_channel(int(text_channel))
+        # Get the channel
+        channel = get_channel(ctx, text_channel)
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
+            await ctx.channel.send(translate("membercount_channel_nonexistant", await culture(ctx)))
             raise Exception("Invalid text channel provided")
+
+        if isinstance(channel, discord.VoiceChannel):
+            await ctx.channel.send(translate("channel_is_voice", await culture(ctx)))
+            return
 
         add_response = await guild_data.add_youtube_channel(
             youtube_channel_id, channel, latest_video["video_id"]
@@ -68,8 +66,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
         name="remove_youtube", usage="remove_youtube_usage", help="remove_youtube_help",
     )
     async def remove_youtube_channel(
-        self, ctx: commands.Context, youtube_channel_id: str, text_channel: str
-    ):
+        self, ctx: commands.Context, youtube_channel_id: str):
         """
         Remove a Youtube channel that was being notified
         :param ctx: The current context. (discord.ext.commands.Context)

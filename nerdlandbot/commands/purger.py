@@ -5,7 +5,7 @@ import requests
 from discord.ext import commands, tasks
 from nerdlandbot.commands.GuildData import get_all_guilds_data, get_guild_data, GuildData
 from nerdlandbot.helpers.log import info, fatal
-from nerdlandbot.helpers.parser import parse_channel
+from nerdlandbot.helpers.channel import get_channel
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 from nerdlandbot.translations.Translations import get_text as translate
 
@@ -29,17 +29,18 @@ class purger(commands.Cog, name="Purger_lists"):
 
         text_channel = text_channel.lower()
 
-        # Sanitize channel name
-        text_channel = parse_channel(text_channel)
-
-        # Retrieve channel
-        channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
-        if not channel:
-            channel = ctx.bot.get_channel(int(text_channel))
+        # Get channel 
+        channel = get_channel(ctx,text_channel)
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
+            await ctx.channel.send(translate("membercount_channel_nonexistant", await culture(ctx)))
             raise Exception("Invalid text channel provided")
+        
+        #Give error if the channel is a voice channel
+        if isinstance(channel, discord.VoiceChannel):
+            await ctx.channel.send(translate("channel_is_voice", await culture(ctx)))
+            return
 
         # member = ctx.get_member(ctx.user.id)
         channel_permissions = channel.permissions_for(ctx.me)
@@ -50,9 +51,9 @@ class purger(commands.Cog, name="Purger_lists"):
 
         msg = ""
         if add_response:
-            msg = translate("purger_added", await culture(ctx)).format(channel, max_age)
+            msg = translate("purger_added", await culture(ctx)).format(str(channel.id), max_age)
         else:
-            msg = translate("purger_exists", await culture(ctx)).format(channel)
+            msg = translate("purger_exists", await culture(ctx)).format(str(channel.id))
         info(msg)
         await ctx.send(msg)
 
@@ -72,20 +73,25 @@ class purger(commands.Cog, name="Purger_lists"):
             gif = translate("not_admin_gif", await culture(ctx))
             return await ctx.send(gif)
 
-        channel = discord.utils.get(ctx.channel.guild.channels, name=text_channel)
-        if not channel:
-            channel = ctx.bot.get_channel(int(text_channel))
+        # Get channel 
+        channel = get_channel(ctx,text_channel)
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
+            await ctx.channel.send(translate("membercount_channel_nonexistant", await culture(ctx)))
             raise Exception("Invalid text channel provided")
+        
+        #Give error if the channel is a voice channel
+        if isinstance(channel, discord.VoiceChannel):
+            await ctx.channel.send(translate("channel_is_voice", await culture(ctx)))
+            return
 
         remove_response = await guild_data.remove_purger(channel)
         msg = ""
         if remove_response:
-            msg = translate("purger_removed", await culture(ctx)).format(channel)
+            msg = translate("purger_removed", await culture(ctx)).format(str(channel.id))
         else:
-            msg = translate("purger_no_exists", await culture(ctx)).format(channel)
+            msg = translate("purger_no_exists", await culture(ctx)).format(str(channel.id))
         info(msg)
         await ctx.send(msg)
 
