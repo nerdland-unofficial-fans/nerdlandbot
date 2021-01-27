@@ -62,11 +62,6 @@ async def on_ready():
             "Not starting YouTube scheduler. Please provide a YOUTUBE_TOKEN in your .env file"
         )
 
-bot.is_purging = {}
-
-# guilds_data = await get_all_guilds_data()
-# for guild_data in guilds_data:
-#     bot.is_purging[str(guild_data.guild_id)] = False
-    
-purge_messages.start(bot)
+    bot.is_purging = {}
+    purge_messages.start(bot)
 bot.run(TOKEN)
