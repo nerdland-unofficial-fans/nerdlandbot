@@ -16,7 +16,7 @@ async def purge_messages(bot):
     guild_data = await get_all_guilds_data()
 
     for guild_data in guilds_data:
-        if bot.is_purging.get(str(guild_data.guild_id),False) == False:
+        if not bot.is_purging.get(str(guild_data.guild_id),False):
             bot.is_purging[str(guild_data.guild_id)] = True
             for text_channel, max_age in guild_data.purgers.items():
                 before = datetime.today() - timedelta(days=max_age)
