@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
-from nerdlandbot.helpers.parser import parse_channel
+
 
 from datetime import datetime
 
