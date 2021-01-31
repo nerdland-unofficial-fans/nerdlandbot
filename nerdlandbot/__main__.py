@@ -9,6 +9,8 @@ from nerdlandbot.helpers.log import info, fatal
 from nerdlandbot.translations.Translations import get_text as _
 from nerdlandbot.scheduler.YoutubeScheduler import check_and_post_latest_videos
 from nerdlandbot.scheduler.PurgeScheduler import purge_messages
+from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
+
 
 load_dotenv()
 
@@ -60,6 +62,6 @@ async def on_ready():
             "Not starting YouTube scheduler. Please provide a YOUTUBE_TOKEN in your .env file"
         )
 
-
-purge_messages.start(bot)
+    bot.is_purging = {}
+    purge_messages.start(bot)
 bot.run(TOKEN)
