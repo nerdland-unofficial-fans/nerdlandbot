@@ -13,7 +13,7 @@ from nerdlandbot.helpers.log import info, fatal
 @tasks.loop(hours = 24.0)
 async def purge_messages(bot):
     info("Purging messages")
-    guild_data = await get_all_guilds_data()
+    guilds_data = await get_all_guilds_data()
 
     for guild_data in guilds_data:
         if not bot.is_purging.get(str(guild_data.guild_id),False):
