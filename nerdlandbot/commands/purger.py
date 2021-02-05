@@ -44,7 +44,7 @@ class purger(commands.Cog, name="Purger_lists"):
 
         # member = ctx.get_member(ctx.user.id)
         channel_permissions = channel.permissions_for(ctx.me)
-        if not channel_permissions.manage_messages:
+        if not (channel_permissions.manage_messages and channel_permissions.read_message_history):
             return await ctx.send(translate("purger_permissions", await culture(ctx)))
 
         add_response = await guild_data.add_purger(channel, max_age)
