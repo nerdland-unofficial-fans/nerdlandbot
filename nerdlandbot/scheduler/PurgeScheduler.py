@@ -23,7 +23,9 @@ async def purge_messages(bot):
                 channel = bot.get_channel(int(text_channel))
                 try:
                     if channel:
-                        await channel.purge(check=check, before=before)
+                        deleted_messages = [1]
+                        while len(deleted_messages) > 0:
+                            deleted_messages = await channel.purge(check=check, before=before)
                 except:
                     fatal(
                         f"Failed to purge messages for channel {channel.name} in guild {guild_data.guild_id}. Does the bot have appropriate permissions on that channel?"
