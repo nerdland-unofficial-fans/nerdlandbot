@@ -12,7 +12,11 @@ To get this project up and running, make sure you have the following installed:
 - [Poetry](https://python-poetry.org/docs/#installation)
 - Use your favourite ide and git to clone the nerdlandbot to your local machine
 
-Once you have these installed (you can check by running 'python --version', 'pip -V' and 'poetry -V' in a commandline) run the following command in the root directory of the clone (eg. ~/Documents/python/nerdlandbot) to install the required packages:
+Once you have these installed (you can check by running 'python --version', 'pip -V' and 'poetry -V' in a commandline), add the required packages (see requirements.txt) using pip:
+```
+pip install <package name>
+```
+Then run the following command in the root directory of the clone (eg. ~/Documents/python/nerdlandbot) to install the required packages:
 ```
 poetry install
 ```
@@ -54,6 +58,8 @@ You can now run the bot by running the following command in the root of your ner
 ```
 python -m nerdlandbot
 ```
+
+
 
 # Running this bot with docker
 
