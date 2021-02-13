@@ -129,4 +129,4 @@
 "purger_list_title","List of channels with automatic removal of messages and max age:","Lijst van kanalen waar berichten automatisch worden verwijderd en de maximale leeftijd:"
 "purger_list_item","  - <#{0}>: {1} day(s)","  - <#{0}>: {1} dag(en)"
 "channel_is_voice","You should provide a text channel, not a voice channel","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
-"dadjoke_help","Replies a random dad joke","Antwoord met een willekeurige dad joke"
+"dadjoke_help","Replies a random dad joke","Antwoordt met een willekeurige dad joke"
