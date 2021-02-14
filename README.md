@@ -14,7 +14,7 @@ To get this project up and running, make sure you have the following installed:
 
 Once you have these installed (you can check by running 'python --version', 'pip -V' and 'poetry -V' in a commandline), add the required packages (see requirements.txt) using pip:
 ```
-pip install <package name>
+pip install -r requirements.txt
 ```
 Then run the following command in the root directory of the clone (eg. ~/Documents/python/nerdlandbot) to install the required packages:
 ```
