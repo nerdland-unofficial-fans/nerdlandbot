@@ -21,3 +21,4 @@ class DadJoke(commands.Cog, name="dad_joke"):
 
 def setup(bot: commands.Bot):
     bot.add_cog(DadJoke(bot))
+    
