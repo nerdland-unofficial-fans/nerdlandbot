@@ -1,5 +1,5 @@
 discord.py
 python-dotenv
 pandas
-requests
 aiohttp
+requests
