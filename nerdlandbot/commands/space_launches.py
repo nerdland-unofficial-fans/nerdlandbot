@@ -1,7 +1,7 @@
-import discord
 import aiohttp
 import asyncio
 import json
+import discord
 from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
@@ -12,7 +12,7 @@ THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = 'launch/upcoming'
 THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
 
 
-class SpaceLaunches (commandc.Cog, name='space_launches'):
+class SpaceLaunches (commands.Cog, name='space_launches'):
     def __init__(self,bot:commands.Bot):
         self.bot = bot
 
@@ -22,14 +22,14 @@ class SpaceLaunches (commandc.Cog, name='space_launches'):
     async def cmd_space_launches(self, ctx:commands.Context):
         full_url = '/'.join [THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE,THE_SPACE_DEVS_LIMIT_TO_10_RESULTS]
         async with aiohttp.ClientSession() as session:
-            async with session.get('full_url', HEADERS = {"Accept":"application/json", "Accept-Charset":"UTF-8" }) as resp: 
+            async with session.get(full_url, HEADERS = {"Accept":"application/json", "Accept-Charset":"UTF-8" }) as resp: 
                 if resp.status == '200':
                     msg = await resp.text()
                     try:
                         dom = json.loads(msg)
                     except json.JSONDecodeError:
                         await ctx.send('Could not parse the response from space devs.')
-                    lines = [self.get_line_for_upcoming_launches(result) for index, result in enumerate(dom['results'])]
+                    lines = [self.get_line_for_upcoming_launches(index, result) for index, result in enumerate(dom['results'])]
                     await ctx.send('\n'.join(lines))
                 else:
                     await ctx.send('Call to the space devs failed.')
