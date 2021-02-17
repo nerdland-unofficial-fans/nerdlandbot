@@ -17,7 +17,7 @@ class SpaceDevs (commands.Cog, name='The space devs'):
         self.bot = bot
         self.ctx = None
 
-    @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="aspace_launches_brief", usage="space_launches_usage")
+    @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief", usage="space_launches_usage")
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
         full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION,
