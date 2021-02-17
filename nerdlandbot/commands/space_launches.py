@@ -11,7 +11,6 @@ THE_SPACE_DEVS_VERSION = '2.0.0'
 THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = 'launch/upcoming'
 THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
 
-
 class SpaceDevs (commands.Cog, name='The space devs'):
     def __init__(self,bot:commands.Bot):
         self.bot = bot
