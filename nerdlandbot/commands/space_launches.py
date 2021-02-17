@@ -12,13 +12,12 @@ THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = 'launch/upcoming'
 THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
 
 
-class SpaceLaunches (commands.Cog, name='space_launches'):
+class SpaceDevs (commands.Cog, name='The space devs'):
     def __init__(self,bot:commands.Bot):
         self.bot = bot
         self.ctx = None
 
-    @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="aspace_launches_brief", usage="space_launches",
-                      help="random_user_help")
+    @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="aspace_launches_brief", usage="space_launches_usage")
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
         full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION,
@@ -52,6 +51,6 @@ class SpaceLaunches (commands.Cog, name='space_launches'):
     
 
 def setup(bot: commands.Bot):
-    bot.add_cog(SpaceLaunches(bot))
+    bot.add_cog(SpaceDevs(bot))
 
                 
