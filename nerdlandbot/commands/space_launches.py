@@ -6,7 +6,7 @@ from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 
-THE_SPACE_DEVS_BASE_URL = ' HTTPS://THESPACEDEVS.COM'
+THE_SPACE_DEVS_BASE_URL = 'https://ll.thespacedevs.com'
 THE_SPACE_DEVS_VERSION = '2.0.0'
 THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = 'launch/upcoming'
 THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
@@ -20,14 +20,16 @@ class SpaceDevs (commands.Cog, name='The space devs'):
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
         full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION,
-                             THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE,THE_SPACE_DEVS_LIMIT_TO_10_RESULTS])
+                             THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE])
         async with aiohttp.ClientSession() as session:
-            async with session.get(full_url, HEADERS = {"Accept":"application/json", "Accept-Charset":"UTF-8" }) as resp: 
-                if resp.status == '200':
+            async with session.get(full_url, headers = {"accept":"application/json"}) as resp: 
+                if resp.status == 200:
                     msg = await resp.text()
-                    self.parse_and_send_results(msg)
+                    await self.parse_and_send_results(msg)
+                elif resp.status == 429:
+                    await ctx.send('Too many requests. Wait a couple of minutes and try again.')
                 else:
-                    await ctx.send('Call to the space devs failed.')
+                    await ctx.send('Call to the space devs failed. Response status: '+ str(resp.status))
 
     async def parse_and_send_results(self, json_string):    # extracted for testing purposes
         try:
