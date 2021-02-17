@@ -12,11 +12,14 @@ To get this project up and running, make sure you have the following installed:
 - [Poetry](https://python-poetry.org/docs/#installation)
 - Use your favourite ide and git to clone the nerdlandbot to your local machine
 
-Once you have these installed (you can check by running 'python --version', 'pip -V' and 'poetry -V' in a commandline), add the required packages (see requirements.txt) using pip:
+Once you have these installed (you can check by running 'python --version', 'pip -V' and 'poetry -V' in a commandline), add the required packages (see requirements.txt). To do this, you have 2 options (choose only 1):
+
+1. If you're just starting out with python and "virtual environment" doesn't ring a bell, using pip will install the required packages in a way you can use them anywhere. You can run this command in a terminal from any folder you like.
 ```
 pip install -r requirements.txt
 ```
-Then run the following command in the root directory of the clone (eg. ~/Documents/python/nerdlandbot) to install the required packages:
+
+2. If you have more experience and work with virtual environments, poetry is more your kind of thing and will make the required packages available for this specific project only. You should run this command in the folder you created when cloning the repository, the one where README.md is located.
 ```
 poetry install
 ```
