@@ -15,24 +15,28 @@ THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
 class SpaceLaunches (commands.Cog, name='space_launches'):
     def __init__(self,bot:commands.Bot):
         self.bot = bot
-
-
+        self.ctx = None
 
     @commands.command(name="space_launches", hidden = False, help="space_launches_help")
     async def cmd_space_launches(self, ctx:commands.Context):
-        full_url = '/'.join [THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE,THE_SPACE_DEVS_LIMIT_TO_10_RESULTS]
+        self.ctx = ctx
+        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION,
+                             THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE,THE_SPACE_DEVS_LIMIT_TO_10_RESULTS])
         async with aiohttp.ClientSession() as session:
             async with session.get(full_url, HEADERS = {"Accept":"application/json", "Accept-Charset":"UTF-8" }) as resp: 
                 if resp.status == '200':
                     msg = await resp.text()
-                    try:
-                        dom = json.loads(msg)
-                    except json.JSONDecodeError:
-                        await ctx.send('Could not parse the response from space devs.')
-                    lines = [self.get_line_for_upcoming_launches(index, result) for index, result in enumerate(dom['results'])]
-                    await ctx.send('\n'.join(lines))
+                    self.parse_and_send_results(msg)
                 else:
                     await ctx.send('Call to the space devs failed.')
+
+    async def parse_and_send_results(self, json_string):    # extracted for testing purposes
+        try:
+            dom = json.loads(json_string)
+        except json.JSONDecodeError:
+            await self.ctx.send('Could not parse the response from space devs.')
+        lines = [self.get_line_for_upcoming_launches(index, result) for index, result in enumerate(dom['results'])]
+        await self.ctx.send('\n'.join(lines))
 
     def get_line_for_upcoming_launches(self, index, result_json):
         try:
@@ -42,9 +46,8 @@ class SpaceLaunches (commands.Cog, name='space_launches'):
             rocket_configuration = result_json["rocket"]["configuration"]["name"]
             pad_location = result_json["pad"]["location"]["name"]
         except KeyError:
-            return ' '.join [index+1, 'Could not parse launch data.']
-
-        return ' '.join [index+1, windows_start, service_provider, mission, rocket_configuration, pad_location]
+            return ' '.join ([index+1, 'Could not parse launch data.'])
+        return ' '.join ([index+1, windows_start, service_provider, mission, rocket_configuration, pad_location])
 
 
         
