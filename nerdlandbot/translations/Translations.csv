@@ -129,3 +129,6 @@
 "purger_list_title","List of channels with automatic removal of messages and max age:","Lijst van kanalen waar berichten automatisch worden verwijderd en de maximale leeftijd:"
 "purger_list_item","  - <#{0}>: {1} day(s)","  - <#{0}>: {1} dag(en)"
 "channel_is_voice","You should provide a text channel, not a voice channel","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
+"space_launches_usage","no parameters","geen parameters"
+"space_launches_brief","Lists the 1st 10 upcoming launches.","Geeft de eerstvolgende 10 lanceringen."
+"space_launches_help","Provides start of the launch window (UTC / GMT), the agency, mission, rocket and location for each of the upcoming 10 launches.","Geeft de start van het lanceervenster, (UTC / GMT), de organisatie, de missie, de raket en plaats van de eerstvolgende 10 lanceringen."
