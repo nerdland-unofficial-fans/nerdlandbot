@@ -17,7 +17,8 @@ class SpaceLaunches (commands.Cog, name='space_launches'):
         self.bot = bot
         self.ctx = None
 
-    @commands.command(name="space_launches", hidden = False, help="space_launches_help")
+    @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="aspace_launches_brief", usage="space_launches",
+                      help="random_user_help")
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
         full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION,
@@ -48,10 +49,7 @@ class SpaceLaunches (commands.Cog, name='space_launches'):
         except KeyError:
             return ' '.join ([index+1, 'Could not parse launch data.'])
         return ' '.join ([index+1, windows_start, service_provider, mission, rocket_configuration, pad_location])
-
-
-        
-
+    
 
 def setup(bot: commands.Bot):
     bot.add_cog(SpaceLaunches(bot))
