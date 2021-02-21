@@ -10,6 +10,7 @@ THE_SPACE_DEVS_BASE_URL = 'https://ll.thespacedevs.com'
 THE_SPACE_DEVS_VERSION = '2.0.0'
 THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = 'launch/upcoming'
 THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
+TEST = 'http://localhost:8000/launch/upcoming/info.json'
 
 class SpaceDevs (commands.Cog, name='The space devs'):
     def __init__(self,bot:commands.Bot):
@@ -19,8 +20,9 @@ class SpaceDevs (commands.Cog, name='The space devs'):
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief", usage="space_launches_usage")
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
-        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION,
-                             THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE])
+        full_url = TEST
+#        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE])
+
         async with aiohttp.ClientSession() as session:
             async with session.get(full_url, headers = {"accept":"application/json"}) as resp: 
                 if resp.status == 200:
@@ -30,25 +32,48 @@ class SpaceDevs (commands.Cog, name='The space devs'):
                     await ctx.send('Too many requests. Wait a couple of minutes and try again.')
                 else:
                     await ctx.send('Call to the space devs failed. Response status: '+ str(resp.status))
+                return
 
     async def parse_and_send_results(self, json_string):    # extracted for testing purposes
         try:
             dom = json.loads(json_string)
         except json.JSONDecodeError:
             await self.ctx.send('Could not parse the response from space devs.')
+            return
         lines = [self.get_line_for_upcoming_launches(index, result) for index, result in enumerate(dom['results'])]
         await self.ctx.send('\n'.join(lines))
+        return
 
     def get_line_for_upcoming_launches(self, index, result_json):
         try:
-            windows_start = result_json["window_start"]
-            service_provider = result_json["launch_service_provider"]["name"]
-            mission = result_json["mission"]["name"]
-            rocket_configuration = result_json["rocket"]["configuration"]["name"]
-            pad_location = result_json["pad"]["location"]["name"]
+            try:
+                windows_start = result_json["window_start"]
+            except TypeError:
+                windows_start = "No start time"
+            
+            try:
+                service_provider = result_json["launch_service_provider"]["name"]
+            except TypeError:
+                service_provider = "No provider"
+            
+            try:                
+                mission = result_json["mission"]["name"]
+            except TypeError:
+                mission = "No mission"
+            
+            try:
+                rocket_configuration = result_json["rocket"]["configuration"]["name"]
+            except TypeError:
+                rocket_configuration = "No configuration"
+            
+            try:
+                pad_location = result_json["pad"]["location"]["name"]
+            except TypeError:
+                pad_location = "No location"
         except KeyError:
             return ' '.join ([index+1, 'Could not parse launch data.'])
-        return ' '.join ([index+1, windows_start, service_provider, mission, rocket_configuration, pad_location])
+ 
+        return ' | '.join ([str(index+1), windows_start, service_provider, mission, rocket_configuration, pad_location])
     
 
 def setup(bot: commands.Bot):
