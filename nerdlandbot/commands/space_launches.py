@@ -2,6 +2,7 @@ import aiohttp
 import asyncio
 import json
 import discord
+from datetime import datetime
 from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
@@ -11,6 +12,7 @@ THE_SPACE_DEVS_VERSION = '2.0.0'
 THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = 'launch/upcoming'
 THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
 TEST = 'http://localhost:8000/launch/upcoming/info.json'
+THE_SPACE_DEVS_HOME_URL = 'https://thespacedevs.com/llapi'
 
 class SpaceDevs (commands.Cog, name='The space devs'):
     def __init__(self,bot:commands.Bot):
@@ -40,17 +42,28 @@ class SpaceDevs (commands.Cog, name='The space devs'):
         except json.JSONDecodeError:
             await self.ctx.send('Could not parse the response from space devs.')
             return
-        lines = [self.get_line_for_upcoming_launches(index, result) for index, result in enumerate(dom['results'])]
-        await self.ctx.send('\n'.join(lines))
+        embed = self.main_info_embed()
+        for index, result in enumerate (dom['results']):
+            await self.get_embed_field_for_upcominglaunch(index, result, embed)
+        await self.ctx.send(embed = embed)
         return
 
-    def get_line_for_upcoming_launches(self, index, result_json):
+    def main_info_embed (self):
+        result = discord.Embed(
+                                title="Upcoming launches", 
+                                url=THE_SPACE_DEVS_HOME_URL, 
+                                description="Provided by the space devs api.",
+                                color=discord.Color.blue()
+                            )
+        return result
+
+    async def get_embed_field_for_upcominglaunch(self, index, result_json, embed):
         try:
             try:
-                windows_start = result_json["window_start"]
+                windows_start = datetime.strptime(result_json["window_start"],'%Y-%m-%dT%H:%M:%SZ')
+                windows_start = windows_start.strftime('%a, %d %b at %H:%M')
             except TypeError:
-                windows_start = "No start time"
-            
+                windows_start = "No start time"           
             try:
                 service_provider = result_json["launch_service_provider"]["name"]
             except TypeError:
@@ -72,9 +85,11 @@ class SpaceDevs (commands.Cog, name='The space devs'):
                 pad_location = "No location"
         except KeyError:
             return ' '.join ([index+1, 'Could not parse launch data.'])
- 
-        return ' | '.join ([str(index+1), windows_start, service_provider, mission, rocket_configuration, pad_location])
-    
+
+
+        name = str(index+1) + '. ' +service_provider+' : '+ mission+ '  ('+ windows_start +') '
+        value =  '; '.join([pad_location, rocket_configuration])
+        embed.add_field(name = name, value = value, inline = False)
 
 def setup(bot: commands.Bot):
     bot.add_cog(SpaceDevs(bot))
