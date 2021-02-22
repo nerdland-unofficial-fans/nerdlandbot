@@ -2,6 +2,7 @@ import pandas
 import codecs
 
 from os import path
+from nerdlandbot.helpers.TranslationHelper import translate_adjective
 
 translations = {}
 
@@ -21,7 +22,9 @@ def get_text(translation_key: str, language: str) -> str:
     if not translations_for_key.keys().__contains__(language):
         return f'[{language}] {translation_key} 2'
 
-    return translations_for_key[language]
+    friendly_key = translations_for_key[language].replace("<<foemp>>", translate_adjective(language))
+
+    return friendly_key
 
 
 # Read csv
