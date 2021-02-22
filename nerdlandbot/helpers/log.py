@@ -1,6 +1,6 @@
 import logging
 
-logging.basicConfig(filename='bot.log', level=logging.WARN)
+logging.basicConfig(filename='bot.log', level=logging.INFO)
 
 
 def debug(msg, *args, **kwargs):
