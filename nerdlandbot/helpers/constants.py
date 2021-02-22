@@ -16,3 +16,6 @@ SCHEDULER_INTERVAL = 10.0 #minutes
 
 POLL_MAX_TIMEOUT = 60 #minutes
 POLL_DEFAULT_TIMEOUT = 5 #minutes
+
+#Dadjoke
+DAD_JOKE_URL = 'https://icanhazdadjoke.com'
