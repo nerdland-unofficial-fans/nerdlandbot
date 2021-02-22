@@ -20,3 +20,4 @@ class EightBall(commands.Cog, name="eight_ball"):
 
 def setup(bot: commands.Bot):
     bot.add_cog(EightBall(bot))
+    
