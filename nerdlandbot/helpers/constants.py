@@ -19,3 +19,4 @@ POLL_DEFAULT_TIMEOUT = 5 #minutes
 
 #Dadjoke
 DAD_JOKE_URL = 'https://icanhazdadjoke.com'
+EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
