@@ -7,12 +7,14 @@ from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 
-THE_SPACE_DEVS_BASE_URL = 'https://ll.thespacedevs.com'
-THE_SPACE_DEVS_VERSION = '2.0.0'
-THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = 'launch/upcoming'
-THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
-TEST = 'http://localhost:8000/launch/upcoming/info.json'
-THE_SPACE_DEVS_HOME_URL = 'https://thespacedevs.com/llapi'
+from nerdlandbot.helpers.constants import THE_SPACE_DEVS_BASE_URL
+from nerdlandbot.helpers.constants import THE_SPACE_DEVS_VERSION
+from nerdlandbot.helpers.constants import THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE
+from nerdlandbot.helpers.constants import THE_SPACE_DEVS_LIMIT_TO_10_RESULTS
+from nerdlandbot.helpers.constants import THE_SPACE_DEVS_LOCAL_TEST_SERVER_URL
+from nerdlandbot.helpers.constants import THE_SPACE_DEVS_HOME_URL
+from nerdlandbot.helpers.constants import 
+
 
 class SpaceDevs (commands.Cog, name='The space devs'):
     def __init__(self,bot:commands.Bot):
@@ -22,7 +24,7 @@ class SpaceDevs (commands.Cog, name='The space devs'):
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief", usage="space_launches_usage")
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
-        full_url = TEST
+        full_url = THE_SPACE_DEVS_LOCAL_TEST_SERVER_URL
 #        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE])
 
         async with aiohttp.ClientSession() as session:

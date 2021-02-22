@@ -16,3 +16,12 @@ SCHEDULER_INTERVAL = 10.0 #minutes
 
 POLL_MAX_TIMEOUT = 60 #minutes
 POLL_DEFAULT_TIMEOUT = 5 #minutes
+
+# the space_launches constants used
+THE_SPACE_DEVS_BASE_URL = 'https://ll.thespacedevs.com'
+THE_SPACE_DEVS_VERSION = '2.0.0'
+THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = 'launch/upcoming'
+THE_SPACE_DEVS_LIMIT_TO_10_RESULTS = '?limit=10&offset=0'
+THE_SPACE_DEVS_LOCAL_TEST_SERVER_URL = 'http://localhost:8000/launch/upcoming/space_launches.json'
+THE_SPACE_DEVS_HOME_URL = 'https://thespacedevs.com/llapi'
+
