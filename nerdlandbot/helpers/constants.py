@@ -18,3 +18,7 @@ POLL_MAX_TIMEOUT = 60 #minutes
 POLL_DEFAULT_TIMEOUT = 5 #minutes
 
 EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
+
+# For the datetime module, the weekday() function returns an int
+SATURDAY = 5
+SUNDAY = 6
