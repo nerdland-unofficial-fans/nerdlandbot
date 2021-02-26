@@ -9,7 +9,7 @@ class DadJoke(commands.Cog, name="dad_joke"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="dad_joke", help="dad_joke_help")
+    @commands.command(name="dad_joke", aliases=["dadjoke"], help="dad_joke_help")
     async def cmd_dad_joke(self, ctx: commands.Context):
         async with aiohttp.ClientSession() as session:
             async with session.get('https://icanhazdadjoke.com',headers = { "Accept": "text/plain" }) as resp:
