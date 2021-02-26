@@ -1,20 +1,19 @@
 import aiohttp
 import asyncio
 import json
+import os
 import discord
 from datetime import datetime
 from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 
-from nerdlandbot.helpers.constants import THE_SPACE_DEVS_BASE_URL
-from nerdlandbot.helpers.constants import THE_SPACE_DEVS_VERSION
-from nerdlandbot.helpers.constants import THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE
-from nerdlandbot.helpers.constants import THE_SPACE_DEVS_LIMIT_TO_10_RESULTS
-from nerdlandbot.helpers.constants import THE_SPACE_DEVS_LOCAL_TEST_SERVER_URL
-from nerdlandbot.helpers.constants import THE_SPACE_DEVS_HOME_URL
-from nerdlandbot.helpers.constants import 
-
+from nerdlandbot.helpers.constants import \
+                                        THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, THE_SPACE_DEVS_LIMIT_TO_10_RESULTS, \
+                                        THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE, \
+                                        THE_SPACE_DEVS_LOCAL_TEST_SERVER_BASE_URL, \
+                                        THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE, \
+                                        THE_SPACE_DEVS_HOME_URL, THE_SPACE_DEVS_TIMESTAMP_FORMAT
 
 class SpaceDevs (commands.Cog, name='The space devs'):
     def __init__(self,bot:commands.Bot):
@@ -24,20 +23,40 @@ class SpaceDevs (commands.Cog, name='The space devs'):
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief", usage="space_launches_usage")
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
-        full_url = THE_SPACE_DEVS_LOCAL_TEST_SERVER_URL
-#        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE])
+        full_url = '/'.join ([THE_SPACE_DEVS_LOCAL_TEST_SERVER_BASE_URL, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.json'])
+#        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, '/'.join (THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE)])
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(full_url, headers = {"accept":"application/json"}) as resp: 
-                if resp.status == 200:
-                    msg = await resp.text()
-                    await self.parse_and_send_results(msg)
-                elif resp.status == 429:
-                    await ctx.send('Too many requests. Wait a couple of minutes and try again.')
-                else:
-                    await ctx.send('Call to the space devs failed. Response status: '+ str(resp.status))
-                return
+        if self.should_call_the_api ():
+            async with aiohttp.ClientSession() as session:
+                async with session.get(full_url, headers = {"accept":"application/json"}) as resp: 
+                    if resp.status == 200:
+                        msg = await resp.text()
+                        with open(os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.json'),"w") as file:
+                            file.write(msg)
+                        with open(os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.time'),"w") as file:
+                            timestamp = datetime.now().strftime(THE_SPACE_DEVS_TIMESTAMP_FORMAT)
+                            file.write(timestamp)
+                        await self.parse_and_send_results(msg)
+                    elif resp.status == 429:
+                        await ctx.send('Too many requests. Wait a couple of minutes and try again.')
+                    else:
+                        await ctx.send('Call to the space devs failed. Response status: '+ str(resp.status))
+                    return
+        else:
+            with open(os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.json'),"r") as file:
+                msg = file.readlines()
+            await self.parse_and_send_results(msg)
 
+    def should_call_the_api (self):
+        return True
+        with open(os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.time'),"r") as file:
+            if not file.exists():
+                return True
+            else:
+                call_timestamp = file.readline().strptime(THE_SPACE_DEVS_TIMESTAMP_FORMAT)
+        now_timestamp = datetime.now()
+        return now_timestamp - call_timestamp > 3600
+        
     async def parse_and_send_results(self, json_string):    # extracted for testing purposes
         try:
             dom = json.loads(json_string)
