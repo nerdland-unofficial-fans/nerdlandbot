@@ -72,7 +72,7 @@ class SpaceDevs (commands.Cog, name='The space devs'):
         result = discord.Embed(
                                 title="Upcoming launches", 
                                 url=THE_SPACE_DEVS_HOME_URL, 
-                                description="Provided by the space devs api.",
+                                description="Provided by the space devs api. Timestamps = UTC",
                                 color=discord.Color.blue()
                             )
         return result
