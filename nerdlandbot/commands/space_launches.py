@@ -23,8 +23,8 @@ class SpaceDevs (commands.Cog, name='The space devs'):
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief", usage="space_launches_usage")
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
-        full_url = '/'.join ([THE_SPACE_DEVS_LOCAL_TEST_SERVER_BASE_URL, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.json'])
-#        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, '/'.join (THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE)])
+#        full_url = '/'.join ([THE_SPACE_DEVS_LOCAL_TEST_SERVER_BASE_URL, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.json'])
+        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, '/'.join (THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE)])
 
         if self.should_call_the_api ():
             async with aiohttp.ClientSession() as session:
@@ -44,18 +44,17 @@ class SpaceDevs (commands.Cog, name='The space devs'):
                     return
         else:
             with open(os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.json'),"r") as file:
-                msg = file.readlines()
+                msg = file.read()
             await self.parse_and_send_results(msg)
 
     def should_call_the_api (self):
-        return True
-        with open(os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.time'),"r") as file:
-            if not file.exists():
-                return True
-            else:
-                call_timestamp = file.readline().strptime(THE_SPACE_DEVS_TIMESTAMP_FORMAT)
-        now_timestamp = datetime.now()
-        return now_timestamp - call_timestamp > 3600
+        if os.path.isfile(os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.time')):
+            with open(os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.time'),"r") as file:
+                call_timestamp = datetime.strptime(file.readline(),THE_SPACE_DEVS_TIMESTAMP_FORMAT)
+            now_timestamp = datetime.now()
+            return (now_timestamp - call_timestamp).total_seconds() > 3600
+        else:
+            return True
         
     async def parse_and_send_results(self, json_string):    # extracted for testing purposes
         try:
