@@ -476,43 +476,5 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         return await ctx.send(embed=embed)
 
-    @commands.command(name="list_users", brief="list_users_brief", usage="list_users_usage", help="list_users_help")
-    async def list_users(self, ctx: commands.Context, list_name: str):
-        """
-        Returns a list of users that subscribed to the specified list.
-        :param ctx: The current context. (discord.ext.commands.Context)
-        :param list_name: The list to return a list of users from. (str)
-        """
-
-        # Grabbing the guild data
-        guild_data = await get_guild_data(ctx.message.guild.id)
-
-        # Make sure the list name is lowercase
-        list_name = list_name.lower()
-
-        # Error if list does not exist
-        if not guild_data.does_list_exist(list_name):
-            msg = translate("list_err_does_not_exit", await culture(ctx))
-            return await ctx.send(msg)
-
-        # Making a list of all the users their ID that subbed to the entered list
-        users = guild_data.get_users_list(list_name)
-
-        # Looping through the users their ID's grabbing their real user names to put them into a string
-        msg = ""
-        for user_id in users:
-            msg += ctx.bot.get_user(user_id).name
-            msg += "\n"
-
-        embed_title = translate("list_users_embed_title", await culture(ctx)).format(len(users))
-
-        embed = discord.Embed(
-                    title=embed_title,
-                    description=msg,
-                    color=NOTIFY_EMBED_COLOR,
-                )
-
-        return await ctx.send(embed=embed)
-
 def setup(bot: commands.Bot):
     bot.add_cog(Notify(bot))
