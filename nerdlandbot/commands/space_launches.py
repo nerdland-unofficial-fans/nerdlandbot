@@ -21,7 +21,7 @@ class SpaceDevs (commands.Cog, name='The space devs'):
 
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief")
     async def cmd_space_launches(self, ctx:commands.Context):
-        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, '/'.join (THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE)])
+        full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, '/'.join (THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE),THE_SPACE_DEVS_LIMIT_TO_10_RESULTS])
 
         if self.should_call_the_api ():
             async with aiohttp.ClientSession() as session:
@@ -33,16 +33,16 @@ class SpaceDevs (commands.Cog, name='The space devs'):
                         with open(self.cache_of_space_launches_time_path,"w") as file:
                             timestamp = datetime.now().strftime(THE_SPACE_DEVS_TIMESTAMP_FORMAT)
                             file.write(timestamp)
-                        await ctx.send(embed = await self.parse_and_compose_embed(msg))
+                        await ctx.send(embed = self.parse_and_compose_embed(msg))
                     elif resp.status == 429:
-                        await ctx.send(embed = await self.compose_error_embed('Too many requests. Wait a couple of minutes and try again.'))
+                        await ctx.send(embed = self.compose_error_embed('Too many requests. Wait a couple of minutes and try again.'))
                     else:
-                        await ctx.send(embed = await self.compose_error_embed('Call to the space devs failed. Response status: ' + str(resp.status)))
+                        await ctx.send(embed = self.compose_error_embed('Call to the space devs failed. Response status: ' + str(resp.status)))
                     return
         else:
             with open(self.cache_of_space_launches_json_path,"r") as file:
                 msg = file.read()
-            await ctx.send(embed = await self.parse_and_compose_embed(msg))
+            await ctx.send(embed = self.parse_and_compose_embed(msg))
 
     def should_call_the_api (self):
         if os.path.isfile(self.cache_of_space_launches_json_path) and os.path.isfile(self.cache_of_space_launches_time_path):
@@ -53,17 +53,17 @@ class SpaceDevs (commands.Cog, name='The space devs'):
         else:
             return True
           
-    async def parse_and_compose_embed(self, json_string):    # extracted for testing purposes      
+    def parse_and_compose_embed(self, json_string):    # extracted for testing purposes      
         try:
             dom = json.loads(json_string)
         except json.JSONDecodeError:
-            return await self.compose_error_embed('Could not parse the response from space devs.')
+            return self.compose_error_embed('Could not parse the response from space devs.')
         embed = self.main_info_embed()
         for index, result in enumerate (dom['results']):
-            await self.get_embed_field_for_upcominglaunch(index, result, embed)
+            self.get_embed_field_for_upcominglaunch(index, result, embed)
         return embed
 
-    async def compose_error_embed(self, error_msg):
+    def compose_error_embed(self, error_msg):
         embed = self.main_info_embed()
         embed.add_field(name = 'ERROR:', value= error_msg, inline=True)
         return embed
@@ -77,7 +77,7 @@ class SpaceDevs (commands.Cog, name='The space devs'):
                             )
         return result
 
-    async def get_embed_field_for_upcominglaunch(self, index, result_json, embed):
+    def get_embed_field_for_upcominglaunch(self, index, result_json, embed):
         try:
             try:
                 windows_start = datetime.strptime(result_json["window_start"],'%Y-%m-%dT%H:%M:%SZ')
