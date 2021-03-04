@@ -20,7 +20,7 @@ class SpaceDevs (commands.Cog, name='The space devs'):
         self.cache_of_space_launches_json_path = os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.json')
         self.cache_of_space_launches_time_path = os.path.join (THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.time')
 
-    @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief", usage="space_launches_usage")
+    @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief")
     async def cmd_space_launches(self, ctx:commands.Context):
         self.ctx = ctx
 
