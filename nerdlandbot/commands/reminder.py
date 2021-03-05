@@ -9,12 +9,23 @@ from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as cu
 from nerdlandbot.helpers.constants import *
 
 
-class Reminder(commands.Cog, name="reminder"):
+class Reminder(commands.Cog, name="Simple Reminder"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(name="reminder", aliases=["remind_me"], brief="reminder_brief", usage="reminder_usage", help="reminder_help")
-    async def reminder(self, ctx: commands.Context, time: typing.Optional[int] = None, *, message: typing.Optional[str] = None):
+    async def reminder(self, ctx: commands.Context, time: typing.Optional[str] = None, *, message: typing.Optional[str] = None):
+        try:
+            time_int = int(time)
+        except:
+            msg = translate("reminder_err_no_int", await culture(ctx))
+            title = translate("reminder_err_title", await cultur(ctx))
+            embed = discord.Embed(
+                description=msg,
+                color=NOTIFY_EMBED_COLOR
+            )
+            return await ctx.send(embed=embed)
+
         # If there is no time, return an error
         if not time:
             msg = translate("reminder_err_no_time", await culture(ctx))
@@ -27,7 +38,7 @@ class Reminder(commands.Cog, name="reminder"):
             return await ctx.send(embed=embed)
 
         # If the time is longer than a day
-        if time >= MAX_REMINDER_TIME:
+        if time_int >= MAX_REMINDER_TIME:
             msg = translate("reminder_err_too_long", await culture(ctx))
             title = translate("reminder_err_title", await culture(ctx))
             embed = discord.Embed(
@@ -38,7 +49,7 @@ class Reminder(commands.Cog, name="reminder"):
             return await ctx.send(embed=embed)
 
         # If the time is shorter than 5 minutes
-        if time <= MIN_REMINDER_TIME:
+        if time_int <= MIN_REMINDER_TIME:
             msg = translate("reminder_err_too_short", await culture(ctx))
             title = translate("reminder_err_title", await culture(ctx))
             embed = discord.Embed(
@@ -49,8 +60,8 @@ class Reminder(commands.Cog, name="reminder"):
             return await ctx.send(embed=embed)
         
         # Dividing the minutes into minutes and hours.
-        hours = int(time / REMINDER_TIME_DIVIDER)
-        minutes = time % REMINDER_TIME_DIVIDER
+        hours = int(time_int / REMINDER_TIME_DIVIDER)
+        minutes = time_int % REMINDER_TIME_DIVIDER
         remind_hour = (datetime.now().hour + hours) % 23
         remind_minute = (datetime.now().minute + minutes) % 60
 

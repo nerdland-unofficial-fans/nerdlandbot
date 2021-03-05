@@ -151,3 +151,4 @@
 "reminder_usage","<minutes> [message]","<minuten> [bericht]"
 "reminder_brief","Set a reminder for yourself.","Stel een herinnering in voor jezelf."
 "reminder_help","Set a reminder for yourself. If you don't use a message, you will just get a general reminder. \n\n <minutes> \u2003 The amount of minutes. Maximum: 1439 (just a little less than a day). \n [message] \u2003 If you want to set a message, to be included with the reminder.","Stel een herinnering in voor jezelf. Als je geen bericht gebruikt, krijg je een algemene herinnering op het gewenste tijdstip. \n\n <minuten> \u2003 Het aantal minuten. Maximum: 1439 (iets minder dan 1 dag). \n [bericht] \u2003 Als je een bericht wilt krijgen bij je reminder, kan je dat gewoon meegeven."
+"reminder_err_no_int","You need to enter minutes!","Je moet het aantal minuten ingeven!"
