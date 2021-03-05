@@ -2,7 +2,7 @@ import typing
 import asyncio
 import discord
 from discord.ext import commands
-from datetime import datetime
+import datetime
 
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
@@ -49,11 +49,12 @@ class Reminder(commands.Cog, name="Simple Reminder"):
             )
             return await ctx.send(embed=embed)
         
-        # Dividing the minutes into minutes and hours.
-        hours = int(time_int / REMINDER_TIME_DIVIDER)
-        minutes = time_int % REMINDER_TIME_DIVIDER
-        remind_hour = (datetime.now().hour + hours) % 23
-        remind_minute = (datetime.now().minute + minutes) % 60
+        # Logic to determine the time the user wants to be reminded
+        current_time = datetime.datetime.now()
+        time_seconds = time_int * REMINDER_CONVERT_TO_MINUTES
+        remind_time = current_time + datetime.timedelta(0, time_seconds)
+        remind_hour = remind_time.hour
+        remind_minute = remind_time.minute
 
         # Fixing notation for first 10 min of the hour
         remind_minute_string = str(remind_minute).rjust(2,"0")
@@ -85,7 +86,7 @@ class Reminder(commands.Cog, name="Simple Reminder"):
         await ctx.send(embed=embed_reminder_set)
 
         # If it's not the specified time, wait for it.
-        while not (datetime.now().hour == remind_hour and datetime.now().minute == remind_minute):
+        while not (datetime.datetime.now().hour == remind_hour and datetime.datetime.now().minute == remind_minute):
             await asyncio.sleep(60)
        
         # Tag the author and send the message!
