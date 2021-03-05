@@ -15,23 +15,13 @@ class Reminder(commands.Cog, name="Simple Reminder"):
 
     @commands.command(name="reminder", aliases=["remind_me"], brief="reminder_brief", usage="reminder_usage", help="reminder_help")
     async def reminder(self, ctx: commands.Context, time: typing.Optional[str] = None, *, message: typing.Optional[str] = None):
+        # If the user doesn't enter a time-format, let him know
         try:
             time_int = int(time)
         except:
             msg = translate("reminder_err_no_int", await culture(ctx))
-            title = translate("reminder_err_title", await cultur(ctx))
-            embed = discord.Embed(
-                description=msg,
-                color=NOTIFY_EMBED_COLOR
-            )
-            return await ctx.send(embed=embed)
-
-        # If there is no time, return an error
-        if not time:
-            msg = translate("reminder_err_no_time", await culture(ctx))
             title = translate("reminder_err_title", await culture(ctx))
             embed = discord.Embed(
-                title=title,
                 description=msg,
                 color=NOTIFY_EMBED_COLOR
             )
