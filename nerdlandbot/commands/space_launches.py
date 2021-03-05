@@ -61,7 +61,7 @@ class SpaceDevs (commands.Cog, name='Space'):
             return self.compose_error_embed('Could not parse the response from space devs.')
         embed = self.main_info_embed()
         for index, result in enumerate (dom['results']):
-            self.get_embed_field_for_upcominglaunch(index, result, embed)
+            self.add_embed_field_for_upcominglaunch(index, result, embed)
         return embed
 
     def compose_error_embed(self, error_msg):
@@ -78,7 +78,7 @@ class SpaceDevs (commands.Cog, name='Space'):
                             )
         return result
 
-    def get_embed_field_for_upcominglaunch(self, index, result_json, embed):
+    def add_embed_field_for_upcominglaunch(self, index, result_json, embed):
         try:
             try:
                 windows_start = datetime.strptime(result_json["window_start"],'%Y-%m-%dT%H:%M:%SZ')
