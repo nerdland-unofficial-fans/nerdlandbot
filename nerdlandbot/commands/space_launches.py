@@ -18,6 +18,8 @@ class SpaceDevs (commands.Cog, name='The space devs'):
         self.bot = bot
         self.cache_of_space_launches_json_path = os.path.join(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.json')
         self.cache_of_space_launches_time_path = os.path.join (THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.time')
+        if not os.path.isdir(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER):
+            os.makedirs(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER)
 
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief")
     async def cmd_space_launches(self, ctx:commands.Context):
