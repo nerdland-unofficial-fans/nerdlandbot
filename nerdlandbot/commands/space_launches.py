@@ -109,6 +109,31 @@ class SpaceDevs (commands.Cog, name='Space'):
         embed.add_field(name = name, value = value, inline = False)
         return
 
+    async def get_percy_data(self):
+        """
+        Returns selected data for percy from the NASA Api
+        :return: dict containing sol, distance, longitude and latitude
+        """
+        # TODO: call API and return the relevant data in a simplified list
+        url = 'https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints_current.json'
+        full_json = ''
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers = {"accept":"application/json"}) as resp:
+                full_json = await resp.text()
+        data = json.loads(full_json)['features'][0]
+        percy_data = dict()
+        percy_data['sol'] = data['properties']['sol']
+        percy_data['distance'] = data['properties']['dist_km']
+        percy_data['longitude'] = data['geometry']['coordinates'][0]
+        percy_data['latitude'] = data['geometry']['coordinates'][1]
+        return percy_data
+
+
+    @commands.command(name="percy", hidden = False, help="percy_help", brief="percy_brief")
+    async def cmd_percy(self, ctx:commands.Context):
+        percy_data = await self.get_percy_data()
+        await ctx.send(json.dumps(percy_data))
+
 def setup(bot: commands.Bot):
     bot.add_cog(SpaceDevs(bot))
 
