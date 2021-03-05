@@ -18,9 +18,10 @@ POLL_MAX_TIMEOUT = 60 #minutes
 POLL_DEFAULT_TIMEOUT = 5 #minutes
 
 
+# Reminder
 MAX_REMINDER_TIME = 1440 #minutes, 1 day
 MIN_REMINDER_TIME = 5 #minutes
-REMINDER_TIME_DIVIDER = 60
+REMINDER_CONVERT_TO_MINUTES = 60
 
 #Dadjoke
 DAD_JOKE_URL = 'https://icanhazdadjoke.com'
