@@ -9,7 +9,7 @@ from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, THE_SPACE_DEVS_LIMIT_TO_10_RESULTS
-from nerdlandbot.helpers.constants import THE_SPACE_DEVS_HOME_URL
+from nerdlandbot.helpers.constants import THE_SPACE_DEVS_HOME_URL, NOTIFY_EMBED_COLOR
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE, THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_TIMESTAMP_FORMAT
 
@@ -22,7 +22,6 @@ class SpaceDevs (commands.Cog, name='The space devs'):
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief")
     async def cmd_space_launches(self, ctx:commands.Context):
         full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, '/'.join (THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE),THE_SPACE_DEVS_LIMIT_TO_10_RESULTS])
-
         if self.should_call_the_api ():
             async with aiohttp.ClientSession() as session:
                 async with session.get(full_url, headers = {"accept":"application/json"}) as resp: 
@@ -73,7 +72,7 @@ class SpaceDevs (commands.Cog, name='The space devs'):
                                 title="Upcoming launches", 
                                 url=THE_SPACE_DEVS_HOME_URL, 
                                 description="Provided by the space devs api. Timestamps = UTC",
-                                color=discord.Color.blue()
+                                color=NOTIFY_EMBED_COLOR
                             )
         return result
 
