@@ -10,8 +10,7 @@ REACTION_TIMEOUT = 300 #seconds
 INTERACT_TIMEOUT = 30 #seconds
 
 # directory where the womat photos are stored
-WOMBATS_DIR_NAME = "wombat"
-PONCHO_DIR_NAME = "poncho"
+WOMBATS_DIR_NAME = "wombats"
 
 SCHEDULER_INTERVAL = 10.0 #minutes
 
