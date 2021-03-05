@@ -393,7 +393,7 @@ class Notify(commands.Cog, name="Notification_lists"):
     async def remove_list(self, ctx: commands.Context, list_name: str):
         """
         Removes the given list.
-        :param ctx: The current contest. (discord.ext.commands.Context)
+        :param ctx: The current context. (discord.ext.commands.Context)
         :param list_name: The list to be removed. (str)
         """
 
@@ -445,6 +445,36 @@ class Notify(commands.Cog, name="Notification_lists"):
             msg = translate("snooze_lose", await culture(ctx))
             return await ctx.send(msg)
 
+    @commands.command(name="list_count", brief="list_count_brief", usage="list_count_usage", help="list_count_help")
+    async def list_count(self, ctx: commands.Context, list_name: str):
+        """
+        Returns a count of the specified list.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        :param list_name: The list to count the users of. (str)
+        """
+        
+        # Grabbing the guild data
+        guild_data = await get_guild_data(ctx.message.guild.id)
+
+        # Make sure the list name is lowercase
+        list_name = list_name.lower()
+
+        # Error if list does not exist
+        if not guild_data.does_list_exist(list_name):
+            msg = translate("list_err_does_not_exit", await culture(ctx))
+            return await ctx.send(msg)
+
+        # Making a list of all the users their ID that subbed to the entered list
+        users = guild_data.get_users_list(list_name)
+
+        msg = translate("list_count_message", await culture(ctx)).format(len(users))
+
+        embed = discord.Embed(
+            description=msg,
+            color=NOTIFY_EMBED_COLOR
+        )
+
+        return await ctx.send(embed=embed)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Notify(bot))
