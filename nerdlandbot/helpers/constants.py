@@ -17,8 +17,11 @@ SCHEDULER_INTERVAL = 10.0 #minutes
 POLL_MAX_TIMEOUT = 60 #minutes
 POLL_DEFAULT_TIMEOUT = 5 #minutes
 
-EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
 
 MAX_REMINDER_TIME = 1440 #minutes, 1 day
 MIN_REMINDER_TIME = 5 #minutes
 REMINDER_TIME_DIVIDER = 60
+
+#Dadjoke
+DAD_JOKE_URL = 'https://icanhazdadjoke.com'
+EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'

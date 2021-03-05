@@ -3,7 +3,7 @@ import aiohttp
 import asyncio
 
 from discord.ext import commands
-
+from nerdlandbot.helpers.constants import DAD_JOKE_URL
 
 class DadJoke(commands.Cog, name="dad_joke"):
     def __init__(self, bot: commands.Bot):
@@ -12,7 +12,7 @@ class DadJoke(commands.Cog, name="dad_joke"):
     @commands.command(name="dad_joke", aliases=["dadjoke"], help="dad_joke_help")
     async def cmd_dad_joke(self, ctx: commands.Context):
         async with aiohttp.ClientSession() as session:
-            async with session.get('https://icanhazdadjoke.com',headers = { "Accept": "text/plain" }) as resp:
+            async with session.get(DAD_JOKE_URL,headers = { "Accept": "text/plain" }) as resp:
                 msg = await resp.text(encoding='utf-8')
 
                 # msg can contain utf 2028 charactercode which is line-separator, we're just converting it to '\n'
