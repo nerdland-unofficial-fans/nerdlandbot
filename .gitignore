@@ -1,3 +1,7 @@
+# ignore the folders of pictures of wombats and poncho
+wombats/
+poncho/
+
 # ignore IDE files
 **/.idea
 **/.vscode
