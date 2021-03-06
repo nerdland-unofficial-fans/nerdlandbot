@@ -53,16 +53,16 @@ bot.load_extension("nerdlandbot.commands.privacy")
 YOUTUBE_TOKEN = os.getenv("YOUTUBE_TOKEN")
 
 
-# @bot.event
-# async def on_ready():
-#     if YOUTUBE_TOKEN:
-#         info("Starting YouTube scheduler")
-#         check_and_post_latest_videos.start(bot)
-#     else:
-#         fatal(
-#             "Not starting YouTube scheduler. Please provide a YOUTUBE_TOKEN in your .env file"
-#         )
+@bot.event
+async def on_ready():
+    if YOUTUBE_TOKEN:
+        info("Starting YouTube scheduler")
+        check_and_post_latest_videos.start(bot)
+    else:
+        fatal(
+            "Not starting YouTube scheduler. Please provide a YOUTUBE_TOKEN in your .env file"
+        )
 
-#     bot.is_purging = {}
-#     purge_messages.start(bot)
+    bot.is_purging = {}
+    purge_messages.start(bot)
 bot.run(TOKEN)
