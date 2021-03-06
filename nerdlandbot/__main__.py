@@ -41,31 +41,28 @@ bot.load_extension("nerdlandbot.commands.notify")
 bot.load_extension("nerdlandbot.commands.help")
 bot.load_extension("nerdlandbot.commands.settings")
 bot.load_extension("nerdlandbot.commands.membercount")
-bot.load_extension("nerdlandbot.commands.random_user")
-bot.load_extension("nerdlandbot.commands.wombat")
+bot.load_extension("nerdlandbot.commands.random")
 bot.load_extension("nerdlandbot.commands.youtube")
 bot.load_extension("nerdlandbot.commands.poll")
 bot.load_extension("nerdlandbot.commands.purger")
 bot.load_extension("nerdlandbot.commands.kerk")
-bot.load_extension("nerdlandbot.commands.dad_joke")
 bot.load_extension("nerdlandbot.commands.open_source")
-bot.load_extension("nerdlandbot.commands.eight_ball")
 bot.load_extension("nerdlandbot.commands.privacy")
 
 # Initialize and start YouTube scheduler
 YOUTUBE_TOKEN = os.getenv("YOUTUBE_TOKEN")
 
 
-@bot.event
-async def on_ready():
-    if YOUTUBE_TOKEN:
-        info("Starting YouTube scheduler")
-        check_and_post_latest_videos.start(bot)
-    else:
-        fatal(
-            "Not starting YouTube scheduler. Please provide a YOUTUBE_TOKEN in your .env file"
-        )
+# @bot.event
+# async def on_ready():
+#     if YOUTUBE_TOKEN:
+#         info("Starting YouTube scheduler")
+#         check_and_post_latest_videos.start(bot)
+#     else:
+#         fatal(
+#             "Not starting YouTube scheduler. Please provide a YOUTUBE_TOKEN in your .env file"
+#         )
 
-    bot.is_purging = {}
-    purge_messages.start(bot)
+#     bot.is_purging = {}
+#     purge_messages.start(bot)
 bot.run(TOKEN)
