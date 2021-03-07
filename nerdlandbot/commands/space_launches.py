@@ -111,16 +111,17 @@ class SpaceDevs (commands.Cog, name='Space'):
 
     async def get_percy_data(self):
         """
-        Returns selected data for percy from the NASA Api
+        Returns simplified data for percy pulled from the NASA Mars map API
         :return: dict containing sol, distance, longitude and latitude
         """
-        # TODO: call API and return the relevant data in a simplified list
         url = 'https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints_current.json'
         full_json = ''
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers = {"accept":"application/json"}) as resp:
                 full_json = await resp.text()
+
         data = json.loads(full_json)['features'][0]
+
         percy_data = dict()
         percy_data['sol'] = data['properties']['sol']
         percy_data['distance'] = data['properties']['dist_km']
@@ -132,7 +133,17 @@ class SpaceDevs (commands.Cog, name='Space'):
     @commands.command(name="percy", hidden = False, help="percy_help", brief="percy_brief")
     async def cmd_percy(self, ctx:commands.Context):
         percy_data = await self.get_percy_data()
-        await ctx.send(json.dumps(percy_data))
+
+        embed=discord.Embed(title="Status update", description="This is your requested latest update from the NASA Perseverance rover.", color=0xb33a00)
+        embed.set_author(name="NASA Perseverance rover", url="https://mars.nasa.gov/mars2020/", icon_url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvanschneider.com%2Fwp-content%2Fuploads%2F2020%2F07%2Fmars_badge.jpg&f=1&nofb=1")
+        
+        embed.add_field(name="Sol", value=percy_data['sol'], inline=False)
+        embed.add_field(name="Latitude", value=percy_data['latitude'], inline=True)
+        embed.add_field(name="Longitude", value=percy_data['longitude'], inline=True)
+        embed.add_field(name="Distance Driven", value=percy_data['distance'], inline=True)
+        embed.set_footer(text="Click the bird below to receive my latest tweet")
+        
+        await ctx.send(embed=embed)
 
 def setup(bot: commands.Bot):
     bot.add_cog(SpaceDevs(bot))
