@@ -9,7 +9,7 @@ from nerdlandbot.helpers.constants import WOMBATS_DIR_NAME, PONCHO_DIR_NAME
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.log import warn
-from nerdlandbot.helpers.constants import EIGHT_BALL_URL
+from nerdlandbot.helpers.constants import EIGHT_BALL_URL,DAD_JOKE_URL
 from nerdlandbot.helpers.channel import get_channel
 
 def pick_random_online_member(ctx: commands.Context) -> discord.Member:
@@ -30,8 +30,7 @@ def pick_random_online_member(ctx: commands.Context) -> discord.Member:
     online_members = filter(is_online, ctx.guild.members)
     return random.choice(list(online_members))
 
-if not os.path.exists(PONCHO_DIR_NAME):
-    os.makedirs(PONCHO_DIR_NAME)
+
 class Random(commands.Cog, name="Random"):
     def __init__(self, bot):
         self.bot = bot
@@ -122,7 +121,7 @@ class Random(commands.Cog, name="Random"):
     @commands.command(name="dad_joke", aliases=["dadjoke"], help="dad_joke_help")
     async def cmd_dad_joke(self, ctx: commands.Context):
         async with aiohttp.ClientSession() as session:
-            async with session.get('https://icanhazdadjoke.com',headers = { "Accept": "text/plain" }) as resp:
+            async with session.get(DAD_JOKE_URL,headers = { "Accept": "text/plain" }) as resp:
                 msg = await resp.text(encoding='utf-8')
 
                 # msg can contain utf 2028 charactercode which is line-separator, we're just converting it to '\n'
