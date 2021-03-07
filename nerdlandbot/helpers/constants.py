@@ -11,6 +11,7 @@ INTERACT_TIMEOUT = 30 #seconds
 
 # directory where the womat photos are stored
 WOMBATS_DIR_NAME = "wombats"
+PONCHO_DIR_NAME = "poncho"
 
 SCHEDULER_INTERVAL = 10.0 #minutes
 
@@ -32,4 +33,8 @@ THE_SPACE_DEVS_TIMESTAMP_FORMAT = '%Y-%m-%dT%H:%M:%S'
 # the constants specific for upcoming launches (command space_launches)
 THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = ['launch','upcoming']
 THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE = 'space_launches'
+
+#Dadjoke
+DAD_JOKE_URL = 'https://icanhazdadjoke.com'
+EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
 

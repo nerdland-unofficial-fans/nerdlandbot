@@ -5,7 +5,7 @@ This is a Python-based discord bot developed by the nerdland fan community.
 This bot was setup mostly as an experiment, and there is no clearly defined goal so far.
 If you have any suggestions feel free to log an issue in this repository, any new ideas or challenges are much appreciated.
 
-#Privacy policy.
+# Privacy policy.
 This bot was developed with privacy as one of our core ideals.
 Because of this we have formulated a few statements about the inner workings.
 
