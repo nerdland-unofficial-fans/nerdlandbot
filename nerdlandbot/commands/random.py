@@ -34,20 +34,16 @@ def pick_random_online_member(ctx: commands.Context) -> discord.Member:
 class Random(commands.Cog, name="Random"):
     def __init__(self, bot):
         self.bot = bot
-        
+
         current_directory = os.getcwd()
         
         if not os.path.exists(WOMBATS_DIR_NAME):
             os.makedirs(WOMBATS_DIR_NAME)
             warn(f"Directory {os.path.join(current_directory,WOMBATS_DIR_NAME)} is created, put some wombat pictures in it!" )
-            msg = translate("empty_wombat_list", await culture(ctx))
-            return await ctx.send(msg)
 
         if not os.path.exists(PONCHO_DIR_NAME):
             os.makedirs(PONCHO_DIR_NAME)
             warn(f"Directory {os.path.join(current_directory,PONCHO_DIR_NAME)} is created, put some Poncho pictures in it!" )
-            msg = translate("empty_poncho_list", await culture(ctx))
-            return await ctx.send(msg)
 
     @commands.command(name="random_user", aliases=["randomuser"], brief="random_user_brief", usage="random_user_usage",
                       help="random_user_help")
@@ -99,8 +95,6 @@ class Random(commands.Cog, name="Random"):
 
     @commands.command(name="poncho", aliases=["poncho_pic","ponchopic"],hidden=True, help="poncho_pic_help")
     async def cmd_poncho_pic(self, ctx):
-
-
         poncho_list = [os.path.join(PONCHO_DIR_NAME, w) for w in os.listdir(PONCHO_DIR_NAME)]
 
         if not poncho_list:
