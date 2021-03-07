@@ -10,6 +10,7 @@ from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as cu
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.log import warn
 from nerdlandbot.helpers.constants import EIGHT_BALL_URL
+from nerdlandbot.helpers.channel import get_channel
 
 def pick_random_online_member(ctx: commands.Context) -> discord.Member:
     """
