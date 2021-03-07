@@ -3,15 +3,21 @@ import asyncio
 import json
 import os
 import discord
+import tweepy
+import time
 from datetime import datetime
 from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
+from nerdlandbot.helpers.log import debug, info, warn, error
+from nerdlandbot.helpers.emoji import bird, camera
+from nerdlandbot.helpers.constants import REACTION_TIMEOUT
 
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, THE_SPACE_DEVS_LIMIT_TO_10_RESULTS
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_HOME_URL, NOTIFY_EMBED_COLOR
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE, THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_TIMESTAMP_FORMAT
+from nerdlandbot.helpers.constants import PERCY_TWITTER_ID
 
 class SpaceDevs (commands.Cog, name='Space'):
     def __init__(self,bot:commands.Bot):
@@ -20,6 +26,13 @@ class SpaceDevs (commands.Cog, name='Space'):
         self.cache_of_space_launches_time_path = os.path.join (THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE + '.time')
         if not os.path.isdir(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER):
             os.makedirs(THE_SPACE_DEVS_LOCAL_CACHE_FOLDER)
+
+        self.twitter_creds = {'key':os.getenv("TWITTER_API_KEY"),'secret':os.getenv("TWITTER_API_SECRET")}
+        self.twitter_enabled = self.twitter_creds['key'] and self.twitter_creds['secret']
+        if not self.twitter_enabled:
+            error(
+                "No Twitter key and secret in .env file, Twitter functionality will not be available"
+            )
 
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief")
     async def cmd_space_launches(self, ctx:commands.Context):
@@ -124,11 +137,53 @@ class SpaceDevs (commands.Cog, name='Space'):
 
         percy_data = dict()
         percy_data['sol'] = data['properties']['sol']
-        percy_data['distance'] = data['properties']['dist_km']
+        percy_data['distance'] = data['properties']['dist_km'] + ' km'
         percy_data['longitude'] = data['geometry']['coordinates'][0]
         percy_data['latitude'] = data['geometry']['coordinates'][1]
         return percy_data
 
+    async def send_percy_tweet(self, ctx: commands.Context):
+
+        auth = tweepy.AppAuthHandler(self.twitter_creds['key'], self.twitter_creds['secret'])
+        api = tweepy.API(auth)
+        last_status = api.user_timeline(id=PERCY_TWITTER_ID)[0]
+        return await ctx.send(last_status.text)
+
+    async def wait_for_tweet_reaction(self, ctx: commands.Context, msg_id: int,
+                                       timeout: int = REACTION_TIMEOUT):
+        end_time = time.time() + timeout
+        while True:
+            try:
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda emoji, author: emoji.message.id == msg_id and not author.bot,
+                    timeout=timeout,
+                )
+                if reaction.emoji == bird:
+                    return await self.send_percy_tweet(ctx)
+            except asyncio.TimeoutError:
+                pass
+
+            if time.time() > end_time:
+                break
+
+    async def wait_for_camera_reaction(self, ctx: commands.Context, msg, embed, timeout: int = REACTION_TIMEOUT):
+        end_time = time.time() + timeout
+        while True:
+            try:
+                reaction, user = await ctx.bot.wait_for(
+                    "reaction_add",
+                    check=lambda emoji, author: emoji.message.id == msg.id and not author.bot,
+                    timeout=timeout,
+                )
+                if reaction.emoji == camera:
+                    embed.set_image(url='https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00002/ids/fdr/browse/zcam/ZLF_0002_0667131112_000FDR_N0010052AUT_04096_0260LUJ01_1200.jpg')
+                    return await msg.edit(embed=embed)
+            except asyncio.TimeoutError:
+                pass
+
+            if time.time() > end_time:
+                break
 
     @commands.command(name="percy", hidden = False, help="percy_help", brief="percy_brief")
     async def cmd_percy(self, ctx:commands.Context):
@@ -141,9 +196,25 @@ class SpaceDevs (commands.Cog, name='Space'):
         embed.add_field(name="Latitude", value=percy_data['latitude'], inline=True)
         embed.add_field(name="Longitude", value=percy_data['longitude'], inline=True)
         embed.add_field(name="Distance Driven", value=percy_data['distance'], inline=True)
-        embed.set_footer(text="Click the bird below to receive my latest tweet")
+        if self.twitter_enabled:
+            embed.set_footer(text="Click the bird below to receive my latest tweet\n Click the camera to see my Image Of The Week")
+        msg = await ctx.send(embed=embed)
+
+        added_reactions = []
+
+        await msg.add_reaction(camera)
+        added_reaction = asyncio.create_task(self.wait_for_camera_reaction(ctx,msg,embed))
+        added_reactions.append(added_reaction)
+
+        if self.twitter_enabled:
+            await msg.add_reaction(bird)
+            added_reaction = asyncio.create_task(self.wait_for_tweet_reaction(ctx, msg.id))
+            added_reactions.append(added_reaction)
         
-        await ctx.send(embed=embed)
+        await asyncio.gather(*added_reactions,return_exceptions=True)
+
+
+        #embed.set_image(url='https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00002/ids/fdr/browse/zcam/ZLF_0002_0667131112_000FDR_N0010052AUT_04096_0260LUJ01_1200.jpg')
 
 def setup(bot: commands.Bot):
     bot.add_cog(SpaceDevs(bot))
