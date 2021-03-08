@@ -18,15 +18,15 @@ class OnCommandError(commands.Cog, name="on_command_error"):
         :param ctx: The current context. (discord.ext.commands.Context)
         :param error: The current error. (Any)
         """
-
-        # Log the warning
-        log_warn(error)
-
+        
         # Notify user for MissingRequiredArgument errors
         if isinstance(error, commands.MissingRequiredArgument):
             command_name = ctx.message.content.split(" ")[0]
             msg = translate("err_missing_parameter", await culture(ctx)).format(command_name, error.param.name)
             return await ctx.send(msg)
+        else:
+            # Log the warning
+            log_warn(error)
 
         # Notify user with general error
         msg = translate("err_unrecognized_command", await culture(ctx))
