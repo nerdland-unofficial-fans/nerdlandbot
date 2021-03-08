@@ -1,3 +1,7 @@
+# ignore the folders of pictures of wombats and poncho
+wombats/
+poncho/
+
 # ignore IDE files
 **/.idea
 **/.vscode
@@ -151,3 +155,6 @@ GuildConfigs/*.json
 bot.log
 .venv
 .run
+
+# Cache for the space_commands (space_launches, space_events, ...)
+space_commands/*
