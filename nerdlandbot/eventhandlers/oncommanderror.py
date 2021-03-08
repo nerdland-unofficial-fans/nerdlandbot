@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
-from nerdlandbot.helpers.log import error as log_error
+from nerdlandbot.helpers.log import warn as log_warn
 
 
 class OnCommandError(commands.Cog, name="on_command_error"):
@@ -19,8 +19,8 @@ class OnCommandError(commands.Cog, name="on_command_error"):
         :param error: The current error. (Any)
         """
 
-        # Log the error
-        log_error(error)
+        # Log the warning
+        log_warn(error)
 
         # Notify user for MissingRequiredArgument errors
         if isinstance(error, commands.MissingRequiredArgument):
