@@ -129,8 +129,17 @@
 "purger_no_exists","There's no automatic message removal in <#{0}>.","Er worden geen berichten verwijderd in <#{0}>."
 "purger_list_title","List of channels with automatic removal of messages and max age:","Lijst van kanalen waar berichten automatisch worden verwijderd en de maximale leeftijd:"
 "purger_list_item","  - <#{0}>: {1} day(s)","  - <#{0}>: {1} dag(en)"
+
+"channel_is_voice","You should provide a text channel, not a voice channel","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
+
+"space_launches_brief","Lists the 1st 10 upcoming launches.","Geeft de eerstvolgende 10 lanceringen."
+"space_launches_help","Provides start of the launch window (UTC / GMT), the agency, mission, rocket and location for each of the upcoming 10 launches.","Geeft de start van het lanceervenster, (UTC / GMT), de organisatie, de missie, de raket en plaats van de eerstvolgende 10 lanceringen."
+
+"dad_joke_help","Replies a random dad joke","Antwoordt met een willekeurige dad joke"
+
 "channel_is_voice","You should provide a text channel, not a voice channel.","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
 "dad_joke_help","Replies a random dad joke.","Antwoordt met een willekeurige dad joke."
+
 "open_source_brief","Let a user know the bot is open source.","Laat een gebruiker weten dat de bot open source is."
 "open_source_usage","[@user]","[@gebruiker]"
 "open_source_help","Let a user know the bot is open source. \n If there is no user tagged, the bot will send a general message. \n If a user is tagged, the bot will also tag the user in it's message.","Laat een gebruiker weten dat de bot open source is. \n Als er geen gebruiker is genoemd, zal er een algemene boodschap verschijnen. \n Als er een gebruiker is genoemd, zal de bot deze gebruiker ook taggen."
