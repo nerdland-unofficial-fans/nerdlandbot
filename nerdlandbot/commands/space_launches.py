@@ -47,16 +47,16 @@ class SpaceDevs (commands.Cog, name='Space'):
                         with open(self.cache_of_space_launches_time_path,"w") as file:
                             timestamp = datetime.now().strftime(THE_SPACE_DEVS_TIMESTAMP_FORMAT)
                             file.write(timestamp)
-                        await ctx.send(embed = self.parse_and_compose_embed(msg))
+                        embed = self.parse_from_file_and_compose_embed (self.cache_of_space_launches_json_path)
+                        await ctx.send(embed = embed)
                     elif resp.status == 429:
                         await ctx.send(embed = self.compose_error_embed('Too many requests. Wait a couple of minutes and try again.'))
                     else:
                         await ctx.send(embed = self.compose_error_embed('Call to the space devs failed. Response status: ' + str(resp.status)))
                     return
         else:
-            with open(self.cache_of_space_launches_json_path,"r") as file:
-                msg = file.read()
-            await ctx.send(embed = self.parse_and_compose_embed(msg))
+            embed = self.parse_from_file_and_compose_embed (self.cache_of_space_launches_json_path)
+            await ctx.send(embed = embed)
 
     def should_call_the_api (self):
         if os.path.isfile(self.cache_of_space_launches_json_path) and os.path.isfile(self.cache_of_space_launches_time_path):
@@ -67,15 +67,17 @@ class SpaceDevs (commands.Cog, name='Space'):
         else:
             return True
           
-    def parse_and_compose_embed(self, json_string):    # extracted for testing purposes      
-        try:
-            dom = json.loads(json_string)
-        except json.JSONDecodeError:
-            return self.compose_error_embed('Could not parse the response from space devs.')
-        embed = self.main_info_embed()
-        for index, result in enumerate (dom['results']):
-            self.get_embed_field_for_upcominglaunch(index, result, embed)
-        return embed
+    def parse_from_file_and_compose_embed(self, json_file):    # extracted for testing purposes      
+        ''' This function expects that the json_file is already verified for existence '''
+        with open(json_file,'r') as file:
+            try:
+                dom = json.load(file)
+            except json.JSONDecodeError:
+                return self.compose_error_embed('Could not parse the response from space devs.')
+            embed = self.main_info_embed()
+            for index, result in enumerate (dom['results']):
+                self.add_embed_field_for_upcominglaunch(index, result, embed)
+            return embed
 
     def compose_error_embed(self, error_msg):
         embed = self.main_info_embed()
@@ -91,7 +93,7 @@ class SpaceDevs (commands.Cog, name='Space'):
                             )
         return result
 
-    def get_embed_field_for_upcominglaunch(self, index, result_json, embed):
+    def add_embed_field_for_upcominglaunch(self, index, result_json, embed):
         try:
             try:
                 windows_start = datetime.strptime(result_json["window_start"],'%Y-%m-%dT%H:%M:%SZ')

@@ -11,6 +11,7 @@ INTERACT_TIMEOUT = 30 #seconds
 
 # directory where the womat photos are stored
 WOMBATS_DIR_NAME = "wombats"
+PONCHO_DIR_NAME = "poncho"
 
 SCHEDULER_INTERVAL = 10.0 #minutes
 
@@ -35,3 +36,8 @@ THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE = 'space_launches'
 
 # ID for official NASA Perseverance Twitter account
 PERCY_TWITTER_ID = '1232783237623119872'
+
+# Dadjoke
+DAD_JOKE_URL = 'https://icanhazdadjoke.com'
+EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
+
