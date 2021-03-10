@@ -1,10 +1,24 @@
 import pandas
 import codecs
-
 from os import path
-from nerdlandbot.helpers.TranslationHelper import translate_adjective
+from datetime import datetime
+
+from discord.ext import commands
+
+from nerdlandbot.helpers.TranslationHelper import get_culture_from_context
+from nerdlandbot.helpers.constants import SATURDAY, SUNDAY, FOEMP
 
 translations = {}
+
+def is_weekend() -> bool:
+    return datetime.now().weekday() in {SATURDAY, SUNDAY}
+
+def translate_adjective(language: str) -> str:
+    return (
+        get_text("darling", language)
+        if is_weekend()
+        else get_text("dummy", language)
+    )
 
 
 def get_text(translation_key: str, language: str) -> str:
@@ -22,9 +36,13 @@ def get_text(translation_key: str, language: str) -> str:
     if not translations_for_key.keys().__contains__(language):
         return f'[{language}] {translation_key} 2'
 
-    friendly_key = translations_for_key[language].replace("<<foemp>>", translate_adjective(language))
+    language_translation = translations_for_key[language]
+    if FOEMP in language_translation:
+        language_translation = language_translation.replace(
+            FOEMP, translate_adjective(language),
+        )
 
-    return friendly_key
+    return language_translation
 
 
 # Read csv
