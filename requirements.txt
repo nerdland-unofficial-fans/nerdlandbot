@@ -4,3 +4,4 @@ pandas
 aiohttp
 requests
 tweepy
+beautifulsoup4

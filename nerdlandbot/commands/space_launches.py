@@ -5,6 +5,7 @@ import os
 import discord
 import tweepy
 import time
+from bs4 import BeautifulSoup
 from datetime import datetime
 from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
@@ -127,6 +128,8 @@ class SpaceDevs (commands.Cog, name='Space'):
         Returns simplified data for percy pulled from the NASA Mars map API
         :return: dict containing sol, distance, longitude and latitude
         """
+        #TODO: add handling of errors should api not load
+        #TODO: add handling of errors should json not parse
         url = 'https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints_current.json'
         full_json = ''
         async with aiohttp.ClientSession() as session:
@@ -141,9 +144,27 @@ class SpaceDevs (commands.Cog, name='Space'):
         percy_data['longitude'] = data['geometry']['coordinates'][0]
         percy_data['latitude'] = data['geometry']['coordinates'][1]
         return percy_data
+    
+    async def get_percy_image(self):
+        """
+        Returns the url to the image of the week
+        :return: string containing the url to image of the week
+        """
+        #TODO: add handling of errors should webpage not load
+        #TODO: add handling of errors should scraping fail
+        web_url = 'https://mars.nasa.gov/mars2020/multimedia/raw-images/image-of-the-week/'
+        page_html = ''
+        async with aiohttp.ClientSession() as session:
+            async with session.get(web_url, headers = {"accept":"text/html"}) as resp:
+                page_html = await resp.text()
+        
+        soup = BeautifulSoup(page_html, "html.parser")
+        img = soup.find("div", {"class": "main_image"}).find("img")
+        
+        return img['src']
+
 
     async def send_percy_tweet(self, ctx: commands.Context):
-
         auth = tweepy.AppAuthHandler(self.twitter_creds['key'], self.twitter_creds['secret'])
         api = tweepy.API(auth)
         last_status = api.user_timeline(id=PERCY_TWITTER_ID)[0]
@@ -177,7 +198,7 @@ class SpaceDevs (commands.Cog, name='Space'):
                     timeout=timeout,
                 )
                 if reaction.emoji == camera:
-                    embed.set_image(url='https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00002/ids/fdr/browse/zcam/ZLF_0002_0667131112_000FDR_N0010052AUT_04096_0260LUJ01_1200.jpg')
+                    embed.set_image(url=await self.get_percy_image())
                     return await msg.edit(embed=embed)
             except asyncio.TimeoutError:
                 pass
@@ -199,6 +220,7 @@ class SpaceDevs (commands.Cog, name='Space'):
         if self.twitter_enabled:
             embed.set_footer(text="Click the bird below to receive my latest tweet\n Click the camera to see my Image Of The Week")
         msg = await ctx.send(embed=embed)
+        await self.get_percy_image()
 
         added_reactions = []
 
@@ -212,7 +234,6 @@ class SpaceDevs (commands.Cog, name='Space'):
             added_reactions.append(added_reaction)
         
         await asyncio.gather(*added_reactions,return_exceptions=True)
-
 
         #embed.set_image(url='https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00002/ids/fdr/browse/zcam/ZLF_0002_0667131112_000FDR_N0010052AUT_04096_0260LUJ01_1200.jpg')
 
