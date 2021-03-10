@@ -18,9 +18,10 @@ SCHEDULER_INTERVAL = 10.0 #minutes
 POLL_MAX_TIMEOUT = 60 #minutes
 POLL_DEFAULT_TIMEOUT = 5 #minutes
 
-# For the datetime module, the weekday() function returns an int
+# For the friendly bot
 SATURDAY = 5
 SUNDAY = 6
+FOEMP = "<<foemp>>"
 
 # the space_commands API url parts
 THE_SPACE_DEVS_HOME_URL = 'https://thespacedevs.com/llapi'
