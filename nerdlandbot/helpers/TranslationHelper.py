@@ -1,8 +1,6 @@
 from discord.ext import commands
-from datetime import datetime
 
 from nerdlandbot.commands.GuildData import get_guild_data
-from nerdlandbot.helpers.constants import SATURDAY, SUNDAY
 
 
 async def get_culture_from_context(ctx: commands.Context) -> str:
