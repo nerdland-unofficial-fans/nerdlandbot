@@ -55,7 +55,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         """
         Unsubscribes the user from the provided list
         :param ctx: The current context. (discord.ext.commands.Context)
-        :param list_name: The list to unsubscribe from. (str)
+        :param list_name: The list to unsubscribe from or the all keyword. (str)
         :param user_id: the user to unsubscribe (int)
         """
         # Make sure list is lowercase
@@ -63,19 +63,27 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         guild_data = await get_guild_data(ctx.message.guild.id)
 
-        # Error if list does not exist
-        if not guild_data.does_list_exist(list_name):
-            msg = translate("list_err_does_not_exit", await culture(ctx))
-            return await ctx.send(msg)
+        if list_name == "all":
+            # Unsubscribe user from all
+            for notification_list in guild_data.notification_lists:
+                await guild_data.unsub_user(notification_list, user_id)
 
-        # Unsubscribe user and error if failed
-        if not await guild_data.unsub_user(list_name, user_id):
-            msg = translate("list_err_not_subscribed", await culture(ctx)).format(str(user_id), list_name)
+            msg = translate("all_unsub_success", await culture(ctx))
             return await ctx.send(msg)
+        else:
+            # Error if list does not exist
+            if not guild_data.does_list_exist(list_name):
+                msg = translate("list_err_does_not_exit", await culture(ctx))
+                return await ctx.send(msg)
 
-        # Unsubscribe successful, show result to user
-        msg = translate("list_unsubscribed", await culture(ctx)).format(str(user_id), list_name)
-        await ctx.send(msg)
+            # Unsubscribe user and error if failed
+            if not await guild_data.unsub_user(list_name, user_id):
+                msg = translate("list_err_not_subscribed", await culture(ctx)).format(str(user_id), list_name)
+                return await ctx.send(msg)
+
+            # Unsubscribe successful, show result to user
+            msg = translate("list_unsubscribed", await culture(ctx)).format(str(user_id), list_name)
+            await ctx.send(msg)
 
     @commands.command(name="sub", aliases=["subscribe"], brief="notify_sub_brief", usage="notify_sub_usage",
                       help="notify_sub_help")
