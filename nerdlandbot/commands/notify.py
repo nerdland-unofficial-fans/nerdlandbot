@@ -159,6 +159,9 @@ class Notify(commands.Cog, name="Notification_lists"):
         for users_str in user_messages:
             await ctx.send(users_str)
 
+        # update guild data audit fields
+        await guild_data.update_notification_audit(list_name)
+
     async def wait_for_added_reactions(self, ctx: commands.Context, msg_id: int, guild_data: GuildData,
                                        timeout: int = REACTION_TIMEOUT):
         """
