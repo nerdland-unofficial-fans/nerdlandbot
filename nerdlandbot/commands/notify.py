@@ -360,6 +360,12 @@ class Notify(commands.Cog, name="Notification_lists"):
         # Make sure the list name is lowercase
         list_name = list_name.lower()
 
+        # Error if list name is any of the reserved keywords
+        reserved = ["all"]
+        if list_name in reserved:
+            msg = translate("list_reserved_keyword", await culture(ctx)).format(list_name)
+            return await ctx.send(msg)
+
         # Error if list already exists
         if guild_data.does_list_exist(list_name):
             msg = translate("list_already_exists", await culture(ctx)).format(list_name)
