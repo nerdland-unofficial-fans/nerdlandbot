@@ -12,6 +12,7 @@ from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as cu
 from nerdlandbot.helpers.emoji import get_custom_emoji, thumbs_up, thumbs_down
 from nerdlandbot.helpers.constants import *
 
+
 class Notify(commands.Cog, name="Notification_lists"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -20,7 +21,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         """
         Subscribes user to a list and confirms with message
         :param ctx: The current context. (discord.ext.commands.Context)
-        :param list_name: The list to subscribe to. (str)
+        :param list_name: The list to subscribe to or the all keyword. (str)
         :param user_id: the user to subscribe (int)
         """
         # Make sure list is lowercase
@@ -28,19 +29,27 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         guild_data = await get_guild_data(ctx.message.guild.id)
 
-        # Error if list does not exist
-        if not guild_data.does_list_exist(list_name):
-            msg = translate("list_err_does_not_exit", await culture(ctx))
-            return await ctx.send(msg)
+        if list_name == "all":
+            # Subscribe user to all
+            for notification_list in guild_data.notification_lists:
+                await guild_data.sub_user(notification_list, user_id)
 
-        # Subscribe user and error if failed
-        if not await guild_data.sub_user(list_name, user_id):
-            msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(user_id), list_name)
+            msg = translate("all_sub_success", await culture(ctx))
             return await ctx.send(msg)
+        else:
+            # Error if list does not exist
+            if not guild_data.does_list_exist(list_name):
+                msg = translate("list_err_does_not_exit", await culture(ctx))
+                return await ctx.send(msg)
 
-        # Subscription successful, show result to user
-        msg = translate("list_subscribed", await culture(ctx)).format(str(user_id), list_name)
-        await ctx.send(msg)
+            # Subscribe user and error if failed
+            if not await guild_data.sub_user(list_name, user_id):
+                msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(user_id), list_name)
+                return await ctx.send(msg)
+
+            # Subscription successful, show result to user
+            msg = translate("list_subscribed", await culture(ctx)).format(str(user_id), list_name)
+            await ctx.send(msg)
 
     async def act_unsubscribe(self, ctx: commands.Context, list_name: str, user_id: int):
         """
@@ -49,7 +58,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         :param list_name: The list to unsubscribe from. (str)
         :param user_id: the user to unsubscribe (int)
         """
-        # make sure list is lowercase
+        # Make sure list is lowercase
         list_name = list_name.lower()
 
         guild_data = await get_guild_data(ctx.message.guild.id)
@@ -81,8 +90,8 @@ class Notify(commands.Cog, name="Notification_lists"):
         # Execute 'show_lists' if no parameter provided
         if not list_name:
             return await self.show_lists(ctx)
-        
-        #handle subscribe
+
+        # Handle subscribe
         await self.act_subscribe(ctx, list_name, ctx.author.id)
 
     @commands.command(name="unsub", aliases=["unsubscribe"], brief="notify_unsub_brief", usage="notify_unsub_usage",
@@ -93,7 +102,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         :param ctx: The current context. (discord.ext.commands.Context)
         :param list_name: The list to unsubscribe from. (str)
         """
-        await self.act_unsubscribe(ctx,list_name,ctx.author.id)
+        await self.act_unsubscribe(ctx, list_name, ctx.author.id)
 
     @commands.command(name="notify", usage="notify_notify_usage", brief="notify_notify_brief", help="notify_notify_help")
     async def notify(self, ctx: commands.Context, list_name: str, *, message: typing.Optional[str] = None):
@@ -114,7 +123,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
         # Fetch users to notify
         users = guild_data.get_users_list(list_name)
-        emoji,is_custom_emoji = guild_data.get_emoji(list_name)
+        emoji, is_custom_emoji = guild_data.get_emoji(list_name)
         if is_custom_emoji:
             emoji = get_custom_emoji(ctx, int(emoji))
 
@@ -138,12 +147,12 @@ class Notify(commands.Cog, name="Notification_lists"):
         user_messages.append(user_tags)
 
         embed = discord.Embed(
-                    title=emoji + "\t" + list_name.capitalize() + "\t" + emoji,
-                    description=message_text,
-                    color=NOTIFY_EMBED_COLOR,
-                )
+            title=emoji + "\t" + list_name.capitalize() + "\t" + emoji,
+            description=message_text,
+            color=NOTIFY_EMBED_COLOR,
+        )
 
-        # append the message if provided
+        # Append the message if provided
         if message:
             # If message too long, tell user to write shorter message
             excess = (-1 * NOTIFY_MAX_MSG_LENGTH) + len(message)
@@ -151,15 +160,15 @@ class Notify(commands.Cog, name="Notification_lists"):
                 msg = translate("notif_too_long", await culture(ctx)).format(excess)
                 return await ctx.send(msg)
             embed.add_field(
-                    name=translate("message", await culture(ctx)),
-                    value=message
+                name=translate("message", await culture(ctx)),
+                value=message
             )
 
         await ctx.channel.send(embed=embed)
         for users_str in user_messages:
             await ctx.send(users_str)
 
-        # update guild data audit fields
+        # Update guild data audit fields
         await guild_data.update_notification_audit(list_name)
 
     async def wait_for_added_reactions(self, ctx: commands.Context, msg_id: int, guild_data: GuildData,
@@ -188,7 +197,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 for key, v in guild_data.notification_lists.items():
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.act_subscribe(ctx, list_name,user.id)
+                        await self.act_subscribe(ctx, list_name, user.id)
 
             except asyncio.TimeoutError:
                 pass
@@ -221,7 +230,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
                     if reaction_emoji == v["emoji"]:
                         list_name = key
-                        await self.act_unsubscribe(ctx, list_name,user.id)
+                        await self.act_unsubscribe(ctx, list_name, user.id)
 
             except asyncio.TimeoutError:
                 pass
@@ -455,7 +464,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         :param ctx: The current context. (discord.ext.commands.Context)
         :param list_name: The list to count the users of. (str)
         """
-        
+
         # Grabbing the guild data
         guild_data = await get_guild_data(ctx.message.guild.id)
 
@@ -478,6 +487,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         )
 
         return await ctx.send(embed=embed)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Notify(bot))
