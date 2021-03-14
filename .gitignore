@@ -158,3 +158,6 @@ bot.log
 
 # Cache for the space_commands (space_launches, space_events, ...)
 space_commands/*
+
+# ignore json for google sheets api
+client_secret.json
