@@ -46,11 +46,14 @@ bot.load_extension("nerdlandbot.commands.youtube")
 bot.load_extension("nerdlandbot.commands.poll")
 bot.load_extension("nerdlandbot.commands.purger")
 bot.load_extension("nerdlandbot.commands.kerk")
-
+bot.load_extension("nerdlandbot.commands.recipe")
 bot.load_extension("nerdlandbot.commands.open_source")
 bot.load_extension("nerdlandbot.commands.privacy")
 
 bot.load_extension("nerdlandbot.commands.space_launches")
+
+# Setting up the google token
+SHEETS_TOKEN = os.getenv("SHEETS_JSON")
 
 # Initialize and start YouTube scheduler
 YOUTUBE_TOKEN = os.getenv("YOUTUBE_TOKEN")
@@ -68,4 +71,9 @@ async def on_ready():
 
     bot.is_purging = {}
     purge_messages.start(bot)
+
+    if SHEETS_TOKEN:
+        info("Spreadsheet editing is possible")
+    else:
+        fatal("No google-sheets token")
 bot.run(TOKEN)
