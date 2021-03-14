@@ -3,3 +3,4 @@ python-dotenv
 pandas
 aiohttp
 requests
+gspread
