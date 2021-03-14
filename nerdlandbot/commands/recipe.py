@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 import gspread
 import os
+import asyncio
 from datetime import datetime
 
 from nerdlandbot.translations.Translations import get_text as translate
@@ -34,14 +35,12 @@ class Recipe(commands.Cog, name="recipes"):
         date_string = "{}/{}/{} {}:{}:{}".format(d_obj.month, d_obj.day, d_obj.year, d_obj.hour, d_obj.minute, d_obj.second)
         
         # Asking the user questions and capturing the answer
-        # TODO: cleaning this up so it's not so dirty
         # TODO: adding checks to the wait_for
-        i = 0
-        while i < 5:
+        for i in range(len(questions)):
             await ctx.send("Please enter {}".format(questions[i]))
+            asyncio.sleep(1)
             msg = await ctx.bot.wait_for("message", timeout=20)
             answers.append(msg)
-            i += 1
 
         # Updating the worksheet(ws) with all the data asked of the user
         ws.update("A{}".format(next_row), date_string)
