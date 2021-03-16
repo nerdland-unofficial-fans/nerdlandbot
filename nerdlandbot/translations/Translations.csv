@@ -129,17 +129,12 @@
 "purger_no_exists","There's no automatic message removal in <#{0}>.","Er worden geen berichten verwijderd in <#{0}>."
 "purger_list_title","List of channels with automatic removal of messages and max age:","Lijst van kanalen waar berichten automatisch worden verwijderd en de maximale leeftijd:"
 "purger_list_item","  - <#{0}>: {1} day(s)","  - <#{0}>: {1} dag(en)"
-
 "channel_is_voice","You should provide a text channel, not a voice channel","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
-
 "space_launches_brief","Lists the 1st 10 upcoming launches.","Geeft de eerstvolgende 10 lanceringen."
 "space_launches_help","Provides start of the launch window (UTC / GMT), the agency, mission, rocket and location for each of the upcoming 10 launches.","Geeft de start van het lanceervenster, (UTC / GMT), de organisatie, de missie, de raket en plaats van de eerstvolgende 10 lanceringen."
-
 "dad_joke_help","Replies a random dad joke","Antwoordt met een willekeurige dad joke"
-
 "channel_is_voice","You should provide a text channel, not a voice channel.","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
 "dad_joke_help","Replies a random dad joke.","Antwoordt met een willekeurige dad joke."
-
 "open_source_brief","Let a user know the bot is open source.","Laat een gebruiker weten dat de bot open source is."
 "open_source_usage","[@user]","[@gebruiker]"
 "open_source_help","Let a user know the bot is open source. \n If there is no user tagged, the bot will send a general message. \n If a user is tagged, the bot will also tag the user in it's message.","Laat een gebruiker weten dat de bot open source is. \n Als er geen gebruiker is genoemd, zal er een algemene boodschap verschijnen. \n Als er een gebruiker is genoemd, zal de bot deze gebruiker ook taggen."
@@ -156,4 +151,15 @@
 "empty_poncho_list","No Poncho pictures were found...","Er werden geen foto's van Poncho gevonden..."
 "poncho_pic_help","Post a random Poncho picture.","Post een willekeurige foto van Poncho."
 "poncho_hond","DOG DOG DOG","HOND HOND HOND"
-
+"recipe_1_question","the name of the dish","de naam van het gerecht in"
+"recipe_2_question","a link to the recipe (discord or external)","een link naar het recept (discord of extern) in"
+"recipe_3_question","how much croquettes you give the recipe","in hoeveel kroketten je het recept geeft"
+"recipe_4_question","any comments you might have on the recipe","alle opmerkingen in die je hebt over het recept"
+"recipe_5_question","your name","je naam in"
+"recipe_template","Please enter {0}.","Voer alsjeblieft {0}."
+"recipe_timeout","You ran out of time, please try again!","Je bent de tijd uit het oog verloren, probeer het opnieuw!"
+"recipe_int_error","Enter minutes, not words!","Voer minuten in, geen woorden!"
+"recipe_brief","Answer a couple questions to fill in a spreadsheet.","Beantwoord een aantal vragen om een spreadsheet in te vullen."
+"recipe_help","When you call this command, the bot will ask you questions you have to respond to within 30 seconds in a normal message. When succesful the bot will signal this. Your answers will be stored in a google spreadsheet.","Wanneer je deze command oproept, zal de bot je een aantal vragen stellen waar je op moet beantwoorden binnen de 30 seconden in een normaal bericht. Wanneer het gelukt is zal de bot het laten weten. Je antwoorden worden opgeslagen in een google spreadsheet."
+"recipe_succes","You did it! The data has been stored now!","Gelukt! De data zal nu worden opgeslagen."
+"recipe_error","Something went wrong, please file an issue on github. Use the command `os` to get our github.","Er ging iets verkeerd, vul alsjeblieft een issue in op github. Gebruik het `os`-command voor onze github te vinden."
