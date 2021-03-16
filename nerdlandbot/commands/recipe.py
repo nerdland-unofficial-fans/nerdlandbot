@@ -14,7 +14,7 @@ SHEETS_TOKEN = os.getenv("SHEETS_JSON")
 SPREADSHEET = os.getenv("SPREADSHEET")
 
 
-class Recipe(commands.Cog, name="recipes"):
+class Recipe(commands.Cog, name="Spreadsheets"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
     
