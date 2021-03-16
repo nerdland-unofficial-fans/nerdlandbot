@@ -54,7 +54,15 @@ class Recipe(commands.Cog, name="recipes"):
                 answers.append(reaction)
                 if i == 2:
                     try:
-                        int(reaction.content)
+                        reaction_int = int(reaction.content)
+                        if reaction_int > 5 or reaction_int < 1:
+                            rating_error = translate("recipe_rating_error", lang)
+                            embed = discord.Embed(
+                                title = embed_title,
+                                description = rating_error,
+                                color = NOTIFY_EMBED_COLOR
+                            )
+                            return await ctx.send(embed=embed)
                     except:
                         int_error = translate("recipe_int_error", lang)
                         embed = discord.Embed(
@@ -71,6 +79,16 @@ class Recipe(commands.Cog, name="recipes"):
                     color = NOTIFY_EMBED_COLOR
                 )
                 return await ctx.send(embed=embed)
+        
+        # Let the user know the process has completed and he/she/it just has to wait now
+        processing = translate("recipe_processing", lang)
+        embed = discord.Embed(
+                    title = embed_title,
+                    description = processing,
+                    color = NOTIFY_EMBED_COLOR
+                )
+        await ctx.send(embed=embed)
+
 
         # Updating the worksheet(ws) with all the data asked of the user
         ws.update("A{}".format(next_row), date_string)

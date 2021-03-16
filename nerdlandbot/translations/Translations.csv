@@ -164,3 +164,5 @@
 "recipe_succes","You did it! The data has been stored now!","Gelukt! De data zal nu worden opgeslagen."
 "recipe_error","Something went wrong, please file an issue on github. Use the command `os` to get our github.","Er ging iets verkeerd, vul alsjeblieft een issue in op github. Gebruik het `os`-command voor onze github te vinden."
 "recipe_title","Recipe","Recept"
+"recipe_rating_error","You can only give a recipe a rating between 1 and 5 croquettes.","Je kan een recept maar een rating geven tussen 1 en 5 kroketten."
+"recipe_processing","Received all answers! Give me 5 seconds. Processing...","Alle antwoorden ontvangen! Geef me 5 seconden. Verwerken..."
