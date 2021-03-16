@@ -160,4 +160,4 @@ bot.log
 space_commands/*
 
 # ignore json for google sheets api
-client_secret.json
+*.json
