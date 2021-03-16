@@ -53,7 +53,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
                 await asyncio.sleep(1)
                 answers.append(reaction)
                 if i == 2:
-                    try:
+                    if reaction.content.isnumeric():
                         reaction_int = int(reaction.content)
                         if reaction_int > 5 or reaction_int < 1:
                             rating_error = translate("recipe_rating_error", lang)
@@ -63,7 +63,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
                                 color = NOTIFY_EMBED_COLOR
                             )
                             return await ctx.send(embed=embed)
-                    except:
+                    else:
                         int_error = translate("recipe_int_error", lang)
                         embed = discord.Embed(
                             title = embed_title,
@@ -87,7 +87,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
                     description = processing,
                     color = NOTIFY_EMBED_COLOR
                 )
-        await ctx.send(embed=embed)
+        msg = await ctx.send(embed=embed)
 
 
         # Updating the worksheet(ws) with all the data asked of the user
@@ -109,7 +109,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
                 description = error_msg,
                 color = NOTIFY_EMBED_COLOR
             )
-            return await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
         else:
             succes_msg = translate("recipe_succes", lang)
             embed = discord.Embed(
@@ -117,7 +117,9 @@ class Recipe(commands.Cog, name="Spreadsheets"):
                 description = succes_msg,
                 color = NOTIFY_EMBED_COLOR
             )
-            return await ctx.send(embed=embed)
+            await ctx.send(embed=embed)
+        
+        return await msg.delete()
 
 
 
