@@ -16,15 +16,18 @@ class Reminder(commands.Cog, name="Simple Reminder"):
     @commands.command(name="reminder", aliases=["remind_me"], brief="reminder_brief", usage="reminder_usage", help="reminder_help")
     async def reminder(self, ctx: commands.Context, time: typing.Optional[str] = None, *, message: typing.Optional[str] = None):
         # If the user doesn't enter a time-format, let him know
-        try:
-            time_int = int(time)
-        except:
-            msg = translate("reminder_err_no_int", await culture(ctx))
-            title = translate("reminder_err_title", await culture(ctx))
-            embed = discord.Embed(
-                description=msg,
-                color=NOTIFY_EMBED_COLOR
-            )
+        msg = translate("reminder_err_no_int", await culture(ctx))
+        title = translate("reminder_err_title", await culture(ctx))
+        embed = discord.Embed(
+            description=msg,
+            color=NOTIFY_EMBED_COLOR
+        )
+        if message != None:
+            if time.isnumeric():
+                time_int = int(time)
+            else:
+                return await ctx.send(embed=embed)
+        else:
             return await ctx.send(embed=embed)
 
         # If the time is longer than a day
@@ -51,8 +54,7 @@ class Reminder(commands.Cog, name="Simple Reminder"):
         
         # Logic to determine the time the user wants to be reminded
         current_time = datetime.datetime.now()
-        time_seconds = time_int * REMINDER_CONVERT_TO_MINUTES
-        remind_time = current_time + datetime.timedelta(0, time_seconds)
+        remind_time = current_time + datetime.timedelta(minutes=time_int)
         remind_hour = remind_time.hour
         remind_minute = remind_time.minute
 
@@ -62,10 +64,10 @@ class Reminder(commands.Cog, name="Simple Reminder"):
         # If there is a message, include it
         if message:
             reminder_set = translate("reminder_set_with_message", await culture(ctx)).format(remind_hour, remind_minute_string, message)
-            reminder = translate("reminder_with_message", await culture(ctx)).format(ctx.message.author.id, remind_hour, remind_minute_string, message)
+            reminder = translate("reminder_with_message", await culture(ctx)).format(ctx.message.author, remind_hour, remind_minute_string, message)
         else:
             reminder_set = translate("reminder_set_no_message", await culture(ctx)).format(remind_hour, remind_minute_string)
-            reminder = translate("reminder_no_message", await culture(ctx)).format(ctx.message.author.id, remind_hour, remind_minute_string)
+            reminder = translate("reminder_no_message", await culture(ctx)).format(ctx.message.author, remind_hour, remind_minute_string)
 
         reminder_embed_title = translate("reminder_embed_title", await culture(ctx))
 
