@@ -19,7 +19,7 @@ class Recipe(commands.Cog, name="recipes"):
         self.bot = bot
     
 
-    @commands.command(name="add_recipe", brief="recipe_brief", help="recipe_help")
+    @commands.command(name="add_recipe", aliases=["recipe"], brief="recipe_brief", help="recipe_help")
     async def add_recipe(self, ctx: commands.Context):
         # Getting everything ready to acces 
         gc = gspread.service_account(SHEETS_TOKEN)
@@ -31,19 +31,26 @@ class Recipe(commands.Cog, name="recipes"):
         d_obj = datetime.now()
         date_string = "{}/{}/{} {}:{}:{}".format(d_obj.month, d_obj.day, d_obj.year, d_obj.hour, d_obj.minute, d_obj.second)
 
+        # Initializing variables needed
+        lang = await culture(ctx)
+        embed_title = translate("recipe_title", lang)
+        questions = []
+        answers = []
+
         def check(author):
             def inner_check(message):
                 return message.author == author
             return inner_check
         
-        lang = await culture(ctx)
-        questions = []
-        answers = []
-        
         # Asking the user questions and capturing the answer
         for i in range(5):
             questions.append(translate("recipe_template", lang).format(translate("recipe_{}_question".format(i+1), lang)))
-            await ctx.send(questions[i])
+            embed = discord.Embed(
+                title = embed_title,
+                description = questions[i],
+                color = NOTIFY_EMBED_COLOR
+            )
+            await ctx.send(embed=embed)
             await asyncio.sleep(1)
             try:
                 reaction = await ctx.bot.wait_for("message", timeout=30, check=check(ctx.author))
@@ -53,10 +60,20 @@ class Recipe(commands.Cog, name="recipes"):
                         int(reaction.content)
                     except:
                         int_error = translate("recipe_int_error", lang)
-                        return await ctx.send(int_error)
+                        embed = discord.Embed(
+                            title = embed_title,
+                            description = int_error,
+                            color = NOTIFY_EMBED_COLOR
+                        )
+                        return await ctx.send(embed=embed)
             except asyncio.TimeoutError:
                 timeout = translate("recipe_timeout", lang)
-                return await ctx.send(timeout)
+                embed = discord.Embed(
+                    title = embed_title,
+                    description = timeout,
+                    color = NOTIFY_EMBED_COLOR
+                )
+                return await ctx.send(embed=embed)
 
         # Updating the worksheet(ws) with all the data asked of the user
         ws.update("A{}".format(next_row), date_string)
@@ -72,10 +89,20 @@ class Recipe(commands.Cog, name="recipes"):
         await asyncio.sleep(5)
         if not ws.acell("F{}".format(next_row)).value:
             error_msg = translate("recipe_error", lang)
-            return await ctx.send(error_msg)
+            embed = discord.Embed(
+                title = embed_title,
+                description = error_msg,
+                color = NOTIFY_EMBED_COLOR
+            )
+            return await ctx.send(embed=embed)
         else:
             succes_msg = translate("recipe_succes", lang)
-            return await ctx.send(succes_msg)
+            embed = discord.Embed(
+                title = embed_title,
+                description = succes_msg,
+                color = NOTIFY_EMBED_COLOR
+            )
+            return await ctx.send(embed=embed)
 
 
 

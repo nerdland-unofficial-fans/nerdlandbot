@@ -163,3 +163,4 @@
 "recipe_help","When you call this command, the bot will ask you questions you have to respond to within 30 seconds in a normal message. When succesful the bot will signal this. Your answers will be stored in a google spreadsheet.","Wanneer je deze command oproept, zal de bot je een aantal vragen stellen waar je op moet beantwoorden binnen de 30 seconden in een normaal bericht. Wanneer het gelukt is zal de bot het laten weten. Je antwoorden worden opgeslagen in een google spreadsheet."
 "recipe_succes","You did it! The data has been stored now!","Gelukt! De data zal nu worden opgeslagen."
 "recipe_error","Something went wrong, please file an issue on github. Use the command `os` to get our github.","Er ging iets verkeerd, vul alsjeblieft een issue in op github. Gebruik het `os`-command voor onze github te vinden."
+"recipe_title","Recipe","Recept"
