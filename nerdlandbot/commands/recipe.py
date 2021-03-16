@@ -19,9 +19,9 @@ class Recipe(commands.Cog, name="recipes"):
         self.bot = bot
     
 
-    @commands.command(name="recipe")
-    async def cmd_recipe(self, ctx: commands.Context):
-        # TODO: experiment with the position of this and if I can use a command to set this up properly
+    @commands.command(name="add_recipe")
+    async def add_recipe(self, ctx: commands.Context):
+        # Getting everything ready to acces 
         gc = gspread.service_account(SHEETS_TOKEN)
         sh = gc.open(SPREADSHEET)
         ws = sh.sheet1
@@ -34,14 +34,21 @@ class Recipe(commands.Cog, name="recipes"):
         # Fetching date and formatting it
         d_obj = datetime.now()
         date_string = "{}/{}/{} {}:{}:{}".format(d_obj.month, d_obj.day, d_obj.year, d_obj.hour, d_obj.minute, d_obj.second)
+
+        def check(author):
+            def inner_check(message):
+                return message.author == author
+            return inner_check
         
         # Asking the user questions and capturing the answer
-        # TODO: adding checks to the wait_for
         for i in range(len(questions)):
             await ctx.send("Please enter {}".format(questions[i]))
-            asyncio.sleep(1)
-            msg = await ctx.bot.wait_for("message", timeout=20)
-            answers.append(msg)
+            await asyncio.sleep(1)
+            try:
+                reaction = await ctx.bot.wait_for("message", timeout=20, check=check(ctx.author))
+                answers.append(reaction)
+            except asyncio.TimeoutError:
+                return await ctx.send("Go to bed, sleepy!")
 
         # Updating the worksheet(ws) with all the data asked of the user
         ws.update("A{}".format(next_row), date_string)
@@ -61,7 +68,7 @@ def next_available_row(worksheet) -> str:
     """
     str_list = list(filter(None, worksheet.col_values(1)))
     return str(len(str_list)+1)
-        
-        
+
+     
 def setup(bot: commands.Bot):
     bot.add_cog(Recipe(bot))
