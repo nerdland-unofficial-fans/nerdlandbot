@@ -22,7 +22,6 @@ POLL_DEFAULT_TIMEOUT = 5 #minutes
 # Reminder
 MAX_REMINDER_TIME = 1440 #minutes, 1 day
 MIN_REMINDER_TIME = 5 #minutes
-REMINDER_CONVERT_TO_MINUTES = 60
 
 
 # the space_commands API url parts
