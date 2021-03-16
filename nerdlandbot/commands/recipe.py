@@ -11,6 +11,7 @@ from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as cu
 from nerdlandbot.helpers.constants import NOTIFY_EMBED_COLOR
 
 SHEETS_TOKEN = os.getenv("SHEETS_JSON")
+SPREADSHEET = os.getenv("SPREADSHEET")
 
 
 class Recipe(commands.Cog, name="recipes"):
@@ -22,7 +23,7 @@ class Recipe(commands.Cog, name="recipes"):
     async def cmd_recipe(self, ctx: commands.Context):
         # TODO: experiment with the position of this and if I can use a command to set this up properly
         gc = gspread.service_account(SHEETS_TOKEN)
-        sh = gc.open("#nomnom recepten")
+        sh = gc.open(SPREADSHEET)
         ws = sh.sheet1
         next_row = next_available_row(ws)
 
