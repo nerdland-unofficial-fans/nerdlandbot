@@ -37,10 +37,7 @@ class Recipe(commands.Cog, name="recipes"):
         questions = []
         answers = []
 
-        def check(author):
-            def inner_check(message):
-                return message.author == author
-            return inner_check
+
         
         # Asking the user questions and capturing the answer
         for i in range(5):
@@ -51,9 +48,9 @@ class Recipe(commands.Cog, name="recipes"):
                 color = NOTIFY_EMBED_COLOR
             )
             await ctx.send(embed=embed)
-            await asyncio.sleep(1)
             try:
                 reaction = await ctx.bot.wait_for("message", timeout=30, check=check(ctx.author))
+                await asyncio.sleep(1)
                 answers.append(reaction)
                 if i == 2:
                     try:
@@ -114,6 +111,11 @@ def next_available_row(worksheet) -> str:
     """
     str_list = list(filter(None, worksheet.col_values(1)))
     return str(len(str_list)+1)
+
+def check(author):
+    def inner_check(message):
+        return message.author == author
+    return inner_check
 
      
 def setup(bot: commands.Bot):
