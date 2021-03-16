@@ -156,7 +156,7 @@
 "recipe_3_question","how much croquettes you give the recipe, use a number between 1 and 5","in hoeveel kroketten je het recept geeft. Gebruik een cijfer tussen 1 en 5"
 "recipe_4_question","any comments you might have on the recipe","alle opmerkingen in die je hebt over het recept"
 "recipe_5_question","your name","je naam in"
-"recipe_template","Please enter {0}.","Voer alsjeblieft {0}."
+"recipe_template","Please enter {0}. Enter '0' to abort.","Voer alsjeblieft {0}. Voer '0' in om te stoppen."
 "recipe_timeout","You ran out of time, please try again!","Je bent de tijd uit het oog verloren, probeer het opnieuw!"
 "recipe_int_error","Enter a number between 1 and 5, not words! Ending command now. No data will be saved.","Voer een cijfer tussen 1 en 5 in, geen woorden! De command wordt nu beëindigd. Geen data wordt opgeslagen."
 "recipe_brief","Answer a couple questions to fill in a spreadsheet.","Beantwoord een aantal vragen om een spreadsheet in te vullen."
@@ -166,3 +166,4 @@
 "recipe_title","Recipe","Recept"
 "recipe_rating_error","You can only give a recipe a rating between 1 and 5 croquettes. Ending command now. No data will be saved.","Je kan een recept maar een rating geven tussen 1 en 5 kroketten. De command wordt nu beëindigd. Geen data wordt opgeslagen."
 "recipe_processing","Received all answers! Give me 5 seconds. Processing...","Alle antwoorden ontvangen! Geef me 5 seconden. Verwerken..."
+"recipe_abort","Aborted!","Gestopt!"

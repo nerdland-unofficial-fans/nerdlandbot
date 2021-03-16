@@ -52,6 +52,16 @@ class Recipe(commands.Cog, name="Spreadsheets"):
                 reaction = await ctx.bot.wait_for("message", timeout=30, check=check(ctx.author))
                 await asyncio.sleep(1)
                 answers.append(reaction)
+                # If the user wants to abort, he can enter '0'
+                if reaction.content == "0":
+                    abort = translate("recipe_abort", lang)
+                    embed = discord.Embed(
+                        title = embed_title,
+                        description = abort,
+                        color = NOTIFY_EMBED_COLOR
+                    )
+                    return await ctx.send(embed=embed)
+                # When the user is asked a rating, check if it's a number between 1 and 5
                 if i == 2:
                     if reaction.content.isnumeric():
                         reaction_int = int(reaction.content)
@@ -119,6 +129,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
             )
             await ctx.send(embed=embed)
         
+        # Removing the processing message
         return await msg.delete()
 
 
