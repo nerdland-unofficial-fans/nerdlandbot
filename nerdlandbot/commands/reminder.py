@@ -22,11 +22,8 @@ class Reminder(commands.Cog, name="Simple Reminder"):
             description=msg,
             color=NOTIFY_EMBED_COLOR
         )
-        if time != None:
-            if time.isnumeric():
-                time_int = int(time)
-            else:
-                return await ctx.send(embed=embed)
+        if time != None and time.isnumeric():
+            time_int = int(time)
         else:
             return await ctx.send(embed=embed)
 
