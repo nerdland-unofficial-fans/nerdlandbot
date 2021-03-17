@@ -22,7 +22,7 @@ class Reminder(commands.Cog, name="Simple Reminder"):
             description=msg,
             color=NOTIFY_EMBED_COLOR
         )
-        if message != None:
+        if time != None:
             if time.isnumeric():
                 time_int = int(time)
             else:
