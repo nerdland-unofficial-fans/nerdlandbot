@@ -70,6 +70,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="sub", aliases=["subscribe"], brief="notify_sub_brief", usage="notify_sub_usage",
                       help="notify_sub_help")
+    @commands.guild_only()
     async def subscribe(self, ctx: commands.Context, list_name: typing.Optional[str] = None):
         """
         If used with list_name, subscribes the user to that list if possible.
@@ -87,6 +88,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="unsub", aliases=["unsubscribe"], brief="notify_unsub_brief", usage="notify_unsub_usage",
                       help="notify_unsub_help")
+    @commands.guild_only()
     async def unsubscribe(self, ctx: commands.Context, list_name: str):
         """
         Command to unsubscribe, calls act_unsibscribe to make it happen
@@ -96,6 +98,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         await self.act_unsubscribe(ctx,list_name,ctx.author.id)
 
     @commands.command(name="notify", usage="notify_notify_usage", brief="notify_notify_brief", help="notify_notify_help")
+    @commands.guild_only()
     async def notify(self, ctx: commands.Context, list_name: str, *, message: typing.Optional[str] = None):
         """
         Notify all subscribers for the given list with the given message.
@@ -230,6 +233,7 @@ class Notify(commands.Cog, name="Notification_lists"):
                 break
 
     @commands.command(name="show_lists", brief="notify_show_lists_brief", help="notify_show_lists_help")
+    @commands.guild_only()
     async def show_lists(self, ctx: commands.Context):
         """
         Show all currently existing lists for this server
@@ -296,6 +300,7 @@ class Notify(commands.Cog, name="Notification_lists"):
             await message.delete()
 
     @commands.command(name="my_lists", help="notify_my_lists_help")
+    @commands.guild_only()
     async def my_lists(self, ctx: commands.Context):
         """
         Show the lists the current user is subscribed to.
@@ -326,6 +331,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="add_list", brief="notify_add_list_brief", usage="notify_add_list_usage",
                       help="notify_add_list_help")
+    @commands.guild_only()
     async def add_list(self, ctx: commands.Context, list_name: str):
         """
         Adds a new notification list with the given name.
@@ -393,6 +399,7 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="remove_list", brief="notify_remove_list_brief", usage="notify_remove_list_usage",
                       help="notify_remove_list_help")
+    @commands.guild_only()
     async def remove_list(self, ctx: commands.Context, list_name: str):
         """
         Removes the given list.
@@ -449,6 +456,7 @@ class Notify(commands.Cog, name="Notification_lists"):
             return await ctx.send(msg)
 
     @commands.command(name="list_count", brief="list_count_brief", usage="list_count_usage", help="list_count_help")
+    @commands.guild_only()
     async def list_count(self, ctx: commands.Context, list_name: str):
         """
         Returns a count of the specified list.

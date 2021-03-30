@@ -24,6 +24,8 @@ class OnCommandError(commands.Cog, name="on_command_error"):
             command_name = ctx.message.content.split(" ")[0]
             msg = translate("err_missing_parameter", await culture(ctx)).format(command_name, error.param.name)
             return await ctx.send(msg)
+        elif isinstance(error, commands.NoPrivateMessage):
+            return
         else:
             # Log the warning
             log_warn(error)
