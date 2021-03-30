@@ -11,7 +11,6 @@ from nerdlandbot.scheduler.YoutubeScheduler import check_and_post_latest_videos
 from nerdlandbot.scheduler.PurgeScheduler import purge_messages
 from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
 
-
 load_dotenv()
 
 PREFIX = os.getenv("PREFIX")
@@ -48,6 +47,8 @@ bot.load_extension("nerdlandbot.commands.youtube")
 bot.load_extension("nerdlandbot.commands.poll")
 bot.load_extension("nerdlandbot.commands.purger")
 bot.load_extension("nerdlandbot.commands.kerk")
+bot.load_extension("nerdlandbot.commands.moderator")
+
 bot.load_extension("nerdlandbot.commands.open_source")
 bot.load_extension("nerdlandbot.commands.privacy")
 bot.load_extension("nerdlandbot.commands.reminder")

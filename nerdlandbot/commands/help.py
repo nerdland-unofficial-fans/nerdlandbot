@@ -135,7 +135,8 @@ class Help(commands.Cog):
     def __init__(self, bot: commands.bot):
         self.bot = bot
 
-    @commands.command(name='help', hidden=True, usage='help_usage', brief='help_brief', help='help_help')
+    @commands.command(name='help', hidden=True, usage='help_usage', brief='help_brief', help='help_help')#,no_pm= True)
+    @commands.guild_only()
     async def help(self, ctx: commands.Context, subject: str = None):
         """
         Show the help text for the given subject, or the general help if no subject provided.

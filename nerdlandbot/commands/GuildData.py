@@ -19,6 +19,7 @@ class GuildData:
     youtube_channels: dict
     purgers: dict
     culture: str
+    mod_channel: str
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -27,6 +28,7 @@ class GuildData:
         self.purgers = dict()
         self.bot_admins = []
         self.culture = "en"
+        self.mod_channel = None
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -159,6 +161,20 @@ class GuildData:
             or user_to_check.id in self.bot_admins
         )
 
+    def user_is_botslet(self, user_to_check: Member):
+        """
+        Checks whether or not a user is a bot admin or a moderator.
+        :param user_to_check: The user to check (discord.Member)
+        :return: True if the user is either a bot admin or a server moderator, False if the user is neither (bool)
+        """
+        # Checks whether the user is moderator by checking the 'Ban Members permission'
+        return (
+            user_to_check.guild_permissions.administrator
+            or user_to_check.guild_permissions.ban_members
+            or user_to_check.id in self.bot_admins
+        )
+
+
     async def update_language(self, language: str):
         """
         Updates the language and saves the guild
@@ -264,7 +280,12 @@ class GuildData:
 
         return True
         
+    async def update_mod_channel(self, mod_channel: str) -> bool:
 
+        self.mod_channel = mod_channel
+        await self.save()
+
+        return True
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
     """
@@ -348,6 +369,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.culture = data.get("culture", "en")
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
+        guildData.mod_channel = data.get("mod_channel",None)
 
         return guildData
 

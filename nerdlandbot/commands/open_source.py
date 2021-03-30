@@ -12,6 +12,7 @@ class OpenSource(commands.Cog, name="open_source"):
         self.bot = bot
 
     @commands.command(name="open_source", aliases=["opensource", "os"], brief="open_source_brief", usage="open_source_usage", help="open_source_help")
+    @commands.guild_only()
     async def open_source(self, ctx: commands.Context, mention:typing.Optional[str] = None):
         # Check if user mentioned  
         if mention and mention[:2] == "<@":
