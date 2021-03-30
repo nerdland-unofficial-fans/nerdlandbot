@@ -166,3 +166,4 @@
 "mod_message","{0} has sent a moderator message: \n\n{1}","{0} heeft een moderator bericht gestuurd: \n\n{1}"
 "mod_message_cancel","The message was not send.","Het bericht is niet verstuurd"
 "mod_confirmation_question","You are going to send this message to the moderators: \n\n'{0}'\n\n Does it contain the info they will need such as the channel, the user(s) and a description of what happened? \n\n{1} Yes, send it. \u2003{2} Cancel.","Je gaat dit bericht naar de moderators sturen: \n\n'{0}'\n\n Bevat het alle informatie die nodig is? Bijvoorbeeld: het kanaal, de gebruikers en een beschrijving van het incident. \n\n{1} Versturen. \u2003{2} Annuleren."
+"err_command_no_DM","This command cannot be used in DM, only the moderator command can be used here","Dit commando kan niet gebruikt worden in een priv\u00e9bericht, enkel het moderator commando kan hier gebruikt worden."
