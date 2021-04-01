@@ -25,6 +25,16 @@ class Kerk(commands.Cog, name="kerk"):
                 if message:
                     msg += "\n\t\"{0}\"".format(message)
                 return await ctx.send(msg)
+    @commands.command(name="kerk_channel", hidden=True)
+    async def cmd_set_kerk(self, ctx: commands.Context, *, channel_id:typing.Optional[str] = None):
+        guild_data = await get_guild_data(ctx.message.guild.id)
+
+        # Error if not admin
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", await culture(ctx))
+            return await ctx.send(gif)
+
+        await guild_data.update_kerk_channel(channel_id)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Kerk(bot))

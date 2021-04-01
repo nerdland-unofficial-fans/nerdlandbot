@@ -19,6 +19,7 @@ class GuildData:
     youtube_channels: dict
     purgers: dict
     culture: str
+    kerk_channel: str
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -27,6 +28,7 @@ class GuildData:
         self.purgers = dict()
         self.bot_admins = []
         self.culture = "en"
+        self.kerk_channel = ""
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -263,7 +265,17 @@ class GuildData:
         await self.save()
 
         return True
-        
+
+    async def update_kerk_channel(self, kerk: str):
+        if kerk != self.kerk_channel:
+            self.kerk_channel = kerk
+            await self.save()
+            return True
+ 
+    async def get_kerk_channel(self) -> str:
+        # Return the value stored with the key
+        return self.kerk_channel
+    
 
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
@@ -348,6 +360,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.culture = data.get("culture", "en")
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
+        guildData.kerk_channel = data.get("kerk_channel", "")
 
         return guildData
 
