@@ -268,17 +268,34 @@ class GuildData:
 
         return True
 
-    async def update_kerk_channel(self, kerk: str):
+    async def update_kerk_channel(self, kerk: str) -> bool:
+        """
+        Updates the kerk_channel
+        :param kerk: the channel that's been set
+        :return: True if updated and saved
+        """
         if kerk != self.kerk_channel:
             self.kerk_channel = kerk
             await self.save()
             return True
  
     async def get_kerk_channel(self) -> str:
+        """
+        Gets the kerk_channel
+        :return: The kerk_channel
+        """
         # Return the value stored with the key
         return self.kerk_channel
     
-    async def set_kerk_event(self, sender, receiver, day, culture, message:Optional[str] = None):
+    async def set_kerk_event(self, sender: str, receiver: str, day: int, culture: str, message:Optional[str] = None):
+        """
+        Adds a kerk_event
+        :param sender: The person who sent a challenge
+        :param receiver: The person who's being challenged
+        :param day: The day the challenge will be sent out
+        :param culture: The language being used in the bot
+        :param message: In case the sender wants to add a message to his challenge
+        """
         info = []
         info.append(sender)
         info.append(receiver)
