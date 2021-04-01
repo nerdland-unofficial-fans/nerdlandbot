@@ -5,6 +5,8 @@ thumbs_down = "👎"
 yes = "✅"
 no = "❌"
 drum = "🥁"
+fist = "👊"
+church = "⛪"
 
 flags = {
     "nl": "🇳🇱",

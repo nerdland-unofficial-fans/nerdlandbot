@@ -160,3 +160,5 @@
 
 "all_sub_success","You are now subbed to every list","Je bent nu geabboneerd op elke lijst"
 "all_unsub_success","You are no longer subscribed to any lists","Je bent nu op geen enkele lijst meer geabboneerd"
+"church","{0} Hi {1}, it's 4pm and <@{2}> wants to see u at the church! {3}","{0} Hey {1} het is 16u en <@{2}> wil u zien aan de kerk! {3}"
+"church_message"," He's even got a message for you: {0}"," Hij heeft ook een bericht voor u: {0}"
