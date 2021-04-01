@@ -20,6 +20,7 @@ class GuildData:
     purgers: dict
     culture: str
     kerk_channel: str
+    kerk_event: list
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -29,6 +30,7 @@ class GuildData:
         self.bot_admins = []
         self.culture = "en"
         self.kerk_channel = ""
+        self.kerk_event = []
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -276,6 +278,19 @@ class GuildData:
         # Return the value stored with the key
         return self.kerk_channel
     
+    async def set_kerk_event(self, sender, receiver, day, culture, message:Optional[str] = None):
+        info = []
+        info.append(sender)
+        info.append(receiver)
+        info.append(day)
+        info.append(culture)
+        info.append(message)
+        self.kerk_event.append(info)
+        await self.save()
+
+    async def remove_kerk_event(self):
+        self.kerk_event.pop(0)
+        await self.save()
 
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
@@ -361,6 +376,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
         guildData.kerk_channel = data.get("kerk_channel", "")
+        guildData.kerk_event = data.get("kerk_event", [])
 
         return guildData
 

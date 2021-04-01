@@ -9,6 +9,7 @@ from nerdlandbot.helpers.log import info, fatal
 from nerdlandbot.translations.Translations import get_text as _
 from nerdlandbot.scheduler.YoutubeScheduler import check_and_post_latest_videos
 from nerdlandbot.scheduler.PurgeScheduler import purge_messages
+from nerdlandbot.scheduler.kerk_scheduler import church_fights
 from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
 
 
@@ -68,4 +69,5 @@ async def on_ready():
 
     bot.is_purging = {}
     purge_messages.start(bot)
+    church_fights.start(bot)
 bot.run(TOKEN)
