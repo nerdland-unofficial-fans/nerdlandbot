@@ -35,12 +35,27 @@ class Kerk(commands.Cog, name="kerk"):
     async def cmd_set_kerk(self, ctx: commands.Context, *, channel_id:typing.Optional[str] = None):
         guild_data = await get_guild_data(ctx.message.guild.id)
 
+        lang = await culture(ctx)
+
         # Error if not admin
         if not guild_data.user_is_admin(ctx.author):
-            gif = translate("not_admin_gif", await culture(ctx))
+            gif = translate("not_admin_gif", lang)
             return await ctx.send(gif)
+        
+        # Error if not an id
+        if not channel_id.isnumeric():
+            msg = translate("church_id_needed", lang)
+            return await ctx.send(msg)
 
-        await guild_data.update_kerk_channel(channel_id)
+        # Give error if the channel is a voice channel
+        channel = get_channel(ctx,channel_id)
+        if isinstance(channel, discord.VoiceChannel):
+            return await ctx.send(translate("channel_is_voice", lang))
+
+        if not channel:
+            return await ctx.send(translate("membercount_channel_nonexistant", lang))
+
+        return await guild_data.update_kerk_channel(channel_id)
 
 def setup(bot: commands.Bot):
     bot.add_cog(Kerk(bot))
