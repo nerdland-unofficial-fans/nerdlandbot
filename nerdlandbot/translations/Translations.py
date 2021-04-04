@@ -15,7 +15,7 @@ def is_weekend() -> bool:
 
 def translate_adjective(language: str) -> str:
     return (
-        get_text("darling", language)
+        get_text("friendship", language)
         if is_weekend()
         else get_text("dummy", language)
     )
