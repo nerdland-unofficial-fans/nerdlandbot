@@ -10,6 +10,8 @@ discord-py = "^1.5.1"
 python-dotenv = "^0.14.0"
 pandas = "^1.1.5"
 requests = "^2.25.0"
+tweepy = "^3.10.0"
+beautifulsoup4 = "^4.9.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
