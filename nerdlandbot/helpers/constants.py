@@ -36,6 +36,8 @@ THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE = 'space_launches'
 
 # ID for official NASA Perseverance Twitter account
 PERCY_TWITTER_ID = '1232783237623119872'
+PERCY_API_URL = 'https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints_current.json'
+PERCY_WEEK_IMG = 'https://mars.nasa.gov/mars2020/multimedia/raw-images/image-of-the-week/'
 
 # Dadjoke
 DAD_JOKE_URL = 'https://icanhazdadjoke.com'

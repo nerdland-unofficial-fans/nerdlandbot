@@ -18,7 +18,7 @@ from nerdlandbot.helpers.constants import THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEV
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_HOME_URL, NOTIFY_EMBED_COLOR
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE, THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_TIMESTAMP_FORMAT
-from nerdlandbot.helpers.constants import PERCY_TWITTER_ID
+from nerdlandbot.helpers.constants import PERCY_TWITTER_ID, PERCY_API_URL, PERCY_WEEK_IMG
 
 class SpaceDevs (commands.Cog, name='Space'):
     def __init__(self,bot:commands.Bot):
@@ -32,7 +32,7 @@ class SpaceDevs (commands.Cog, name='Space'):
         self.twitter_enabled = self.twitter_creds['key'] and self.twitter_creds['secret']
         if not self.twitter_enabled:
             error(
-                "No Twitter key and secret in .env file, Twitter functionality will not be available"
+                "No TWITTER_API_KEY and TWITTER_API_SECRET .env file, Twitter functionality will not be available"
             )
 
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief")
@@ -128,48 +128,64 @@ class SpaceDevs (commands.Cog, name='Space'):
     async def get_percy_data(self):
         """
         Returns simplified data for percy pulled from the NASA Mars map API
-        :return: dict containing sol, distance, longitude and latitude
+        :return: dict containing sol, distance, longitude and latitude (None if failure)
         """
-        #TODO: add handling of errors should api not load
-        #TODO: add handling of errors should json not parse
-        url = 'https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints_current.json'
+        url = PERCY_API_URL
         full_json = ''
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers = {"accept":"application/json"}) as resp:
-                full_json = await resp.text()
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers = {"accept":"application/json"}) as resp:
+                    full_json = await resp.text()
 
-        data = json.loads(full_json)['features'][0]
+            data = json.loads(full_json)['features'][0]
 
-        percy_data = dict()
-        percy_data['sol'] = data['properties']['sol']
-        percy_data['distance'] = data['properties']['dist_km'] + ' km'
-        percy_data['longitude'] = data['geometry']['coordinates'][0]
-        percy_data['latitude'] = data['geometry']['coordinates'][1]
-        return percy_data
+            percy_data = dict()
+            percy_data['sol'] = data['properties']['sol']
+            percy_data['distance'] = str(data['properties']['dist_km']) + ' km'
+            percy_data['longitude'] = data['geometry']['coordinates'][0]
+            percy_data['latitude'] = data['geometry']['coordinates'][1]
+            return percy_data
+        except Exception as e:
+            error("Failed to load and parse perseverence API: " + 
+                    type(e).__name__ + str(e) +
+                    '--> full_json string head:' + full_json[:100]
+            )
+            return
     
     async def get_percy_image(self):
         """
         Returns the url to the image of the week
-        :return: string containing the url to image of the week
+        :return: string containing the url to image of the week (None if failure)
         """
-        #TODO: add handling of errors should webpage not load
-        #TODO: add handling of errors should scraping fail
-        web_url = 'https://mars.nasa.gov/mars2020/multimedia/raw-images/image-of-the-week/'
+        web_url = PERCY_WEEK_IMG
         page_html = ''
-        async with aiohttp.ClientSession() as session:
-            async with session.get(web_url, headers = {"accept":"text/html"}) as resp:
-                page_html = await resp.text()
-        
-        soup = BeautifulSoup(page_html, "html.parser")
-        img = soup.find("div", {"class": "main_image"}).find("img")
-        
-        return img['src']
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(web_url, headers = {"accept":"text/html"}) as resp:
+                    page_html = await resp.text()
+            
+            soup = BeautifulSoup(page_html, "html.parser")
+            img = soup.find("div", {"class": "main_image"}).find("img")
+            
+            return img['src']
+        except Exception as e:
+            error("Failed to load Perseverance Image of the Week: " + 
+                    type(e).__name__ + str(e) +
+                    '--> page_html string head:' + page_html[:100]
+            )
+            return
 
 
     async def send_percy_tweet(self, ctx: commands.Context):
-        auth = tweepy.AppAuthHandler(self.twitter_creds['key'], self.twitter_creds['secret'])
-        api = tweepy.API(auth)
-        last_status = api.user_timeline(id=PERCY_TWITTER_ID)[0]
+        try:
+            auth = tweepy.AppAuthHandler(self.twitter_creds['key'], self.twitter_creds['secret'])
+            api = tweepy.API(auth)
+            last_status = api.user_timeline(id=PERCY_TWITTER_ID)[0]
+        except Exception as e:
+            error("Failed to load Perseverance latest tweet: " + 
+                    type(e).__name__ + str(e)
+            )
+            return await ctx.send("Sorry, something went wrong and I could not load Percy's latest tweet.")
         return await ctx.send(last_status.text)
 
     async def wait_for_tweet_reaction(self, ctx: commands.Context, msg_id: int,
@@ -199,9 +215,12 @@ class SpaceDevs (commands.Cog, name='Space'):
                     check=lambda emoji, author: emoji.message.id == msg.id and not author.bot,
                     timeout=timeout,
                 )
-                if reaction.emoji == camera:
-                    embed.set_image(url=await self.get_percy_image())
+                percy_image = await self.get_percy_image()
+                if reaction.emoji == camera and percy_image:
+                    embed.set_image(url=percy_image)
                     return await msg.edit(embed=embed)
+                elif reaction.emoji == camera:
+                    return await ctx.send("Sorry, something went wrong and I could not load Percy's image of the week")
             except asyncio.TimeoutError:
                 pass
 
@@ -212,32 +231,34 @@ class SpaceDevs (commands.Cog, name='Space'):
     async def cmd_percy(self, ctx:commands.Context):
         percy_data = await self.get_percy_data()
 
-        embed=discord.Embed(title="Status update", description="This is your requested latest update from the NASA Perseverance rover.", color=0xb33a00)
-        embed.set_author(name="NASA Perseverance rover", url="https://mars.nasa.gov/mars2020/", icon_url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvanschneider.com%2Fwp-content%2Fuploads%2F2020%2F07%2Fmars_badge.jpg&f=1&nofb=1")
-        
-        embed.add_field(name="Sol", value=percy_data['sol'], inline=False)
-        embed.add_field(name="Latitude", value=percy_data['latitude'], inline=True)
-        embed.add_field(name="Longitude", value=percy_data['longitude'], inline=True)
-        embed.add_field(name="Distance Driven", value=percy_data['distance'], inline=True)
-        if self.twitter_enabled:
-            embed.set_footer(text="Click the bird below to receive my latest tweet\n Click the camera to see my Image Of The Week")
-        msg = await ctx.send(embed=embed)
-        await self.get_percy_image()
+        if percy_data:
+            embed=discord.Embed(title="Status update", description="This is your requested update from the NASA Perseverance rover.", color=0xb33a00)
+            embed.set_author(name="NASA Perseverance rover", url="https://mars.nasa.gov/mars2020/", icon_url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvanschneider.com%2Fwp-content%2Fuploads%2F2020%2F07%2Fmars_badge.jpg&f=1&nofb=1")
+            
+            embed.add_field(name="Sol", value=percy_data['sol'], inline=False)
+            embed.add_field(name="Latitude", value=percy_data['latitude'], inline=True)
+            embed.add_field(name="Longitude", value=percy_data['longitude'], inline=True)
+            embed.add_field(name="Distance Driven", value=percy_data['distance'], inline=True)
+            if self.twitter_enabled:
+                embed.set_footer(text="Click the bird below to receive my latest tweet\n Click the camera to see my Image Of The Week")
+            else:
+                embed.set_footer(text="Click the camera to see my Image of The Week")
+            msg = await ctx.send(embed=embed)
 
-        added_reactions = []
+            added_reactions = []
 
-        await msg.add_reaction(camera)
-        added_reaction = asyncio.create_task(self.wait_for_camera_reaction(ctx,msg,embed))
-        added_reactions.append(added_reaction)
-
-        if self.twitter_enabled:
-            await msg.add_reaction(bird)
-            added_reaction = asyncio.create_task(self.wait_for_tweet_reaction(ctx, msg.id))
+            await msg.add_reaction(camera)
+            added_reaction = asyncio.create_task(self.wait_for_camera_reaction(ctx,msg,embed))
             added_reactions.append(added_reaction)
-        
-        await asyncio.gather(*added_reactions,return_exceptions=True)
 
-        #embed.set_image(url='https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/00002/ids/fdr/browse/zcam/ZLF_0002_0667131112_000FDR_N0010052AUT_04096_0260LUJ01_1200.jpg')
+            if self.twitter_enabled:
+                await msg.add_reaction(bird)
+                added_reaction = asyncio.create_task(self.wait_for_tweet_reaction(ctx, msg.id))
+                added_reactions.append(added_reaction)
+            
+            await asyncio.gather(*added_reactions,return_exceptions=True)
+        else:
+            await ctx.send("Sorry, something went wrong and I could not load percy status update.")
 
 def setup(bot: commands.Bot):
     bot.add_cog(SpaceDevs(bot))
