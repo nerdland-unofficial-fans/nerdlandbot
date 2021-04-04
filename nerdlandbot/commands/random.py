@@ -111,7 +111,7 @@ class Random(commands.Cog, name="Random"):
             async with session.get(EIGHT_BALL_URL) as resp:
                 msg = await resp.text(encoding='utf-8')
                 msg = msg[1:-2]
-                await ctx.send(msg)
+                await ctx.reply(msg)
 
     @commands.command(name="dad_joke", aliases=["dadjoke"], help="dad_joke_help")
     async def cmd_dad_joke(self, ctx: commands.Context):

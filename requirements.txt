@@ -5,3 +5,4 @@ aiohttp
 requests
 tweepy
 beautifulsoup4
+gspread
