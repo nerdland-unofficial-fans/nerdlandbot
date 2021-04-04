@@ -7,7 +7,7 @@ from discord.ext import commands
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as get_culture_from_context
-from nerdlandbot.helpers.emoji import number_emojis, yes, no, drum
+from nerdlandbot.helpers.emoji import poll_emojis, yes, no, drum
 from nerdlandbot.helpers.constants import POLL_MAX_TIMEOUT, POLL_DEFAULT_TIMEOUT
 
 class Poll(commands.Cog, name="Simple Poll"):
@@ -74,8 +74,8 @@ class Poll(commands.Cog, name="Simple Poll"):
         else:
             i = 1
             for option in options_list:
-                txt += "{} - {}\n".format(number_emojis[i],option)
-                options_dict[number_emojis[i]] = option
+                txt += "{} - {}\n".format(poll_emojis[i],option)
+                options_dict[poll_emojis[i]] = option
                 i += 1
 
         msg = await ctx.send(txt)
@@ -87,7 +87,7 @@ class Poll(commands.Cog, name="Simple Poll"):
         else:
             i = 1
             for option in options_list:
-                await msg.add_reaction(number_emojis[i])
+                await msg.add_reaction(poll_emojis[i])
                 i += 1
 
         # wait until timeout
