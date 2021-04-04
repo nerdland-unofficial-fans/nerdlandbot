@@ -14,8 +14,8 @@ from nerdlandbot.helpers.constants import NOTIFY_EMBED_COLOR
 
 class Recipe(commands.Cog, name="Spreadsheets"):
     def __init__(self, bot: commands.Bot):
-        self.SHEETS_TOKEN = os.getenv("SHEETS_JSON")
-        self.SPREADSHEET = os.getenv("SPREADSHEET")
+        self.sheets_token = os.getenv("SHEETS_JSON")
+        self.spreadsheet = os.getenv("SPREADSHEET")
         self.bot = bot
     
 
@@ -24,8 +24,8 @@ class Recipe(commands.Cog, name="Spreadsheets"):
         # Getting everything ready to acces 
         lang = await culture(ctx)
         try:
-            gc = gspread.service_account(self.SHEETS_TOKEN)
-            sh = gc.open(self.SPREADSHEET)
+            gc = gspread.service_account(self.sheets_token)
+            sh = gc.open(self.spreadsheet)
         except:
             msg = translate("recipe_verification_error", lang)
             return await ctx.send(msg)
