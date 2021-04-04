@@ -38,6 +38,7 @@ THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE = 'space_launches'
 PERCY_TWITTER_ID = '1232783237623119872'
 PERCY_API_URL = 'https://mars.nasa.gov/mmgis-maps/M20/Layers/json/M20_waypoints_current.json'
 PERCY_WEEK_IMG = 'https://mars.nasa.gov/mars2020/multimedia/raw-images/image-of-the-week/'
+PERCY_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvanschneider.com%2Fwp-content%2Fuploads%2F2020%2F07%2Fmars_badge.jpg&f=1&nofb=1'
 
 # Dadjoke
 DAD_JOKE_URL = 'https://icanhazdadjoke.com'

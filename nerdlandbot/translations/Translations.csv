@@ -129,17 +129,10 @@
 "purger_no_exists","There's no automatic message removal in <#{0}>.","Er worden geen berichten verwijderd in <#{0}>."
 "purger_list_title","List of channels with automatic removal of messages and max age:","Lijst van kanalen waar berichten automatisch worden verwijderd en de maximale leeftijd:"
 "purger_list_item","  - <#{0}>: {1} day(s)","  - <#{0}>: {1} dag(en)"
-
-"channel_is_voice","You should provide a text channel, not a voice channel","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
-
 "space_launches_brief","Lists the 1st 10 upcoming launches.","Geeft de eerstvolgende 10 lanceringen."
 "space_launches_help","Provides start of the launch window (UTC / GMT), the agency, mission, rocket and location for each of the upcoming 10 launches.","Geeft de start van het lanceervenster, (UTC / GMT), de organisatie, de missie, de raket en plaats van de eerstvolgende 10 lanceringen."
-
-"dad_joke_help","Replies a random dad joke","Antwoordt met een willekeurige dad joke"
-
 "channel_is_voice","You should provide a text channel, not a voice channel.","Geef een tekst kanaal in plaats van een voice kanaal, foemp!"
 "dad_joke_help","Replies a random dad joke.","Antwoordt met een willekeurige dad joke."
-
 "open_source_brief","Let a user know the bot is open source.","Laat een gebruiker weten dat de bot open source is."
 "open_source_usage","[@user]","[@gebruiker]"
 "open_source_help","Let a user know the bot is open source. \n If there is no user tagged, the bot will send a general message. \n If a user is tagged, the bot will also tag the user in it's message.","Laat een gebruiker weten dat de bot open source is. \n Als er geen gebruiker is genoemd, zal er een algemene boodschap verschijnen. \n Als er een gebruiker is genoemd, zal de bot deze gebruiker ook taggen."
@@ -156,4 +149,11 @@
 "empty_poncho_list","No Poncho pictures were found...","Er werden geen foto's van Poncho gevonden..."
 "poncho_pic_help","Post a random Poncho picture.","Post een willekeurige foto van Poncho."
 "poncho_hond","DOG DOG DOG","HOND HOND HOND"
-
+"percy_error","Sorry, something went wrong and I could not load percy status update.","Sorry, er ging iets mis en ik kon de statusupdate van Percy niet inladen."
+"percy_footer_camera","Click the camera to see my Image of The Week.","Klik op de camera om mijn afbeelding van de week te bekijken."
+"percy_footer_both","Click the bird below to receive my latest tweet.\nClick the camera to see my Image Of The Week.","Klik op het vogeltje om mijn laatste tweet te lezen.\nKlik op de camera om mijn afbeelding van de week te bekijken."
+"percy_description","This is your requested update from the NASA Perseverance rover.","Dit is de laatste update van de NASA Perseverance rover."
+"percy_img_error","Sorry, something went wrong and I could not load Percy's image of the week.","Sorry, er ging iets mis en ik kon de afbeelding van de week niet inladen."
+"percy_tweet_error","Sorry, something went wrong and I could not load Percy's latest tweet.","Sorry, er ging iets mis en ik kon de laatste tweet niet inladen."
+"percy_brief","Shows the latest status of NASA's Perseverance Rover.","Geeft je de laatste gekende locatie van de NASA Perserverance Rover."
+"percy_help","Shows the latest status of NASA's Perseverance Rover and lets you request its Image of the Week or latest tweet.","Geeft je de laatste gekende locatie van de NASA Perserverance Rover en geeft je de mogelijkheid om zijn afbeelding van de week en zijn laatste tweet op te vragen."

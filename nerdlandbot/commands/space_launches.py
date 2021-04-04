@@ -18,7 +18,7 @@ from nerdlandbot.helpers.constants import THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEV
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_HOME_URL, NOTIFY_EMBED_COLOR
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE
 from nerdlandbot.helpers.constants import THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE, THE_SPACE_DEVS_LOCAL_CACHE_FOLDER, THE_SPACE_DEVS_TIMESTAMP_FORMAT
-from nerdlandbot.helpers.constants import PERCY_TWITTER_ID, PERCY_API_URL, PERCY_WEEK_IMG
+from nerdlandbot.helpers.constants import PERCY_TWITTER_ID, PERCY_API_URL, PERCY_WEEK_IMG, PERCY_ICON
 
 class SpaceDevs (commands.Cog, name='Space'):
     def __init__(self,bot:commands.Bot):
@@ -185,7 +185,7 @@ class SpaceDevs (commands.Cog, name='Space'):
             error("Failed to load Perseverance latest tweet: " + 
                     type(e).__name__ + str(e)
             )
-            return await ctx.send("Sorry, something went wrong and I could not load Percy's latest tweet.")
+            return await ctx.send(translate("percy_tweet_error", await culture(ctx)))
         return await ctx.send(last_status.text)
 
     async def wait_for_tweet_reaction(self, ctx: commands.Context, msg_id: int,
@@ -220,7 +220,7 @@ class SpaceDevs (commands.Cog, name='Space'):
                     embed.set_image(url=percy_image)
                     return await msg.edit(embed=embed)
                 elif reaction.emoji == camera:
-                    return await ctx.send("Sorry, something went wrong and I could not load Percy's image of the week")
+                    return await ctx.send(translate("percy_img_error", await culture(ctx)))
             except asyncio.TimeoutError:
                 pass
 
@@ -232,17 +232,23 @@ class SpaceDevs (commands.Cog, name='Space'):
         percy_data = await self.get_percy_data()
 
         if percy_data:
-            embed=discord.Embed(title="Status update", description="This is your requested update from the NASA Perseverance rover.", color=0xb33a00)
-            embed.set_author(name="NASA Perseverance rover", url="https://mars.nasa.gov/mars2020/", icon_url="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvanschneider.com%2Fwp-content%2Fuploads%2F2020%2F07%2Fmars_badge.jpg&f=1&nofb=1")
+            embed=discord.Embed(title="Status update", 
+                                description=translate("percy_description", await culture(ctx)), 
+                                color=0xb33a00
+            )
+            embed.set_author(name="NASA Perseverance rover", 
+                            url="https://mars.nasa.gov/mars2020/", 
+                            icon_url=PERCY_ICON
+            )
             
             embed.add_field(name="Sol", value=percy_data['sol'], inline=False)
             embed.add_field(name="Latitude", value=percy_data['latitude'], inline=True)
             embed.add_field(name="Longitude", value=percy_data['longitude'], inline=True)
             embed.add_field(name="Distance Driven", value=percy_data['distance'], inline=True)
             if self.twitter_enabled:
-                embed.set_footer(text="Click the bird below to receive my latest tweet\n Click the camera to see my Image Of The Week")
+                embed.set_footer(text=translate("percy_footer_both", await culture(ctx)))
             else:
-                embed.set_footer(text="Click the camera to see my Image of The Week")
+                embed.set_footer(text=translate("percy_footer_camera", await culture(ctx)))
             msg = await ctx.send(embed=embed)
 
             added_reactions = []
@@ -258,7 +264,7 @@ class SpaceDevs (commands.Cog, name='Space'):
             
             await asyncio.gather(*added_reactions,return_exceptions=True)
         else:
-            await ctx.send("Sorry, something went wrong and I could not load percy status update.")
+            await ctx.send(translate("percy_error", await culture(ctx)))
 
 def setup(bot: commands.Bot):
     bot.add_cog(SpaceDevs(bot))
