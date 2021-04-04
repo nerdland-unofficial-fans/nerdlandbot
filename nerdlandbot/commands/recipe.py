@@ -10,12 +10,12 @@ from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 from nerdlandbot.helpers.constants import NOTIFY_EMBED_COLOR
 
-SHEETS_TOKEN = os.getenv("SHEETS_JSON")
-SPREADSHEET = os.getenv("SPREADSHEET")
 
 
 class Recipe(commands.Cog, name="Spreadsheets"):
     def __init__(self, bot: commands.Bot):
+        self.SHEETS_TOKEN = os.getenv("SHEETS_JSON")
+        self.SPREADSHEET = os.getenv("SPREADSHEET")
         self.bot = bot
     
 
