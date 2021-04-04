@@ -3,6 +3,7 @@ import json
 from os import path, listdir, makedirs
 from typing import List, Optional
 from discord import Member
+from datetime import datetime
 
 _configFolder = "GuildConfigs"
 _guildConfigCache = dict()
@@ -99,6 +100,8 @@ class GuildData:
             "emoji": emoji,
             "is_custom_emoji": custom_emoji,
             "users": [],
+            "created_on": datetime.now().isoformat(),
+            "notified_on": []
         }
         await self.save()
 
@@ -241,6 +244,26 @@ class GuildData:
         else:
             # purger text channel does not exist in list, return False
             return False
+
+    async def update_notification_audit(self, list_name: str) -> bool:
+        """
+        Updates the notified_on field for the notified list
+        :param list_name: The list that needs to be updated (str)
+        :return: True if updated successfully, False if something went wrong. (bool)
+        """
+        if not list_name in self.notification_lists.keys():
+            return False
+
+        notification_list = self.notification_lists[list_name]
+        
+        if not "notified_on" in notification_list.keys():
+            notification_list["notified_on"] = []
+
+        notification_list["notified_on"].append(datetime.now().isoformat())
+        await self.save()
+
+        return True
+        
 
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
