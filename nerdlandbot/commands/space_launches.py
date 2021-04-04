@@ -180,7 +180,7 @@ class SpaceDevs (commands.Cog, name='Space'):
         try:
             auth = tweepy.AppAuthHandler(self.twitter_creds['key'], self.twitter_creds['secret'])
             api = tweepy.API(auth)
-            last_status = api.user_timeline(id=PERCY_TWITTER_ID)[0]
+            last_status = api.user_timeline(id=PERCY_TWITTER_ID,count=1)[0]
         except Exception as e:
             error("Failed to load Perseverance latest tweet: " + 
                     type(e).__name__ + str(e)
@@ -246,9 +246,9 @@ class SpaceDevs (commands.Cog, name='Space'):
             embed.add_field(name="Longitude", value=percy_data['longitude'], inline=True)
             embed.add_field(name="Distance Driven", value=percy_data['distance'], inline=True)
             if self.twitter_enabled:
-                embed.set_footer(text=translate("percy_footer_both", await culture(ctx)))
+                embed.set_footer(text=translate("percy_footer_both", await culture(ctx)).format(camera,bird))
             else:
-                embed.set_footer(text=translate("percy_footer_camera", await culture(ctx)))
+                embed.set_footer(text=translate("percy_footer_camera", await culture(ctx)).format(camera))
             msg = await ctx.send(embed=embed)
 
             added_reactions = []
