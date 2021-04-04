@@ -272,20 +272,14 @@ class GuildData:
         """
         Updates the kerk_channel
         :param kerk: the channel that's been set
-        :return: True if updated and saved
+        :return: True if updated and saved, False if it's the same
         """
         if kerk != self.kerk_channel:
             self.kerk_channel = kerk
             await self.save()
             return True
- 
-    async def get_kerk_channel(self) -> str:
-        """
-        Gets the kerk_channel
-        :return: The kerk_channel
-        """
-        # Return the value stored with the key
-        return self.kerk_channel
+        else:
+            return False
     
     async def set_kerk_event(self, sender: str, receiver: str, day: int, culture: str, message:Optional[str] = None):
         """
