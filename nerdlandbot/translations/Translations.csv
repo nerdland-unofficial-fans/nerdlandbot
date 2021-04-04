@@ -176,5 +176,6 @@
 "recipe_rating_error","You can only give a recipe a rating between 1 and 5 croquettes. Ending command now. No data will be saved.","Je kan een recept maar een rating geven tussen 1 en 5 kroketten. De command wordt nu beëindigd. Geen data wordt opgeslagen."
 "recipe_processing","Received all answers! Give me 5 seconds. Processing...","Alle antwoorden ontvangen! Geef me 5 seconden. Verwerken..."
 "recipe_abort","Aborted!","Gestopt!"
+"recipe_verification_error","Something went wrong with verifying to google. Please let the bot-admins know.","Er is iets verkeerd gegaan met verificatie. Laat alsjeblieft de bot-admins iets weten."
 "all_sub_success","You are now subbed to every list","Je bent nu geabboneerd op elke lijst"
 "all_unsub_success","You are no longer subscribed to any lists","Je bent nu op geen enkele lijst meer geabboneerd"
