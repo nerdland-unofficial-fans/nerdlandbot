@@ -22,8 +22,13 @@ class Recipe(commands.Cog, name="Spreadsheets"):
     @commands.command(name="add_recipe", aliases=["recipe"], brief="recipe_brief", help="recipe_help")
     async def add_recipe(self, ctx: commands.Context):
         # Getting everything ready to acces 
-        gc = gspread.service_account(SHEETS_TOKEN)
-        sh = gc.open(SPREADSHEET)
+        lang = await culture(ctx)
+        try:
+            gc = gspread.service_account(self.SHEETS_TOKEN)
+            sh = gc.open(self.SPREADSHEET)
+        except:
+            msg = translate("recipe_verification_error", lang)
+            return await ctx.send(msg)
         ws = sh.sheet1
         next_row = next_available_row(ws)
 
@@ -32,7 +37,6 @@ class Recipe(commands.Cog, name="Spreadsheets"):
         date_string = "{}/{}/{} {}:{}:{}".format(d_obj.month, d_obj.day, d_obj.year, d_obj.hour, d_obj.minute, d_obj.second)
 
         # Initializing variables needed
-        lang = await culture(ctx)
         embed_title = translate("recipe_title", lang)
         questions = []
         answers = []
