@@ -5,7 +5,7 @@ import discord
 from dotenv import load_dotenv
 
 from nerdlandbot.bot import NerdlandBot
-from nerdlandbot.helpers.log import info, fatal
+from nerdlandbot.helpers.log import info, error, fatal
 from nerdlandbot.translations.Translations import get_text as _
 from nerdlandbot.scheduler.YoutubeScheduler import check_and_post_latest_videos
 from nerdlandbot.scheduler.PurgeScheduler import purge_messages
@@ -58,6 +58,8 @@ SHEETS_TOKEN = os.getenv("SHEETS_JSON")
 # Initialize and start YouTube scheduler
 YOUTUBE_TOKEN = os.getenv("YOUTUBE_TOKEN")
 
+# Initialize Twitter keys
+
 
 @bot.event
 async def on_ready():
@@ -65,8 +67,8 @@ async def on_ready():
         info("Starting YouTube scheduler")
         check_and_post_latest_videos.start(bot)
     else:
-        fatal(
-            "Not starting YouTube scheduler. Please provide a YOUTUBE_TOKEN in your .env file"
+        error(
+            "No YOUTUBE_TOKEN present in .env, not starting YouTube scheduler."
         )
 
     bot.is_purging = {}

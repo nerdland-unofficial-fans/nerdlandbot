@@ -3,4 +3,6 @@ python-dotenv
 pandas
 aiohttp
 requests
+tweepy
+beautifulsoup4
 gspread
