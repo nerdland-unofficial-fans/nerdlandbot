@@ -62,6 +62,9 @@ PREFIX=?
 ```
 Make sure this file is listed in the .gitignore file, so your bot token isn't uploaded to github for everyone to see (and use).
 
+# Using Space Twitter functionality
+In order for Twitter functionality in the Space module to work, you will need to provide a `TWITTER_API_KEY` and `TWITTER_API_SECRET` in your `.env` file. You can find out how to generate those [here](https://www.einfachub.com/blog/twitter-api-key/). The API key and secret need not have any more rights above reading statusses from accounts. The functionality in this bot is limited to that, it will not tweet, retweet or like tweets. Feel free to contact bobvdvleuten for help.
+
 # Using YouTube functionality 
 
 For using the YouTube notifications functionality you'll need to set the `YOUTUBE TOKEN` in your `.env` file. Follow the instructions [here](https://developers.google.com/youtube/registering_an_application) to create an API key.
