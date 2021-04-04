@@ -114,7 +114,7 @@
 "poll_votes","{0} - {1}\n","{0} - {1}\n"
 "poll_usage","<question>?<timeout(minutes)> [answer 1];[answer 2];...;[answer 9]","<vraag>?<timeout (minuten)> [antwoord 1];[antwoord 2];...;[antwoord 9]"
 "poll_brief","Put a poll out for people to vote","Maak een peiling waarin mensen kunnen stemmen"
-"poll_help","Start a poll, with minimal arguments this will be a yes/no poll, if you provide options seperated by semicolons you can add up to 9 options.","Start een peiling, met minimale opties wordt dit een Ja/Nee peiling die <timeout> minuten duurt. Indien je zelf opties meegeeft door puntkomma gescheiden kunnen dat er maximaal 9 zijn."
+"poll_help","Start a poll, with minimal arguments this will be a yes/no poll, if you provide options seperated by semicolons you can add up to 20 options.","Start een peiling, met minimale opties wordt dit een Ja/Nee peiling die <timeout> minuten duurt. Indien je zelf opties meegeeft door puntkomma gescheiden kunnen dat er maximaal 20 zijn."
 "empty_wombat_list","No wombat pictures were found...","Er werden geen foto's van wombats gevonden..."
 "wombat_help","Posts a random wombat picture.","Post een willekeurige foto van een wombat."
 "add_purger_usage","<Channel ID> <Max message age (in days)>","<Kanaal ID> <Max leeftijd bericht (in dagen)>"
