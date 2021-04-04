@@ -46,7 +46,6 @@ bot.load_extension("nerdlandbot.commands.youtube")
 bot.load_extension("nerdlandbot.commands.poll")
 bot.load_extension("nerdlandbot.commands.purger")
 bot.load_extension("nerdlandbot.commands.kerk")
-bot.load_extension("nerdlandbot.commands.recipe")
 bot.load_extension("nerdlandbot.commands.open_source")
 bot.load_extension("nerdlandbot.commands.privacy")
 
@@ -75,7 +74,8 @@ async def on_ready():
     purge_messages.start(bot)
 
     if SHEETS_TOKEN:
-        info("Spreadsheet editing is possible")
+        info("Spreadsheet editing is possible")    
+        bot.load_extension("nerdlandbot.commands.recipe")
     else:
-        fatal("No google-sheets token")
+        error("No google-sheets token")
 bot.run(TOKEN)
