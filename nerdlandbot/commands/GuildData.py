@@ -299,6 +299,7 @@ class GuildData:
         self.kerk_event.append(info)
         await self.save()
 
+
     async def remove_kerk_event(self):
         self.kerk_event.pop(0)
         await self.save()

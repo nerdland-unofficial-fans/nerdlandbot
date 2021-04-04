@@ -21,13 +21,16 @@ class Kerk(commands.Cog, name="kerk"):
         lang = await culture(ctx)
         temp_date = datetime.now()
         # If it's past 16:00 it will be scheduled for the next day
-        if temp_date.hour >= 16:
+        if temp_date.hour >= 23:
             church_day = (temp_date + timedelta(days=1)).day
         else:
             church_day = temp_date.day
         
         # Adding a church_event to the guild data.
         await guild_data.set_kerk_event(ctx.author.id, mention, church_day, lang, message)
+        msg = translate("church_event_success", lang)
+        
+        return await ctx.send(msg)
         
     
 
@@ -55,7 +58,13 @@ class Kerk(commands.Cog, name="kerk"):
         if not channel:
             return await ctx.send(translate("membercount_channel_nonexistant", lang))
 
-        return await guild_data.update_kerk_channel(channel_id)
+        if(await guild_data.update_kerk_channel(channel_id)):
+            msg = translate("church_channel_success", lang)
+        else:
+            msg = translate("church_channel_error", lang)
+
+        return await ctx.send(msg)
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Kerk(bot))
