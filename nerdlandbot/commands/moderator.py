@@ -25,30 +25,15 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
             msg = translate("mod_no_message", await culture_id(int(NERDLAND_SERVER_ID)))
             return await ctx.send(msg)
         
+        # Get the channel ID from the guild data
         guild_data = await get_guild_data(int(NERDLAND_SERVER_ID))
         mod_channel = guild_data.mod_channel
 
-        recipients = []
-        if mod_channel == 'DM':
-            nerdland_guild = ctx.bot.get_guild(int(NERDLAND_SERVER_ID))
-            moderator_role = discord.utils.find(lambda role: role.name == MODERATOR_NAME,nerdland_guild.roles)
-            ##TODO: Not sure how long this will take for the nerdland server with 6000 members. Maybe disable the DM option?
-            for member in nerdland_guild.members:
-                if moderator_role in member.roles:
-                    recipients.append(member)
-
-        elif mod_channel.isnumeric():
-            channel = ctx.bot.get_channel(int(mod_channel))
-            if channel:
-                recipients.append(channel)
-            else:
-                msg = translate("mod_channel_not_exist", await culture_ctx(ctx))
-                return await ctx.send(msg)
-
-        else: 
+        # Get the channel object from the ID
+        channel = ctx.bot.get_channel(int(mod_channel))
+        if not channel:
             msg = translate("mod_no_channel_set", await culture_id(int(NERDLAND_SERVER_ID)))
             return await ctx.send(msg)
-
 
         mod_message = translate("mod_message",await culture_id(int(NERDLAND_SERVER_ID))).format(ctx.author,input_message)
 
@@ -73,8 +58,7 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
 
             # Process emoji
             if reaction.emoji == thumbs_up:
-                for recipient in recipients:
-                    await recipient.send(mod_message)
+                await channel.send(mod_message)
                 msg = translate("mod_message_sent",await culture_id(int(NERDLAND_SERVER_ID)))
                 await ctx.send(msg)
 
@@ -90,19 +74,20 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
             msg = translate("snooze_lose", await culture_id(int(NERDLAND_SERVER_ID)))
             return await ctx.send(msg)
 
-    @commands.command(name="set_mod_channel",usage="add_mod_channel_usage",brief="add_mod_channel_brief", help="add_mod_channel_help")
+    @commands.command(name="set_mod_channel",aliases = ['mod_channel'],usage="add_mod_channel_usage",brief="add_mod_channel_brief", help="add_mod_channel_help")
     @commands.guild_only()
     async def set_mod_channel(self, ctx: commands.Context, mod_channel=None):
+
         if not ctx.guild.id == int(NERDLAND_SERVER_ID):
             msg = translate("mod_channel_only_nerdland", await culture_ctx(ctx))
-            return await ctx.send('This is only for the nerdland server') ##TODO: fix translation
+            return await ctx.send(msg)
 
-        guild_data = await get_guild_data(ctx)
+        guild_data = await get_guild_data(ctx.guild.id)
         if not guild_data.user_is_botslet:
             gif = translate("not_admin_gif", await culture_ctx(ctx))
             return await ctx.send(gif)
         if not mod_channel:
-            msg = translate("no_mod_channel", await culture_ctx(ctx))
+            msg = translate("no_mod_channel_given", await culture_ctx(ctx))
             return await ctx.send(msg)
 
 
@@ -119,9 +104,6 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
         
             await guild_data.update_mod_channel(str(channel.id))
             msg = translate("mod_channel_set", await culture_ctx(ctx)).format(channel)
-            return await ctx.send(msg)
-        elif mod_channel == 'DM':
-            msg = translate("mod_channel_set", await culture_ctx(ctx)).format(mod_channel)
             return await ctx.send(msg)
         else: 
             msg = translate("mod_channel_not_exist", await culture_ctx(ctx))
