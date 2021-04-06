@@ -6,7 +6,7 @@ import datetime
 
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
-from nerdlandbot.helpers.constants import *
+from nerdlandbot.helpers.constants import NOTIFY_EMBED_COLOR, MAX_REMINDER_TIME, MIN_REMINDER_TIME
 
 
 class Reminder(commands.Cog, name="Simple Reminder"):
@@ -22,7 +22,7 @@ class Reminder(commands.Cog, name="Simple Reminder"):
             description=msg,
             color=NOTIFY_EMBED_COLOR
         )
-        if time != None and time.isnumeric():
+        if time is not None and time.isnumeric():
             time_int = int(time)
         else:
             return await ctx.send(embed=embed)
