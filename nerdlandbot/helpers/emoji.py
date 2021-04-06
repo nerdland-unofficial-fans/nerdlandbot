@@ -6,7 +6,7 @@ yes = "✅"
 no = "❌"
 drum = "🥁"
 fist = "👊"
-church = "⛪"
+church_emoji = "⛪"
 bird = "🐦"
 camera = "📸"
 

@@ -19,8 +19,8 @@ class GuildData:
     youtube_channels: dict
     purgers: dict
     culture: str
-    kerk_channel: str
-    kerk_event: list
+    church_channel: int
+    church_event: list
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -29,8 +29,8 @@ class GuildData:
         self.purgers = dict()
         self.bot_admins = []
         self.culture = "en"
-        self.kerk_channel = ""
-        self.kerk_event = []
+        self.church_channel = int
+        self.church_event = []
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -268,20 +268,22 @@ class GuildData:
 
         return True
 
-    async def update_kerk_channel(self, kerk: str) -> bool:
+    async def update_church_channel(self, church: str) -> bool:
         """
         Updates the kerk_channel
         :param kerk: the channel that's been set
         :return: True if updated and saved, False if it's the same
         """
-        if kerk != self.kerk_channel:
-            self.kerk_channel = kerk
+        church = church.strip("<#")
+        church = int(church.strip(">"))
+        if church != self.church_channel:
+            self.church_channel = church
             await self.save()
             return True
         else:
             return False
     
-    async def set_kerk_event(self, sender: str, receiver: str, day: int, culture: str, message:Optional[str] = None):
+    async def set_church_event(self, sender: str, receiver: str, day: int, culture: str, message:Optional[str] = None):
         """
         Adds a kerk_event
         :param sender: The person who sent a challenge
@@ -296,12 +298,12 @@ class GuildData:
         info.append(day)
         info.append(culture)
         info.append(message)
-        self.kerk_event.append(info)
+        self.church_event.append(info)
         await self.save()
 
 
-    async def remove_kerk_event(self):
-        self.kerk_event.pop(0)
+    async def remove_church_event(self):
+        self.church_event.pop(0)
         await self.save()
 
 
@@ -387,8 +389,8 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.culture = data.get("culture", "en")
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
-        guildData.kerk_channel = data.get("kerk_channel", "")
-        guildData.kerk_event = data.get("kerk_event", [])
+        guildData.church_channel = data.get("church_channel", "")
+        guildData.church_event = data.get("church_event", [])
 
         return guildData
 

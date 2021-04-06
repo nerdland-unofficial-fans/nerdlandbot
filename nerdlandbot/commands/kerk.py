@@ -27,7 +27,7 @@ class Kerk(commands.Cog, name="kerk"):
             church_day = temp_date.day
         
         # Adding a church_event to the guild data.
-        await guild_data.set_kerk_event(ctx.author.id, mention, church_day, lang, message)
+        await guild_data.set_church_event(ctx.author.id, mention, church_day, lang, message)
         msg = translate("church_event_success", lang)
         
         return await ctx.send(msg)
@@ -44,11 +44,6 @@ class Kerk(commands.Cog, name="kerk"):
         if not guild_data.user_is_admin(ctx.author):
             gif = translate("not_admin_gif", lang)
             return await ctx.send(gif)
-        
-        # Error if not an id
-        if not channel_id.isnumeric():
-            msg = translate("church_id_needed", lang)
-            return await ctx.send(msg)
 
         # Give error if the channel is a voice channel
         channel = get_channel(ctx,channel_id)
@@ -58,8 +53,8 @@ class Kerk(commands.Cog, name="kerk"):
         if not channel:
             return await ctx.send(translate("membercount_channel_nonexistant", lang))
 
-        if(await guild_data.update_kerk_channel(channel_id)):
-            msg = translate("church_channel_success", lang)
+        if(await guild_data.update_church_channel(channel_id)):
+            msg = translate("church_channel_success", lang).format(channel)
         else:
             msg = translate("church_channel_error", lang)
 
