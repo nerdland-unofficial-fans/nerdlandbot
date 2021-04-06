@@ -229,6 +229,7 @@ class SpaceDevs (commands.Cog, name='Space'):
                 break
 
     @commands.command(name="percy", hidden = False, help="percy_help", brief="percy_brief")
+    @commands.guild_only()
     async def cmd_percy(self, ctx:commands.Context):
         percy_data = await self.get_percy_data()
 
