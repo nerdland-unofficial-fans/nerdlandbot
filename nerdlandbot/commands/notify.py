@@ -10,7 +10,7 @@ from nerdlandbot.commands.GuildData import get_guild_data, GuildData
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 from nerdlandbot.helpers.emoji import get_custom_emoji, thumbs_up, thumbs_down
-from nerdlandbot.helpers.constants import *
+from nerdlandbot.helpers.constants import DISCORD_MAX_MSG_LENGTH, NOTIFY_EMBED_COLOR, NOTIFY_MAX_MSG_LENGTH, REACTION_TIMEOUT, NOTIFY_MAX_PER_PAGE, INTERACT_TIMEOUT
 
 
 class Notify(commands.Cog, name="Notification_lists"):
