@@ -151,7 +151,7 @@
 "poncho_hond","DOG DOG DOG","HOND HOND HOND"
 "add_mod_channel_usage","<channel>","<kanaal>"
 "add_mod_channel_brief","**admin-only** \n \u2003 Set a channel for moderator messages.","**admin-functie** \n \u2003 Stel een kanaal in voor moderator berichten"
-"add_mod_channel_help","*admin-only* \u2003 Set a channel for moderator messages.\n\n\u2003<channel> Tag a channel or give the name for a channel. If you use DM, the bot will send a private message to everyone with the moderator role for moderator messages.","*admin-functie* \u2003 Stel een kanaal in voor moderator berichten.\n\n\u2003<kanaal>Tag het kanaal of geef de naam van het kanaal. Als je DM ingeeft, zullen de moderator berichten in een privébericht gestuurd worden naar iedereen met de moderator rol."
+"add_mod_channel_help","*admin-only* \u2003 Set a channel for moderator messages.\n\n\u2003<channel> Tag a channel or give the name for a channel.","*admin-functie* \u2003 Stel een kanaal in voor moderator berichten.\n\n\u2003<kanaal>Tag het kanaal of geef de naam van het kanaal."
 "no_mod_channel_given","You have not given a channel, foemp!","Je moet een kanaal opgeven, foemp!"
 "mod_channel_not_exist","This channel does not exist, foemp!","Dit kanaal bestaat niet, foemp!"
 "mod_channel_set","The moderator channel is set to {0}","Het moderator kanaal is ingesteld op {0}"
