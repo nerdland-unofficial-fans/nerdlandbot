@@ -10,8 +10,8 @@ async def get_culture_from_context(ctx: commands.Context) -> str:
     :return: The culture for the given context. (str)
     """
     guild_id = ctx.guild.id
-    guild = await get_guild_data(guild_id)
-    return guild.culture
+    culture = await get_culture_from_id(guild_id)
+    return culture
 
 
 async def get_culture_from_id(guild_id: int) -> str:
