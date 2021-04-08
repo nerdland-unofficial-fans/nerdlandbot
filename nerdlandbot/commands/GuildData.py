@@ -161,7 +161,7 @@ class GuildData:
             or user_to_check.id in self.bot_admins
         )
 
-    def user_is_botslet(self, user_to_check: Member):
+    def user_is_admin_moderator(self, user_to_check: Member):
         """
         Checks whether or not a user is a bot admin or a moderator.
         :param user_to_check: The user to check (discord.Member)

@@ -54,5 +54,5 @@ DAD_JOKE_URL = 'https://icanhazdadjoke.com'
 EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
 
 #Nerdland server
-NERDLAND_SERVER_ID = 712743925114339328 #bot test server for testing purposes
+DISCORD_SERVER_ID = 712743925114339328 #bot test server for testing purposes
 MODERATOR_NAME = "moderator"
