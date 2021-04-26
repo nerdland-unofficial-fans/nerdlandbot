@@ -1,6 +1,5 @@
 discord.py >= 1.7.0
 python-dotenv
-pandas
 aiohttp
 requests
 tweepy >= 3.10.0

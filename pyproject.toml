@@ -8,7 +8,6 @@ authors = ["Arno989", "Autom", "Bob van der Vleuten", "Eva Smeets", "flor01", "S
 python = "^3.8"
 discord-py = "^1.7.0"
 python-dotenv = "^0.14.0"
-pandas = "^1.1.5"
 requests = "^2.25.0"
 tweepy = "^3.10.0"
 beautifulsoup4 = "^4.9.3"

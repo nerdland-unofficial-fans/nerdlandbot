@@ -1,5 +1,5 @@
-import pandas
-import codecs
+import csv
+
 from os import path
 from datetime import datetime
 
@@ -12,6 +12,7 @@ translations = {}
 
 def is_weekend() -> bool:
     return datetime.now().weekday() in {SATURDAY, SUNDAY}
+
 
 def translate_adjective(language: str) -> str:
     return (
@@ -28,12 +29,12 @@ def get_text(translation_key: str, language: str) -> str:
     :param language: The language to translate to. (str)
     :return: The translated key. (str)
     """
-    if not translations.keys().__contains__(translation_key):
+    if translation_key not in translations:
         return f'[{language}] {translation_key} 1'
 
     translations_for_key = translations[translation_key]
 
-    if not translations_for_key.keys().__contains__(language):
+    if language not in translations_for_key:
         return f'[{language}] {translation_key} 2'
 
     language_translation = translations_for_key[language]
@@ -45,16 +46,10 @@ def get_text(translation_key: str, language: str) -> str:
     return language_translation
 
 
-# Read csv
-translations_dataframe = pandas.read_csv(path.join(path.dirname(__file__), "Translations.csv"))
-
-# Remove artificial index
-translations_dataframe = translations_dataframe.set_index('Key', drop=True)
-
-# Process dataframe data
-for key, data in translations_dataframe.iterrows():
-    dict_for_key = {}
-    for culture in data.keys():
-        dict_for_key[culture] = codecs.decode(data[culture], 'unicode_escape')
-
-    translations[key] = dict_for_key
+def load_translations() -> None:
+    with open(path.join(path.dirname(__file__), "Translations.csv"), newline='') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            key = row['Key']
+            del row['Key']
+            translations[key] = {k: v.encode().decode('unicode-escape') for k, v in row.items()}
