@@ -28,6 +28,9 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
         # Get the channel ID from the guild data
         guild_data = await get_guild_data(int(DISCORD_SERVER_ID))
         mod_channel = guild_data.mod_channel
+        if not mod_channel:
+            msg = translate("mod_no_channel_set", await culture_id(int(DISCORD_SERVER_ID)))
+            return await ctx.send(msg)
 
         # Get the channel object from the ID
         channel = ctx.bot.get_channel(int(mod_channel))
