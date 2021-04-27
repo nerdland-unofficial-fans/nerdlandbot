@@ -35,7 +35,14 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
             msg = translate("mod_no_channel_set", await culture_id(int(DISCORD_SERVER_ID)))
             return await ctx.send(msg)
 
-        mod_message = translate("mod_message",await culture_id(int(DISCORD_SERVER_ID))).format(ctx.author,input_message)
+        nerdland_guild = ctx.bot.get_guild(int(DISCORD_SERVER_ID))
+        moderator_role = discord.utils.find(lambda role: role.name == MODERATOR_NAME,nerdland_guild.roles)
+
+        if moderator_role:
+            mod_message = moderator_role.mention + "\n"
+        else:
+            mod_message = ""
+        mod_message += translate("mod_message",await culture_id(int(DISCORD_SERVER_ID))).format(ctx.author,input_message)
 
         # Ask user confirmation
         msg = translate("mod_confirmation_question", await culture_id(int(DISCORD_SERVER_ID)))\
