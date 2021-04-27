@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 from nerdlandbot.bot import NerdlandBot
 from nerdlandbot.helpers.log import info, error, fatal
-from nerdlandbot.translations.Translations import get_text as _
+from nerdlandbot.translations.Translations import load_translations, get_text as _
 from nerdlandbot.scheduler.YoutubeScheduler import check_and_post_latest_videos
 from nerdlandbot.scheduler.PurgeScheduler import purge_messages
 from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
@@ -22,6 +22,8 @@ if PREFIX:
 else:
     fatal("Please provide a PREFIX in your .env file")
     sys.exit()
+
+load_translations()
 
 # load up intents
 intents = discord.Intents.all()
@@ -75,7 +77,7 @@ async def on_ready():
     purge_messages.start(bot)
 
     if SHEETS_TOKEN:
-        info("Spreadsheet editing is possible")    
+        info("Spreadsheet editing is possible")
         bot.load_extension("nerdlandbot.commands.recipe")
     else:
         error("No google-sheets token")
