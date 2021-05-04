@@ -26,11 +26,11 @@ class Pets(commands.Cog, name="Pets"):
         pet_id = await guild_data.set_pet(name, str(ctx.author.id))
         if ctx.message.attachments:
             await resize_and_save(ctx,ctx.message.attachments[0],pet_id)
-            msg = "Pet {0} added as number {1}!".format(name.capitalize(), pet_id)
+            msg = translate("pet_added_succes", lang).format(name.capitalize(), pet_id)
             await ctx.send(msg)
         else:
-            embed_title = 'Voeg een foto toe'
-            question = 'Reageer hierop met de foto van {0} die je wil toevoegen. \n Reageer met 0 om te annuleren'.format(name.capitalize())
+            embed_title = translate("pet_embed_title", lang)
+            question = translate("waiting_question", lang).format(name.capitalize())
             embed = discord.Embed(
                 title = embed_title,
                 description = question,
@@ -41,7 +41,7 @@ class Pets(commands.Cog, name="Pets"):
     
                 if reaction.content == "0":
                     await guild_data.delete_pet(pet_id)
-                    abort = translate("recipe_abort", lang)
+                    abort = translate("command_abort", lang)
                     embed = discord.Embed(
                         title = embed_title,
                         description = abort,
@@ -52,11 +52,12 @@ class Pets(commands.Cog, name="Pets"):
                 if reaction.attachments:
                     await resize_and_save(ctx,reaction.attachments[0],pet_id)
                 else: 
-                    msg = 'Voeg een foto toe, foemp!'
+                    msg = translate("pet_reaction_error", lang)
                     await ctx.send(msg)
                 
             except asyncio.TimeoutError:
-                timeout = translate("recipe_timeout", lang)
+                await guild_data.delete_pet(pet_id)
+                timeout = translate("command_timeout", lang)
                 embed = discord.Embed(
                     title = embed_title,
                     description = timeout,
@@ -75,7 +76,7 @@ class Pets(commands.Cog, name="Pets"):
             pet_id = random.choice(list(pets.keys()))
             guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
             filepath = guild_path / f"{pet_id}.jpg"
-            message = "Dit is foto {0} van {1}".format(pet_id, pets[pet_id]['pet_name'].capitalize())
+            message = translate("pet_posted", lang).format(pet_id, pets[pet_id]['pet_name'].capitalize())
         else:
             list_of_ids = list(pets.keys())
             random.shuffle(list_of_ids)
@@ -84,11 +85,11 @@ class Pets(commands.Cog, name="Pets"):
                 if pets[pet_id]['pet_name'] == name.lower() and not pet_found:
                     guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
                     filepath = guild_path / f"{pet_id}.jpg"
-                    message = "Dit is foto {0} van {1}".format(pet_id, pets[pet_id]['pet_name'].capitalize())
+                    message = translate("pet_posted", lang).format(pet_id, pets[pet_id]['pet_name'].capitalize())
                     pet_found = True
 
             if not pet_found:
-                message = "Er is geen dier gevonden met die naam."
+                message = translate("pet_not_found", lang)
                 return await ctx.send(message)
 
         await ctx.send(message)
@@ -107,12 +108,12 @@ class Pets(commands.Cog, name="Pets"):
                 guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
                 filepath = guild_path / f"{pet_id}.jpg"
                 filepath.unlink()
-                message = "Picture {0} removed from data".format(pet_id)
+                message = translate("pet_removed", lang).format(pet_id)
             else: 
                 gif = translate("not_admin_gif", lang)
                 return await ctx.send(gif)
         else:
-            message = "Picture {0} doesn't exist".format(pet_id)
+            message = translate("pet_picture_does_not_exist", lang).format(pet_id)
         await ctx.send(message)
         
 

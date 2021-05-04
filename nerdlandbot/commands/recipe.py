@@ -58,7 +58,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
                 answers.append(reaction)
                 # If the user wants to abort, he can enter '0'
                 if reaction.content == "0":
-                    abort = translate("recipe_abort", lang)
+                    abort = translate("command_abort", lang)
                     embed = discord.Embed(
                         title = embed_title,
                         description = abort,
@@ -86,7 +86,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
                         )
                         return await ctx.send(embed=embed)
             except asyncio.TimeoutError:
-                timeout = translate("recipe_timeout", lang)
+                timeout = translate("command_timeout", lang)
                 embed = discord.Embed(
                     title = embed_title,
                     description = timeout,
