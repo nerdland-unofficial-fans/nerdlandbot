@@ -10,20 +10,25 @@ from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 from nerdlandbot.helpers.constants import NOTIFY_EMBED_COLOR
 
-SHEETS_TOKEN = os.getenv("SHEETS_JSON")
-SPREADSHEET = os.getenv("SPREADSHEET")
 
 
 class Recipe(commands.Cog, name="Spreadsheets"):
     def __init__(self, bot: commands.Bot):
+        self.sheets_token = os.getenv("SHEETS_JSON")
+        self.spreadsheet = os.getenv("SPREADSHEET")
         self.bot = bot
     
 
     @commands.command(name="add_recipe", aliases=["recipe"], brief="recipe_brief", help="recipe_help")
     async def add_recipe(self, ctx: commands.Context):
         # Getting everything ready to acces 
-        gc = gspread.service_account(SHEETS_TOKEN)
-        sh = gc.open(SPREADSHEET)
+        lang = await culture(ctx)
+        try:
+            gc = gspread.service_account(self.sheets_token)
+            sh = gc.open(self.spreadsheet)
+        except:
+            msg = translate("recipe_verification_error", lang)
+            return await ctx.send(msg)
         ws = sh.sheet1
         next_row = next_available_row(ws)
 
@@ -32,7 +37,6 @@ class Recipe(commands.Cog, name="Spreadsheets"):
         date_string = "{}/{}/{} {}:{}:{}".format(d_obj.month, d_obj.day, d_obj.year, d_obj.hour, d_obj.minute, d_obj.second)
 
         # Initializing variables needed
-        lang = await culture(ctx)
         embed_title = translate("recipe_title", lang)
         questions = []
         answers = []

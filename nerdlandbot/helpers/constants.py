@@ -18,7 +18,15 @@ SCHEDULER_INTERVAL = 10.0 #minutes
 POLL_MAX_TIMEOUT = 60 #minutes
 POLL_DEFAULT_TIMEOUT = 5 #minutes
 
-EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
+
+# Reminder
+MAX_REMINDER_TIME = 1440 #minutes, 1 day
+MIN_REMINDER_TIME = 5 #minutes
+
+# For the friendly bot
+SATURDAY = 5
+SUNDAY = 6
+FOEMP = "<<foemp>>"
 
 # the space_commands API url parts
 THE_SPACE_DEVS_HOME_URL = 'https://thespacedevs.com/llapi'
@@ -33,6 +41,7 @@ THE_SPACE_DEVS_TIMESTAMP_FORMAT = '%Y-%m-%dT%H:%M:%S'
 # the constants specific for upcoming launches (command space_launches)
 THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE = ['launch','upcoming']
 THE_SPACE_DEVS_LOCAL_CACHE_SPACE_LAUNCHES_FILE = 'space_launches'
+
 
 # ID for official NASA Perseverance Twitter account
 PERCY_TWITTER_ID = '1232783237623119872'
