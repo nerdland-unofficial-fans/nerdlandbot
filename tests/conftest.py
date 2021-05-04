@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import importlib
 import pytest
 
@@ -14,7 +15,7 @@ import nerdlandbot as original
 
 class NerdlandBot(commands.bot.BotBase):
     def __init__(self, prefix: str, intents: Intents) -> None:
-        super().__init__(command_prefix="!", help_command=None, description="Nerdland testbot")
+        super().__init__(command_prefix=prefix, help_command=None, description="Nerdland testbot")
         self.user = MagicMock(id="0")
 
     def run(self, token: str) -> None:
@@ -58,7 +59,12 @@ class NerdlandBot(commands.bot.BotBase):
         return ctx, magic_http
 
 
-@pytest.fixture(autouse=True)
-def nerdlandbot() -> NerdlandBot:
+@pytest.fixture
+def testbot() -> NerdlandBot:
+    os.environ['PREFIX'] = '!'
+    return raw_testbot()
+
+
+def raw_testbot():
     with patch('nerdlandbot.__main__.NerdlandBot', new=NerdlandBot) as mock_nerdlandbot:
-        yield original.__main__.main()
+        return original.__main__.main()

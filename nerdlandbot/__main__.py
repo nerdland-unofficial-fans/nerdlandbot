@@ -13,8 +13,6 @@ from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
 
 
 def main() -> None:
-    load_dotenv()
-
     PREFIX = os.getenv("PREFIX")
     TOKEN = os.getenv("DISCORD_TOKEN")
 
@@ -88,4 +86,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    load_dotenv()
     main()
