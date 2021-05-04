@@ -292,12 +292,13 @@ class GuildData:
         :param culture: The language being used in the bot
         :param message: In case the sender wants to add a message to his challenge
         """
-        info = []
-        info.append(sender)
-        info.append(receiver)
-        info.append(day)
-        info.append(culture)
-        info.append(message)
+        info = {}
+        info["sender"] = sender
+        info["receiver"] = receiver
+        info["day"] = day
+        info["culture"] = culture
+        info["message"] = message
+        
         self.church_event.append(info)
         await self.save()
 
