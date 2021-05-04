@@ -11,11 +11,11 @@ from nerdlandbot.commands.GuildData import get_all_guilds_data, get_guild_data, 
 
 
 
-class Kerk(commands.Cog, name="kerk"):
+class Kerk(commands.Cog, name="Church"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(name="16ukerk", hidden=True)
+    @commands.command(name="16uchurch", hidden=True)
     async def cmd_kerk16(self, ctx: commands.Context, mention:typing.Optional[str] = None, *, message:typing.Optional[str] = None):
         guild_data = await get_guild_data(ctx.message.guild.id)  
         lang = await culture(ctx)
@@ -34,7 +34,7 @@ class Kerk(commands.Cog, name="kerk"):
         
     
 
-    @commands.command(name="kerk_channel", hidden=True)
+    @commands.command(name="church_channel", hidden=True)
     async def cmd_set_kerk(self, ctx: commands.Context, *, channel_id:typing.Optional[str] = None):
         guild_data = await get_guild_data(ctx.message.guild.id)
 
