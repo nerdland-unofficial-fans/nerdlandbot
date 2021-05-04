@@ -21,7 +21,7 @@ class Kerk(commands.Cog, name="Church"):
         lang = await culture(ctx)
         temp_date = datetime.now()
         # If it's past 16:00 it will be scheduled for the next day
-        if temp_date.hour >= 23:
+        if temp_date.hour >= 16:
             church_day = (temp_date + timedelta(days=1)).day
         else:
             church_day = temp_date.day
