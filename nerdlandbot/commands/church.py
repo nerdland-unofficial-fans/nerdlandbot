@@ -51,7 +51,7 @@ class Kerk(commands.Cog, name="Church"):
             return await ctx.send(translate("channel_is_voice", lang))
 
         if not channel:
-            return await ctx.send(translate("membercount_channel_nonexistant", lang))
+            return await ctx.send(translate("channel_nonexistant", lang))
 
         if(await guild_data.update_church_channel(channel_id)):
             msg = translate("church_channel_success", lang).format(channel)

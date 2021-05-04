@@ -14,7 +14,7 @@
 "membercount_help","Perform a member count.\n\nWithout parameter: Return the server member count.\n\nWith a channel name: Return a count of all members currently in the given channel.\n\nWith parameter 'online': Return all members currently online.","Tel het aantal leden.\n\nZonder parameter: Tel het aantal leden in de server.\n\nMet een kanaal: Tel het aantal leden in dat kanaal.\n\nMet parameter 'online': Tel het aantal leden die momenteel online zijn."
 "membercount_online_result","There are {0} people online in this server!","Er zijn momenteel {0} gebruikers online in deze server!"
 "membercount_server_result","There are {0} people in {1}!","Er zitten momenteel {0} gebruikers in {1}!"
-"membercount_channel_nonexistant","The provided channel does not exist, foemp!","Het kanaal dat je meegaf bestaat niet, foemp!"
+"channel_nonexistant","The provided channel does not exist, foemp!","Het kanaal dat je meegaf bestaat niet, foemp!"
 "membercount_empty_channel","<#{0}> is empty, foemp!","<#{0}> is leeg, foemp!"
 "membercount_single_person","There is 1 person in channel <#{0}>!","Er is 1 persoon aanwezig in <#{0}>!"
 "membercount_channel_result","There are {0} people in channel <#{1}>!","Er zijn {0} mensen aanwezig in <#{1}>"
