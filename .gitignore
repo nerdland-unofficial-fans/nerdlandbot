@@ -161,3 +161,6 @@ space_commands/*
 
 # ignore json for google sheets api
 *.json
+
+# ignore images from pets feature
+*.jpg

@@ -5,3 +5,4 @@ requests
 tweepy >= 3.10.0
 beautifulsoup4 >= 4.9.3
 gspread >= 3.7.0
+pillow >= 8.2.0

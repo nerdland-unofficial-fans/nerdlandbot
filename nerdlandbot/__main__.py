@@ -51,7 +51,7 @@ bot.load_extension("nerdlandbot.commands.kerk")
 bot.load_extension("nerdlandbot.commands.open_source")
 bot.load_extension("nerdlandbot.commands.privacy")
 bot.load_extension("nerdlandbot.commands.reminder")
-
+bot.load_extension("nerdlandbot.commands.pets")
 bot.load_extension("nerdlandbot.commands.space_launches")
 
 # Setting up the google token

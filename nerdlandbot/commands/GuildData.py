@@ -19,6 +19,7 @@ class GuildData:
     youtube_channels: dict
     purgers: dict
     culture: str
+    pets: dict
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -27,6 +28,7 @@ class GuildData:
         self.purgers = dict()
         self.bot_admins = []
         self.culture = "en"
+        self.pets = dict()
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -263,7 +265,33 @@ class GuildData:
         await self.save()
 
         return True
+    
+    async def set_pet(self, pet_name: str, user_id: str) -> str:
+        pets = self.pets
+
+        if len(pets) == 0:
+            pet_id = str(1)
+        else:
+            id_list_strings = list(pets.keys())
+            mapped_list = map(int,id_list_strings)
+            id_list_ints = list(mapped_list)
+            sorted_id_list = sorted(id_list_ints)
+            pet_id = str(sorted_id_list[-1] + 1)
+
+        pets[pet_id] = {}
+        pets[pet_id]['owner'] = user_id
+        pets[pet_id]['pet_name'] = pet_name.lower()
+        await self.save()
+
+        return pet_id
+
+    async def delete_pet(self, pet_id: str) -> bool:
+        pets = self.pets
         
+        del pets[pet_id]
+
+        await self.save()
+        return True
 
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
@@ -348,7 +376,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.culture = data.get("culture", "en")
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
-
+        guildData.pets = data.get("pets", {})
         return guildData
 
 
