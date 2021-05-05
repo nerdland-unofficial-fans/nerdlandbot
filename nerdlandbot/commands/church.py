@@ -26,6 +26,11 @@ class Kerk(commands.Cog, name="Church"):
         else:
             church_day = temp_date.day
         
+        # If the user doesn't mention someone tell him to do so
+        if mention is None:
+            msg = translate("church_no_mention", lang)
+            return await ctx.send(msg)
+        
         # Adding a church_event to the guild data.
         await guild_data.set_church_event(ctx.author.id, mention, church_day, lang, message)
         msg = translate("church_event_success", lang)

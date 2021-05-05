@@ -197,3 +197,4 @@
 "church_channel_success","Church-channel has been set to {0}!","Kerk-kanaal is ingesteld op {0}!"
 "church_channel_error","This channel already was the church-channel, <<foemp>>!","Dit kanaal was al het kerk-kanaal, <<foemp>>!"
 "church_event_success","Church-meeting has been set, prepare for the fight!","Kerk-meeting is ingesteld, maak je klaar voor het gevecht!"
+"church_no_mention","You need to challenge someone, <<foemp>>!","Ge moet iemand uitdagen, <<foemp>>!"
