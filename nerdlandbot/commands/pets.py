@@ -17,10 +17,15 @@ class Pets(commands.Cog, name="Pets"):
         self.bot = bot
 
 
-    @commands.command(name="add_pet")
+    @commands.command(
+        name="add_pet", brief="add_pet_brief", help="add_pet_help", usage="add_pet_usage"
+        )
     @commands.guild_only()
     async def add_pet(self, ctx:commands.Context, name:typing.Optional[str] = None):
         lang = await culture(ctx)
+        if name is None:
+            message = translate("pet_need_name", lang)
+            return await ctx.send(message)
         guild_data = await get_guild_data(ctx.message.guild.id)
 
         pet_id = await guild_data.set_pet(name, str(ctx.author.id))
@@ -64,7 +69,9 @@ class Pets(commands.Cog, name="Pets"):
                 )
                 return await ctx.send(embed=embed)
         
-    @commands.command(name="post_pet")
+    @commands.command(
+        name="post_pet", aliases=["pet", "random_pet"], brief="post_pet_brief", help="post_pet_help", usage="post_pet_usage"
+        )
     @commands.guild_only()
     async def post_pet(self, ctx:commands.Context, name:typing.Optional[str] = None):
         lang = await culture(ctx)
@@ -95,7 +102,9 @@ class Pets(commands.Cog, name="Pets"):
         await ctx.send(message)
         await ctx.send(file=discord.File(filepath))
 
-    @commands.command(name="remove_pet")
+    @commands.command(
+        name="remove_pet", aliases=["rm_pet"],brief="remove_pet_brief", usage="remove_pet_usage", help="remove_pet_help"
+        )
     @commands.guild_only()
     async def remove_pet(self, ctx:commands.Context, pet_id:typing.Optional[str] = None):
         lang = await culture(ctx)
