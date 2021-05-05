@@ -28,7 +28,9 @@ class Pets(commands.Cog, name="Pets"):
             return await ctx.send(message)
         guild_data = await get_guild_data(ctx.message.guild.id)
 
-        pet_id = await guild_data.set_pet(name, str(ctx.author.id))
+        await guild_data.get_new_pet_id()
+        pet_id = guild_data.pets_last_id["id"]
+        await guild_data.set_pet(name, str(ctx.author.id), pet_id)
         if ctx.message.attachments:
             await resize_and_save(ctx,ctx.message.attachments[0],pet_id)
             msg = translate("pet_added_succes", lang).format(name.capitalize(), pet_id)
@@ -56,6 +58,8 @@ class Pets(commands.Cog, name="Pets"):
 
                 if reaction.attachments:
                     await resize_and_save(ctx,reaction.attachments[0],pet_id)
+                    msg = translate("pet_added_succes", lang).format(name.capitalize(), pet_id)
+                    await ctx.send(msg)
                 else: 
                     msg = translate("pet_reaction_error", lang)
                     await ctx.send(msg)

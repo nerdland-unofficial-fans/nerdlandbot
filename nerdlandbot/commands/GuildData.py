@@ -20,6 +20,7 @@ class GuildData:
     purgers: dict
     culture: str
     pets: dict
+    pets_last_id: dict
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -29,6 +30,7 @@ class GuildData:
         self.bot_admins = []
         self.culture = "en"
         self.pets = dict()
+        self.pets_last_id = dict()
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -266,24 +268,16 @@ class GuildData:
 
         return True
     
-    async def set_pet(self, pet_name: str, user_id: str) -> str:
+    async def set_pet(self, pet_name: str, user_id: str, pet_id: int):
         pets = self.pets
 
-        if len(pets) == 0:
-            pet_id = str(1)
-        else:
-            id_list_strings = list(pets.keys())
-            mapped_list = map(int,id_list_strings)
-            id_list_ints = list(mapped_list)
-            sorted_id_list = sorted(id_list_ints)
-            pet_id = str(sorted_id_list[-1] + 1)
+        pet_id_str = str(pet_id)
+        pets[pet_id_str] = {}
+        pets[pet_id_str]['owner'] = user_id
+        pets[pet_id_str]['pet_name'] = pet_name.lower()
+        return await self.save()
+        
 
-        pets[pet_id] = {}
-        pets[pet_id]['owner'] = user_id
-        pets[pet_id]['pet_name'] = pet_name.lower()
-        await self.save()
-
-        return pet_id
 
     async def delete_pet(self, pet_id: str) -> bool:
         pets = self.pets
@@ -292,6 +286,17 @@ class GuildData:
 
         await self.save()
         return True
+    
+    async def get_new_pet_id(self):
+        pet_id = self.pets_last_id
+        
+        if not "id" in pet_id.keys():
+            pet_id["id"] = 0
+        
+        pet_id["id"] += 1
+        
+        await self.save()
+        
 
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
@@ -377,6 +382,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
         guildData.pets = data.get("pets", {})
+        guildData.pets_last_id = data.get("pets_last_id", {})
         return guildData
 
 
