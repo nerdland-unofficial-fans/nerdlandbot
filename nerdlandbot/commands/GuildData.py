@@ -271,14 +271,14 @@ class GuildData:
         return True
 
     async def add_pet(self, pet_name: str, user_id: str, category: str):
-        pets = self.pets
         pet_id = await self.get_new_pet_id()
         pet_id_str = str(pet_id)
-        pets[pet_id_str] = {}
-        pets[pet_id_str]['owner'] = user_id
-        pets[pet_id_str]['pet_name'] = pet_name.lower()
-        pets[pet_id_str]['category'] = category.lower()
+        self.pets[pet_id_str] = {}
+        self.pets[pet_id_str]['owner'] = user_id
+        self.pets[pet_id_str]['pet_name'] = pet_name.lower()
+        self.pets[pet_id_str]['category'] = category.lower()
         await self.save()
+        
     
 
     async def delete_pet(self, pet_id: str) -> bool:
@@ -290,15 +290,13 @@ class GuildData:
         return True
 
     async def get_new_pet_id(self) -> int:
-        pet_id = self.pets_last_id
+        if self.pets_last_id is None:
+            self.pets_last_id = 0
 
-        if pet_id is None:
-            pet_id = 0
-
-        pet_id += 1
+        self.pets_last_id += 1
 
         await self.save()
-        return pet_id
+        return self.pets_last_id
 
     async def add_new_pet_category(self, category_name: str) -> bool:
         categories = self.pets_categories
@@ -402,7 +400,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
         guildData.pets = data.get("pets", {})
-        guildData.pets_last_id = data.get("pets_last_id", {})
+        guildData.pets_last_id = data.get("pets_last_id", None)
         guildData.pets_categories = data.get("pets_categories", [])
         return guildData
 
