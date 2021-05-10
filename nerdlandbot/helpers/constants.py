@@ -12,7 +12,7 @@ INTERACT_TIMEOUT = 30 #seconds
 # directory where the womat photos are stored
 WOMBATS_DIR_NAME = "wombats"
 PONCHO_DIR_NAME = "poncho"
-PETS_DIR_NAME = "community pets"
+PETS_DIR_NAME = "community_pets"
 
 SCHEDULER_INTERVAL = 10.0 #minutes
 

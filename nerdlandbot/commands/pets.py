@@ -245,16 +245,17 @@ class Pets(commands.Cog, name="Pets"):
             get_guild_data(ctx.message.guild.id),
         )
         pets = guild_data.pets
+        category_name = category_name.lower()
 
         for pet_id in pets.keys():
-            if pets[pet_id]["category"] == category_name.lower():
+            if pets[pet_id]["category"] == category_name:
                 msg = translate("pet_category_still_in_use", lang).format(pet_id)
                 return await ctx.send(msg)
 
         if category_name is None:
             translation_key = "pet_category_need_name"
         else:
-            if await guild_data.remove_pet_category(category_name.lower()):
+            if await guild_data.remove_pet_category(category_name):
                 translation_key = "pet_category_removal_succes"
 
         msg = translate(translation_key, lang)
