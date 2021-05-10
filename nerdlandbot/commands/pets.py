@@ -45,8 +45,9 @@ class Pets(commands.Cog, name="Pets"):
             message = translate("pet_category_nonexistant", lang)
             return await ctx.send(message)
 
-        pet_id = await guild_data.get_new_pet_id()
-        await guild_data.set_pet(name, ctx.author.id, pet_id, category.lower())
+        
+        await guild_data.add_pet(name, ctx.author.id, category.lower())
+        pet_id = guild_data.pets_last_id
         if ctx.message.attachments:
             await resize_and_save(ctx, ctx.message.attachments[0], pet_id)
             msg = translate("pet_added_succes", lang).format(

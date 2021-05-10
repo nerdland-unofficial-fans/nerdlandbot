@@ -270,9 +270,9 @@ class GuildData:
 
         return True
 
-    async def set_pet(self, pet_name: str, user_id: str, pet_id: int, category: str):
+    async def add_pet(self, pet_name: str, user_id: str, category: str):
         pets = self.pets
-
+        pet_id = await self.get_new_pet_id()
         pet_id_str = str(pet_id)
         pets[pet_id_str] = {}
         pets[pet_id_str]['owner'] = user_id
