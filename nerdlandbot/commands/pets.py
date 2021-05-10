@@ -147,8 +147,7 @@ class Pets(commands.Cog, name="Pets"):
                 message = translate("pet_not_found", lang)
                 return await ctx.send(message)
 
-        await ctx.send(message)
-        await ctx.send(file=discord.File(filepath))
+        await ctx.send(message, file=discord.File(filepath))
 
     @commands.command(
         name="remove_pet",
