@@ -20,7 +20,7 @@ class GuildData:
     purgers: dict
     culture: str
     pets: dict
-    pets_last_id: dict
+    pets_last_id: int
     pets_categories: list
 
     def __init__(self, guild_id: int):
@@ -31,7 +31,7 @@ class GuildData:
         self.bot_admins = []
         self.culture = "en"
         self.pets = dict()
-        self.pets_last_id = dict()
+        self.pets_last_id = None
         self.pets_categories = []
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
@@ -292,10 +292,10 @@ class GuildData:
     async def get_new_pet_id(self):
         pet_id = self.pets_last_id
 
-        if not "id" in pet_id:
-            pet_id["id"] = 0
+        if pet_id is None:
+            pet_id = 0
 
-        pet_id["id"] += 1
+        pet_id += 1
 
         await self.save()
 
