@@ -289,7 +289,7 @@ class GuildData:
         await self.save()
         return True
 
-    async def get_new_pet_id(self):
+    async def get_new_pet_id(self) -> int:
         pet_id = self.pets_last_id
 
         if pet_id is None:
@@ -298,6 +298,7 @@ class GuildData:
         pet_id += 1
 
         await self.save()
+        return pet_id
 
     async def add_new_pet_category(self, category_name: str) -> bool:
         categories = self.pets_categories
