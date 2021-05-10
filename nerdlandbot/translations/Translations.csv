@@ -195,7 +195,7 @@
 "pet_embed_title","Add a picture.","Voeg een foto toe."
 "waiting_question","React with a picture of {0} that you want to add within 60 seconds. \n React with 0 to cancel.","Reageer hierop met de foto van {0} die je wil toevoegen binnen de 60 seconden. \n Reageer met 0 om te annuleren."
 "pet_reaction_error","Add a picture, <<foemp>>!","Voeg een foto toe, <<foemp>>!"
-"pet_posted","This is picture {0} of {1}.","Dit is foto {0} van {1}."
+"pet_posted","This is picture {0} of {1}. This pet belongs to category {2}.","Dit is foto {0} van {1}. Dit huisdier hoort bij categorie {2}."
 "pet_not_found","I didn't find a pet with that name.","Er is geen dier gevonden met die naam."
 "pet_removed","Picture {0} removed from my data.","Foto {0} verwijderd van mijn data."
 "pet_picture_does_not_exist","Picture {0} doesn't exist.","Foto {0} bestaat niet."

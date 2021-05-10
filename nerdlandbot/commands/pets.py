@@ -116,8 +116,24 @@ class Pets(commands.Cog, name="Pets"):
             guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
             filepath = guild_path / f"{pet_id}.jpg"
             message = translate("pet_posted", lang).format(
-                pet_id, pets[pet_id]["pet_name"].capitalize()
+                pet_id, pets[pet_id]["pet_name"].capitalize(), pets[pet_id]["category"].capitalize()
             )
+        elif name in guild_data.pets_categories:
+            list_of_ids = list(pets.keys())
+            random.shuffle(list_of_ids)
+            pet_found = False
+            for pet_id in list_of_ids:
+                if pets[pet_id]["category"] == name.lower() and not pet_found:
+                    guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
+                    filepath = guild_path / f"{pet_id}.jpg"
+                    message = translate("pet_posted", lang).format(
+                        pet_id, pets[pet_id]["pet_name"].capitalize(), name.capitalize()
+                    )
+                    pet_found = True
+
+                if not pet_found:
+                    message = translate("pet_not_found", lang)
+                    return await ctx.send(message)
         else:
             list_of_ids = list(pets.keys())
             random.shuffle(list_of_ids)
@@ -127,7 +143,7 @@ class Pets(commands.Cog, name="Pets"):
                     guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
                     filepath = guild_path / f"{pet_id}.jpg"
                     message = translate("pet_posted", lang).format(
-                        pet_id, pets[pet_id]["pet_name"].capitalize()
+                        pet_id, pets[pet_id]["pet_name"].capitalize(), pets[pet_id]["category"].capitalize()
                     )
                     pet_found = True
 
