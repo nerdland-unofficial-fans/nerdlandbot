@@ -165,24 +165,21 @@ class Pets(commands.Cog, name="Pets"):
             get_guild_data(ctx.message.guild.id),
         )
 
-        if pet_id in guild_data.pets:
+        if pet_id not in guild_data.pets:
+            message = translate("pet_picture_does_not_exist", lang).format(pet_id)
+            return await ctx.send(message)
 
-            if (
-                guild_data.user_is_admin(ctx.author)
-                or str(ctx.author.id) == guild_data.pets[pet_id]["owner"]
-            ):
-                await guild_data.delete_pet(pet_id)
-                guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
-                filepath = guild_path / f"{pet_id}.jpg"
-                filepath.unlink()
-                message = translate("pet_removed", lang).format(pet_id)
-            else:
-                gif = translate("not_admin_gif", lang)
-                return await ctx.send(gif)
-        else:
-            message = translate(
-                "pet_picture_does_not_exist", lang).format(pet_id)
+        if not (guild_data.user_is_admin(ctx.author) or str(ctx.author.id) == guild_data.pets[pet_id]["owner"]):
+            gif = translate("not_admin_gif", lang)
+            return await ctx.send(gif)
+
+        await guild_data.delete_pet(pet_id)
+        guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
+        filepath = guild_path / f"{pet_id}.jpg"
+        filepath.unlink()
+        message = translate("pet_removed", lang).format(pet_id)
         await ctx.send(message)
+                
 
     @commands.command(
         name="add_category",
@@ -201,15 +198,17 @@ class Pets(commands.Cog, name="Pets"):
             msg = translate("pet_category_need_name", lang)
             return await ctx.send(msg)
 
-        if guild_data.user_is_admin(ctx.author):
-            if await guild_data.add_new_pet_category(category_name.lower()):
-                msg = translate("pet_category_succes", lang).format(category_name)
-            else:
-                msg = translate("pet_category_error", lang)
-            return await ctx.send(msg)
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", lang)
+            return await ctx.send(gif)
+        
+        if await guild_data.add_new_pet_category(category_name.lower()):
+            msg = translate("pet_category_succes", lang).format(category_name)
+        else:
+            msg = translate("pet_category_error", lang)
+        return await ctx.send(msg)
 
-        gif = translate("not_admin_gif", lang)
-        return await ctx.send(gif)
+        
 
     @commands.command(
         name="show_categories",
@@ -249,7 +248,7 @@ class Pets(commands.Cog, name="Pets"):
 
         for pet_id in pets.keys():
             if pets[pet_id]["category"] == category_name.lower():
-                msg = translate("pet_category_still_in_use", lang)
+                msg = translate("pet_category_still_in_use", lang).format(pet_id)
                 return await ctx.send(msg)
 
         if category_name is None:

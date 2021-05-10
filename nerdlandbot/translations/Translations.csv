@@ -217,7 +217,7 @@
 "pet_category_need_name","You need to enter a name for the new category, <<foemp>>!","Je moet een naam voor de nieuwe categorie toevoegen, <<foemp>>!"
 "pet_category_removal_succes","Category removed succesfully!","Categorie succesvol verwijderd!"
 "pet_category_removal_error","Category was not removed!","Categorie is niet verwijderd!"
-"pet_category_still_in_use","The category is still in use, try to remove every picture before removing this category.","De categorie wordt nog gebruikt, probeer eerst iedere foto te verwijderen voor je de categorie verwijdert."
+"pet_category_still_in_use","The category is still used by picture {0}, try to remove every picture before removing this category.","De categorie wordt nog gebruikt door de foto met ID {0}, probeer eerst iedere foto te verwijderen voor je de categorie verwijdert."
 "pet_add_category_brief","Add a category for pets to be added to.","Voeg een categorie toe om huisdieren bij toe te voegen."
 "pet_add_category_usage","<category_name>","<categorie_naam>"
 "pet_add_category_help","Add a category for pets to be added to. This is necessary for the pets-feature to work properly.","Voegt een categorie toe voor huisdieren. Dit is nodig voor de huisdieren-functie om goed te werken." 
