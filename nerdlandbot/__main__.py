@@ -48,7 +48,6 @@ bot.load_extension("nerdlandbot.commands.poll")
 bot.load_extension("nerdlandbot.commands.purger")
 bot.load_extension("nerdlandbot.commands.kerk")
 bot.load_extension("nerdlandbot.commands.moderator")
-
 bot.load_extension("nerdlandbot.commands.open_source")
 bot.load_extension("nerdlandbot.commands.privacy")
 bot.load_extension("nerdlandbot.commands.reminder")
