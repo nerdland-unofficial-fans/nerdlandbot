@@ -29,7 +29,7 @@ class Pets(commands.Cog, name="Pets"):
         ctx: commands.Context,
         name: typing.Optional[str] = None,
         category: typing.Optional[str] = None,
-    ):
+    ) -> None:
         lang, guild_data = await asyncio.gather(
             culture(ctx),
             get_guild_data(ctx.message.guild.id),
@@ -41,59 +41,60 @@ class Pets(commands.Cog, name="Pets"):
             message = translate("pet_need_category", lang)
             return await ctx.send(message)
 
-        if category.lower() not in guild_data.pets_categories:
+        category = category.lower() 
+        name = name.capitalize()
+        if category not in guild_data.pets_categories:
             message = translate("pet_category_nonexistant", lang)
             return await ctx.send(message)
 
         
-        await guild_data.add_pet(name, ctx.author.id, category.lower())
+        await guild_data.add_pet(name, ctx.author.id, category)
         pet_id = guild_data.pets_last_id
+
         if ctx.message.attachments:
             await resize_and_save(ctx, ctx.message.attachments[0], pet_id)
             msg = translate("pet_added_succes", lang).format(
-                name.capitalize(), pet_id)
-            await ctx.send(msg)
-        else:
-            embed_title = translate("pet_embed_title", lang)
-            question = translate("waiting_question",
-                                 lang).format(name.capitalize())
-            embed = discord.Embed(
-                title=embed_title,
-                description=question,
+                name, pet_id)
+            return await ctx.send(msg)
+        embed_title = translate("pet_embed_title", lang)
+        question = translate("waiting_question", lang).format(name)
+        embed = discord.Embed(
+            title=embed_title,
+            description=question,
+        )
+        await ctx.send(embed=embed)
+        try:
+            reaction = await ctx.bot.wait_for(
+                "message", timeout=INTERACT_TIMEOUT, check=reaction_check(ctx.author)
             )
-            await ctx.send(embed=embed)
-            try:
-                reaction = await ctx.bot.wait_for(
-                    "message", timeout=INTERACT_TIMEOUT, check=check(ctx.author)
-                )
 
-                if reaction.content == "0":
-                    await guild_data.delete_pet(pet_id)
-                    abort = translate("command_abort", lang)
-                    embed = discord.Embed(
-                        title=embed_title,
-                        description=abort,
-                    )
-                    return await ctx.send(embed=embed)
-
-                if reaction.attachments:
-                    await resize_and_save(ctx, reaction.attachments[0], pet_id)
-                    msg = translate("pet_added_succes", lang).format(
-                        name.capitalize(), pet_id
-                    )
-                    await ctx.send(msg)
-                else:
-                    msg = translate("pet_reaction_error", lang)
-                    await ctx.send(msg)
-
-            except asyncio.TimeoutError:
+            if reaction.content == "0":
                 await guild_data.delete_pet(pet_id)
-                timeout = translate("command_timeout", lang)
+                abort = translate("command_abort", lang)
                 embed = discord.Embed(
                     title=embed_title,
-                    description=timeout,
+                    description=abort,
                 )
                 return await ctx.send(embed=embed)
+
+            if reaction.attachments:
+                await resize_and_save(ctx, reaction.attachments[0], pet_id)
+                msg = translate("pet_added_succes", lang).format(
+                    name.capitalize(), pet_id
+                )
+                await ctx.send(msg)
+            else:
+                msg = translate("pet_reaction_error", lang)
+                await ctx.send(msg)
+
+        except asyncio.TimeoutError:
+            await guild_data.delete_pet(pet_id)
+            timeout = translate("command_timeout", lang)
+            embed = discord.Embed(
+                title=embed_title,
+                description=timeout,
+            )
+            return await ctx.send(embed=embed)
 
     @commands.command(
         name="post_pet",
@@ -103,7 +104,7 @@ class Pets(commands.Cog, name="Pets"):
         usage="post_pet_usage",
     )
     @commands.guild_only()
-    async def post_pet(self, ctx: commands.Context, name: typing.Optional[str] = None):
+    async def post_pet(self, ctx: commands.Context, name: typing.Optional[str] = None) -> None:
         lang, guild_data = await asyncio.gather(
             culture(ctx),
             get_guild_data(ctx.message.guild.id),
@@ -113,8 +114,7 @@ class Pets(commands.Cog, name="Pets"):
 
         if name == None:
             pet_id = random.choice(list(pets.keys()))
-            guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
-            filepath = guild_path / f"{pet_id}.jpg"
+            filepath = get_pet_path(ctx, pet_id)
             message = translate("pet_posted", lang).format(
                 pet_id, pets[pet_id]["pet_name"].capitalize(), pets[pet_id]["category"].capitalize()
             )
@@ -123,8 +123,7 @@ class Pets(commands.Cog, name="Pets"):
             random.shuffle(list_of_ids)
             for pet_id in list_of_ids:
                 if pets[pet_id]["category"] == name.lower():
-                    guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
-                    filepath = guild_path / f"{pet_id}.jpg"
+                    filepath = get_pet_path(ctx, pet_id)
                     message = translate("pet_posted", lang).format(
                         pet_id, pets[pet_id]["pet_name"].capitalize(), name.capitalize()
                     )
@@ -137,8 +136,7 @@ class Pets(commands.Cog, name="Pets"):
             random.shuffle(list_of_ids)
             for pet_id in list_of_ids:
                 if pets[pet_id]["pet_name"] == name.lower():
-                    guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
-                    filepath = guild_path / f"{pet_id}.jpg"
+                    filepath = get_pet_path(ctx, pet_id)
                     message = translate("pet_posted", lang).format(
                         pet_id, pets[pet_id]["pet_name"].capitalize(), pets[pet_id]["category"].capitalize()
                     )
@@ -159,7 +157,7 @@ class Pets(commands.Cog, name="Pets"):
     @commands.guild_only()
     async def remove_pet(
         self, ctx: commands.Context, pet_id: typing.Optional[str] = None
-    ):
+    ) -> None:
         lang, guild_data = await asyncio.gather(
             culture(ctx),
             get_guild_data(ctx.message.guild.id),
@@ -174,8 +172,7 @@ class Pets(commands.Cog, name="Pets"):
             return await ctx.send(gif)
 
         await guild_data.delete_pet(pet_id)
-        guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
-        filepath = guild_path / f"{pet_id}.jpg"
+        filepath = get_pet_path(ctx, pet_id)
         filepath.unlink()
         message = translate("pet_removed", lang).format(pet_id)
         await ctx.send(message)
@@ -189,7 +186,7 @@ class Pets(commands.Cog, name="Pets"):
     @commands.guild_only()
     async def add_category(
         self, ctx: commands.Context, category_name: typing.Optional[str] = None
-    ):
+    ) -> None:
         lang, guild_data = await asyncio.gather(
             culture(ctx),
             get_guild_data(ctx.message.guild.id),
@@ -216,7 +213,7 @@ class Pets(commands.Cog, name="Pets"):
         help="pet_show_categories_help"  
     )
     @commands.guild_only()
-    async def show_categories(self, ctx: commands.Context):
+    async def show_categories(self, ctx: commands.Context) -> None:
         lang, guild_data = await asyncio.gather(
             culture(ctx),
             get_guild_data(ctx.message.guild.id),
@@ -227,8 +224,7 @@ class Pets(commands.Cog, name="Pets"):
 
         msg = translate("pet_categories", lang)
         for category in guild_data.pets_categories:
-            msg += f"\n -"
-            msg += category.capitalize()
+            msg += f"\n - {category.capitalize()}"
 
         return await ctx.send(msg)
 
@@ -239,7 +235,7 @@ class Pets(commands.Cog, name="Pets"):
         brief="pet_remove_category_brief"
     )
     @commands.guild_only()
-    async def remove_category(self, ctx: commands.Context, category_name: str):
+    async def remove_category(self, ctx: commands.Context, category_name: str) -> None:
         lang, guild_data = await asyncio.gather(
             culture(ctx),
             get_guild_data(ctx.message.guild.id),
@@ -247,8 +243,8 @@ class Pets(commands.Cog, name="Pets"):
         pets = guild_data.pets
         category_name = category_name.lower()
 
-        for pet_id in pets.keys():
-            if pets[pet_id]["category"] == category_name:
+        for pet_id, pet in pets.items():
+            if pet["category"] == category_name:
                 msg = translate("pet_category_still_in_use", lang).format(pet_id)
                 return await ctx.send(msg)
 
@@ -257,6 +253,8 @@ class Pets(commands.Cog, name="Pets"):
         else:
             if await guild_data.remove_pet_category(category_name):
                 translation_key = "pet_category_removal_succes"
+            else:
+                translation_key = "pet_category_removal_error"
 
         msg = translate(translation_key, lang)
         return await ctx.send(msg)
@@ -273,14 +271,19 @@ async def resize_and_save(ctx, attachment, pet_id):
     limit_img_size(old_path, new_path, IMAGE_SIZE, tolerance=5)
     old_path.unlink()
 
+def get_pet_path(ctx: commands.Context, pet_id: str) -> Path:
+    guild_path = Path.cwd() / PETS_DIR_NAME / str(ctx.guild.id)
+    filepath = guild_path / f"{pet_id}.jpg"
+    return filepath
 
-def check(author):
-    def inner_check(message):
+
+def reaction_check(author):
+    def inner_reaction_check(message):
         return message.author == author
-    return inner_check
+    return inner_reaction_check
 
 
-def limit_img_size(img_filename, img_target_filename, target_filesize, tolerance=5):
+def limit_img_size(img_filename: Path, img_target_filename: Path, target_filesize: float, tolerance=5):
     img = img_orig = Image.open(img_filename)
     aspect = img.size[0] / img.size[1]
 

@@ -20,8 +20,8 @@ class GuildData:
     purgers: dict
     culture: str
     pets: dict
-    pets_last_id: int
-    pets_categories: list
+    pets_last_id: Optional[int]
+    pets_categories: List[str]
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -30,7 +30,7 @@ class GuildData:
         self.purgers = dict()
         self.bot_admins = []
         self.culture = "en"
-        self.pets = dict()
+        self.pets = {}
         self.pets_last_id = None
         self.pets_categories = []
 
@@ -270,7 +270,7 @@ class GuildData:
 
         return True
 
-    async def add_pet(self, pet_name: str, user_id: str, category: str):
+    async def add_pet(self, pet_name: str, user_id: str, category: str) -> None:
         pet_id = await self.get_new_pet_id()
         pet_id_str = str(pet_id)
         self.pets[pet_id_str] = {}
@@ -281,13 +281,12 @@ class GuildData:
         
     
 
-    async def delete_pet(self, pet_id: str) -> bool:
+    async def delete_pet(self, pet_id: str) -> None:
         pets = self.pets
 
         del pets[pet_id]
 
         await self.save()
-        return True
 
     async def get_new_pet_id(self) -> int:
         if self.pets_last_id is None:
@@ -311,6 +310,10 @@ class GuildData:
 
     async def remove_pet_category(self, category_name: str) -> bool:
         categories = self.pets_categories
+        category_name = category_name.lower()
+        
+        if category_name not in categories:
+            return False
 
         categories.remove(category_name)
         await self.save()
