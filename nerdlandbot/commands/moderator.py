@@ -73,7 +73,7 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
                 await ctx.send(msg)
 
             elif reaction.emoji == thumbs_down:
-                msg = translate("mod_message_no_sent", await culture_id(int(DISCORD_SERVER_ID)))
+                msg = translate("mod_message_cancel", await culture_id(int(DISCORD_SERVER_ID)))
                 await ctx.send(msg)
 
             # Delete message
