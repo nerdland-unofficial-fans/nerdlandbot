@@ -36,7 +36,10 @@ class OnCommandError(commands.Cog, name="on_command_error"):
             log_warn(error)
 
         # Notify user with general error
-        msg = translate("err_unrecognized_command", await culture(ctx))
+        if ctx.guild:
+            msg = translate("err_unrecognized_command", await culture(ctx))
+        else:
+            msg = translate("err_unrecognized_command", await culture_id(int(DISCORD_SERVER_ID)))
         await ctx.send(msg)
 
 
