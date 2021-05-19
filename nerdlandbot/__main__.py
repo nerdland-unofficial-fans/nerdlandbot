@@ -47,7 +47,6 @@ bot.load_extension("nerdlandbot.commands.youtube")
 bot.load_extension("nerdlandbot.commands.poll")
 bot.load_extension("nerdlandbot.commands.purger")
 bot.load_extension("nerdlandbot.commands.kerk")
-bot.load_extension("nerdlandbot.commands.moderator")
 bot.load_extension("nerdlandbot.commands.open_source")
 bot.load_extension("nerdlandbot.commands.privacy")
 bot.load_extension("nerdlandbot.commands.reminder")
@@ -62,6 +61,9 @@ YOUTUBE_TOKEN = os.getenv("YOUTUBE_TOKEN")
 
 # Initialize Twitter keys
 
+# Initialize data for moderator
+DISCORD_SERVER_ID = os.getenv("DISCORD_SERVER_ID") 
+MODERATOR_NAME = os.getenv("MODERATOR_NAME")
 
 @bot.event
 async def on_ready():
@@ -81,4 +83,13 @@ async def on_ready():
         bot.load_extension("nerdlandbot.commands.recipe")
     else:
         error("No google-sheets token")
+
+    if DISCORD_SERVER_ID and MODERATOR_NAME:
+        info("Moderator feature is available.")
+        bot.load_extension("nerdlandbot.commands.moderator")
+    if not DISCORD_SERVER_ID:
+        error("No DISCORD_SERVER_ID in the .env file.")
+    if not MODERATOR_NAME:
+        error("No MODERATOR_NAME in the .env file.")
+
 bot.run(TOKEN)

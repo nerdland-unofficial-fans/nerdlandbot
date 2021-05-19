@@ -52,7 +52,3 @@ PERCY_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvansch
 # Dadjoke
 DAD_JOKE_URL = 'https://icanhazdadjoke.com'
 EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
-
-#Nerdland server
-DISCORD_SERVER_ID = 712743925114339328 #bot test server for testing purposes
-MODERATOR_NAME = "moderator"

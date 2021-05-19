@@ -1,11 +1,11 @@
 import discord
 import asyncio
-
+import os
 from discord.ext import commands
 
 from nerdlandbot.commands.GuildData import get_guild_data, GuildData
 from nerdlandbot.helpers.channel import get_channel
-from nerdlandbot.helpers.constants import DISCORD_SERVER_ID, MODERATOR_NAME, NOTIFY_EMBED_COLOR, INTERACT_TIMEOUT
+from nerdlandbot.helpers.constants import NOTIFY_EMBED_COLOR, INTERACT_TIMEOUT
 from nerdlandbot.helpers.emoji import thumbs_up,thumbs_down
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_id as culture_id
@@ -14,6 +14,8 @@ from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as cu
 class AlertModerator(commands.Cog, name="Alert_Moderator"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
+        self.discord_server_id = os.getenv("DISCORD_SERVER_ID")
+        self.moderator_name = os.getenv("MODERATOR_NAME")
 
     @commands.command(name="moderator", aliases=['mod'], 
                         brief="mod_message_brief",
@@ -22,39 +24,51 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
     async def moderator(self, ctx: commands.Context,*,input_message:str = None):
 
         if not input_message:
-            msg = translate("mod_no_message", await culture_id(int(DISCORD_SERVER_ID)))
+            msg = translate("mod_no_message", await culture_id(int(self.discord_server_id)))
             return await ctx.send(msg)
-        
+
         # Get the channel ID from the guild data
-        guild_data = await get_guild_data(int(DISCORD_SERVER_ID))
+        guild_data = await get_guild_data(int(self.discord_server_id))
         mod_channel = guild_data.mod_channel
         if not mod_channel:
-            msg = translate("mod_no_channel_set", await culture_id(int(DISCORD_SERVER_ID)))
+            msg = translate("mod_no_channel_set", await culture_id(int(self.discord_server_id)))
             return await ctx.send(msg)
 
         # Get the channel object from the ID
         channel = ctx.bot.get_channel(int(mod_channel))
         if not channel:
-            msg = translate("mod_no_channel_set", await culture_id(int(DISCORD_SERVER_ID)))
+            msg = translate("mod_no_channel_set", await culture_id(int(self.discord_server_id)))
             return await ctx.send(msg)
 
-        nerdland_guild = ctx.bot.get_guild(int(DISCORD_SERVER_ID))
-        moderator_role = discord.utils.find(lambda role: role.name == MODERATOR_NAME,nerdland_guild.roles)
+        nerdland_guild = ctx.bot.get_guild(int(self.discord_server_id))
+        moderator_role = discord.utils.find(lambda role: role.name == self.moderator_name,nerdland_guild.roles)
+
 
         if moderator_role:
             mod_message = moderator_role.mention + "\n"
         else:
             mod_message = ""
-        mod_message += translate("mod_message",await culture_id(int(DISCORD_SERVER_ID))).format(ctx.author,input_message)
+        mod_message += translate("mod_message",await culture_id(int(self.discord_server_id)))\
+                        .format(ctx.author)
 
-        # Ask user confirmation
-        msg = translate("mod_confirmation_question", await culture_id(int(DISCORD_SERVER_ID)))\
-                    .format(input_message, thumbs_up,thumbs_down)
-        embed = discord.Embed(
-            description=msg,
+        mod_embed = discord.Embed(
+            description=translate("mod_embed_title", await culture_id(int(self.discord_server_id))),
             color=NOTIFY_EMBED_COLOR,
         )
-        confirmation_ref = await ctx.send(embed = embed)
+        mod_embed.add_field(name = "\u200b", value = input_message, inline = False)
+
+        # Ask user confirmation
+        confirmation_embed = discord.Embed(
+            description=translate("mod_confirmation_intro", await culture_id(int(self.discord_server_id))),
+            color=NOTIFY_EMBED_COLOR,
+        )
+        confirmation_embed.add_field(name="\u200b", value = input_message, inline=False)
+        confirmation_embed.add_field(name="\u200b", value = translate("mod_confirmation_footer", 
+                                                await culture_id(int(self.discord_server_id)))
+                                                .format(thumbs_up,thumbs_down), 
+                                    inline=False)
+
+        confirmation_ref = await ctx.send(embed = confirmation_embed)
         await confirmation_ref.add_reaction(thumbs_up)
         await confirmation_ref.add_reaction(thumbs_down)
 
@@ -69,11 +83,12 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
             # Process emoji
             if reaction.emoji == thumbs_up:
                 await channel.send(mod_message)
-                msg = translate("mod_message_sent",await culture_id(int(DISCORD_SERVER_ID)))
+                await channel.send(embed = mod_embed)
+                msg = translate("mod_message_sent",await culture_id(int(self.discord_server_id)))
                 await ctx.send(msg)
 
             elif reaction.emoji == thumbs_down:
-                msg = translate("mod_message_cancel", await culture_id(int(DISCORD_SERVER_ID)))
+                msg = translate("mod_message_cancel", await culture_id(int(self.discord_server_id)))
                 await ctx.send(msg)
 
             # Delete message
@@ -81,14 +96,14 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
         # Handle Timeout
         except asyncio.TimeoutError:
             await confirmation_ref.delete()
-            msg = translate("snooze_lose", await culture_id(int(DISCORD_SERVER_ID)))
+            msg = translate("snooze_lose", await culture_id(int(self.discord_server_id)))
             return await ctx.send(msg)
 
     @commands.command(name="set_mod_channel",aliases = ['mod_channel'],usage="add_mod_channel_usage",brief="add_mod_channel_brief", help="add_mod_channel_help")
     @commands.guild_only()
     async def set_mod_channel(self, ctx: commands.Context, mod_channel=None):
 
-        if not ctx.guild.id == int(DISCORD_SERVER_ID):
+        if not ctx.guild.id == int(self.discord_server_id):
             msg = translate("mod_channel_only_nerdland", await culture(ctx))
             return await ctx.send(msg)
 
