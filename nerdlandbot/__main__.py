@@ -9,6 +9,7 @@ from nerdlandbot.helpers.log import info, error, fatal
 from nerdlandbot.translations.Translations import load_translations, get_text as _
 from nerdlandbot.scheduler.YoutubeScheduler import check_and_post_latest_videos
 from nerdlandbot.scheduler.PurgeScheduler import purge_messages
+from nerdlandbot.scheduler.ChurchScheduler import church_fights
 from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
 
 
@@ -47,7 +48,7 @@ bot.load_extension("nerdlandbot.commands.random")
 bot.load_extension("nerdlandbot.commands.youtube")
 bot.load_extension("nerdlandbot.commands.poll")
 bot.load_extension("nerdlandbot.commands.purger")
-bot.load_extension("nerdlandbot.commands.kerk")
+bot.load_extension("nerdlandbot.commands.church")
 bot.load_extension("nerdlandbot.commands.open_source")
 bot.load_extension("nerdlandbot.commands.privacy")
 bot.load_extension("nerdlandbot.commands.reminder")
@@ -75,6 +76,7 @@ async def on_ready():
 
     bot.is_purging = {}
     purge_messages.start(bot)
+    church_fights.start(bot)
 
     if SHEETS_TOKEN:
         info("Spreadsheet editing is possible")
