@@ -55,7 +55,7 @@ class MemberCount(commands.Cog, name="member_count"):
         channel = get_channel(ctx,channel_name)
 
         if channel is None:
-            msg = translate("membercount_channel_nonexistant", await culture(ctx))
+            msg = translate("channel_nonexistant", await culture(ctx))
             return await ctx.send(msg)
 
         if len(channel.members) < 1:

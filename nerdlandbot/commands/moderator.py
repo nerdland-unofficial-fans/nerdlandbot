@@ -99,7 +99,7 @@ class AlertModerator(commands.Cog, name="Alert_Moderator"):
             msg = translate("snooze_lose", await culture_id(int(self.discord_server_id)))
             return await ctx.send(msg)
 
-    @commands.command(name="set_mod_channel",aliases = ['mod_channel'],usage="add_mod_channel_usage",brief="add_mod_channel_brief", help="add_mod_channel_help")
+    @commands.command(name="set_mod_channel",aliases = ['mod_channel'],usage="set_mod_channel_usage",brief="set_mod_channel_brief", help="set_mod_channel_help")
     @commands.guild_only()
     async def set_mod_channel(self, ctx: commands.Context, mod_channel=None):
 

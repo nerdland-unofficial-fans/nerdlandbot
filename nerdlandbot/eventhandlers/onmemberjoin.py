@@ -23,7 +23,7 @@ class OnMemberJoin(commands.Cog, name="on_member_join"):
         guild = member.guild
 
         # Get member count
-        member_count = guild.member_count
+        member_count = len(guild.members)
 
         # Return if count is no multiple of threshold
         if member_count % member_notification_trigger != 0:
