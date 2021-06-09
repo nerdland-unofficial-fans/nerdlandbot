@@ -143,10 +143,11 @@ class Notify(commands.Cog, name="Notification_lists"):
         # Setup the announcement with the subject and caller
         message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
 
+        filtered_users = [user for user in users if ctx.guild.get_member(int(user))]
         # build users mentioning strings
-        user_tags = f'<@{str(users[0])}>'
+        user_tags = f'<@{str(filtered_users[0])}>'
         user_messages = []
-        for user_id in users[1:]:
+        for user_id in filtered_users[1:]:
             if len(user_tags) + len(str(user_id)) + 5 < DISCORD_MAX_MSG_LENGTH:
                 user_tags += ', ' + (f'<@{str(user_id)}>')
             else:
