@@ -15,6 +15,7 @@ class Settings(commands.Cog):
 
     @commands.command(name="add_admin", brief="settings_add_admin_brief", usage="settings_add_admin_usage",
                       help="settings_add_admin_help")
+    @commands.guild_only()
     async def add_admin(self, ctx: commands.Context):
         """
         Add a new bot admin.
@@ -57,6 +58,7 @@ class Settings(commands.Cog):
 
     @commands.command(name="remove_admin", brief="settings_remove_admin_brief", usage="settings_remove_admin_usage",
                       help="settings_remove_admin_help")
+    @commands.guild_only()
     async def remove_admin(self, ctx: commands.Context):
         """
         Remove a bot admin.
@@ -160,6 +162,7 @@ class Settings(commands.Cog):
 
     @commands.command(name="bot_admins", aliases=["who_da_boss"], brief="settings_bot_admins_brief",
                       help="settings_bot_admins_help")
+    @commands.guild_only()
     async def admins_bot(self, ctx: commands.Context):
         """
         Show a list of all bot admins.
@@ -183,6 +186,7 @@ class Settings(commands.Cog):
 
     @commands.command(name="language", aliases=["translate"], brief="settings_language_brief",
                       help="settings_language_help")
+    @commands.guild_only()
     async def set_language(self, ctx: commands.Context):
         """
         Show the current language, and allow for updates.

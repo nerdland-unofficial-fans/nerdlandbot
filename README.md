@@ -86,6 +86,13 @@ For using the YouTube notifications functionality you'll need to set the `YOUTUB
 * In the .env-file add a field `SHEETS_JSON` and enter the JSON-filename with double quotes around it.  
 * Add another field named `SPREADSHEET` and enter the spreadsheetname in double quotes. 
 
+# Using moderator functionality
+
+With this functionality, users are able to send a DM to the bot and the bot will post a message in a moderator channel to alert the moderators in a less obvious way than pinging them in a public channel.
+
+To use this you need to add 2 variables to the `.env` file:
+- `DISCORD_SERVER_ID` (int): The ID for the server where this feature will be used. 
+- `MODERATOR_NAME` (str): The name of the moderator role in that server.
 
 # Running the bot on your local machine
 You can now run the bot by running the following command in the root of your nerdlandbot folder:

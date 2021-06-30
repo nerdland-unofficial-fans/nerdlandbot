@@ -13,6 +13,7 @@ class Kerk(commands.Cog, name="kerk"):
         self.bot = bot
 
     @commands.command(name="16ukerk", hidden=True)
+    @commands.guild_only()
     async def cmd_kerk16(self, ctx: commands.Context, mention:typing.Optional[str] = None, *, message:typing.Optional[str] = None):
         #check if message in lounge
         if ctx.channel.name == ("lounge"):

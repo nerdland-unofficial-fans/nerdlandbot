@@ -14,6 +14,7 @@ class purger(commands.Cog, name="Purger_lists"):
     @commands.command(
         name="add_purger", usage="add_purger_usage", help="add_purger_help",
     )
+    @commands.guild_only()
     async def add_purger(self, ctx: commands.Context, text_channel: str, max_age: int):
         """
         Add a channel to be regularly purged.
@@ -34,7 +35,7 @@ class purger(commands.Cog, name="Purger_lists"):
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
-            await ctx.channel.send(translate("membercount_channel_nonexistant", await culture(ctx)))
+            await ctx.channel.send(translate("channel_nonexistant", await culture(ctx)))
             raise Exception("Invalid text channel provided")
         
         #Give error if the channel is a voice channel
@@ -60,6 +61,7 @@ class purger(commands.Cog, name="Purger_lists"):
     @commands.command(
         name="remove_purger", usage="remove_purger_usage", help="remove_purger_help",
     )
+    @commands.guild_only()
     async def remove_purger(self, ctx: commands.Context, text_channel: str):
         """
         Remove a purger channel that was being notified
@@ -78,7 +80,7 @@ class purger(commands.Cog, name="Purger_lists"):
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
-            await ctx.channel.send(translate("membercount_channel_nonexistant", await culture(ctx)))
+            await ctx.channel.send(translate("channel_nonexistant", await culture(ctx)))
             raise Exception("Invalid text channel provided")
         
         #Give error if the channel is a voice channel
@@ -98,6 +100,7 @@ class purger(commands.Cog, name="Purger_lists"):
     @commands.command(
         name="list_purger", help="list_purger_help",
     )
+    @commands.guild_only()
     async def list_purger_channels(self, ctx: commands.Context):
         """
         List all purger channels that are being monitored

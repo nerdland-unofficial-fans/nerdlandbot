@@ -36,6 +36,7 @@ class SpaceDevs (commands.Cog, name='Space'):
             )
 
     @commands.command(name="space_launches", hidden = False, help="space_launches_help", brief="space_launches_brief")
+    @commands.guild_only()
     async def cmd_space_launches(self, ctx:commands.Context):
         full_url = '/'.join ([THE_SPACE_DEVS_BASE_URL, THE_SPACE_DEVS_VERSION, '/'.join (THE_SPACE_DEVS_UPCOMING_LAUNCH_RESOURCE),THE_SPACE_DEVS_LIMIT_TO_10_RESULTS])
         if self.should_call_the_api ():
@@ -228,6 +229,7 @@ class SpaceDevs (commands.Cog, name='Space'):
                 break
 
     @commands.command(name="percy", hidden = False, help="percy_help", brief="percy_brief")
+    @commands.guild_only()
     async def cmd_percy(self, ctx:commands.Context):
         percy_data = await self.get_percy_data()
 
@@ -268,5 +270,3 @@ class SpaceDevs (commands.Cog, name='Space'):
 
 def setup(bot: commands.Bot):
     bot.add_cog(SpaceDevs(bot))
-
-                

@@ -15,6 +15,7 @@ class Poll(commands.Cog, name="Simple Poll"):
         self.bot = bot
 
     @commands.command(name="poll", brief="poll_brief", usage="poll_usage", help="poll_help")
+    @commands.guild_only()
     async def poll(self, ctx: commands.Context, *, input_str: str):
         """
         Create a poll with either yes or no as an answer or self submitted options.

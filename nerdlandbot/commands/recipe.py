@@ -20,6 +20,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
     
 
     @commands.command(name="add_recipe", aliases=["recipe"], brief="recipe_brief", help="recipe_help")
+    @commands.guild_only()
     async def add_recipe(self, ctx: commands.Context):
         # Getting everything ready to acces 
         lang = await culture(ctx)
