@@ -70,7 +70,7 @@ class Random(commands.Cog, name="Random"):
 
         # Error if channel does not exist
         if channel is None:
-            msg = translate("membercount_channel_nonexistant", await culture(ctx))
+            msg = translate("channel_nonexistant", await culture(ctx))
             return await ctx.send(msg)
 
         # Error if channel empty

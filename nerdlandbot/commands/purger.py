@@ -34,7 +34,7 @@ class purger(commands.Cog, name="Purger_lists"):
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
-            await ctx.channel.send(translate("membercount_channel_nonexistant", await culture(ctx)))
+            await ctx.channel.send(translate("channel_nonexistant", await culture(ctx)))
             raise Exception("Invalid text channel provided")
         
         #Give error if the channel is a voice channel
@@ -78,7 +78,7 @@ class purger(commands.Cog, name="Purger_lists"):
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
-            await ctx.channel.send(translate("membercount_channel_nonexistant", await culture(ctx)))
+            await ctx.channel.send(translate("channel_nonexistant", await culture(ctx)))
             raise Exception("Invalid text channel provided")
         
         #Give error if the channel is a voice channel
