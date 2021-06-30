@@ -161,3 +161,6 @@ space_commands/*
 
 # ignore json for google sheets api
 *.json
+
+# ignore folders from pets feature
+community_pets/

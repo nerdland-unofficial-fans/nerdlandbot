@@ -19,6 +19,9 @@ class GuildData:
     youtube_channels: dict
     purgers: dict
     culture: str
+    pets: dict
+    pets_last_id: Optional[int]
+    pets_categories: List[str]
     mod_channel: str
     church_channel: int
     church_event: list
@@ -30,6 +33,9 @@ class GuildData:
         self.purgers = dict()
         self.bot_admins = []
         self.culture = "en"
+        self.pets = {}
+        self.pets_last_id = None
+        self.pets_categories = []
         self.mod_channel = None
         self.church_channel = None
         self.church_event = []
@@ -79,13 +85,13 @@ class GuildData:
         """
         return self.notification_lists[list_name]["users"]
 
-    def get_emoji(self, list_name: str) -> (str,bool):
+    def get_emoji(self, list_name: str) -> (str, bool):
         """
         Return the emoji for the given list
         :param list_name: The list to fetch. (str)
         :return: the emoji to use (str), if the emoji is a custom emoji(bool)
         """
-        return self.notification_lists[list_name]["emoji"],self.notification_lists[list_name]["is_custom_emoji"]
+        return self.notification_lists[list_name]["emoji"], self.notification_lists[list_name]["is_custom_emoji"]
 
     def does_list_exist(self, list_name: str) -> bool:
         """
@@ -275,7 +281,7 @@ class GuildData:
             return False
 
         notification_list = self.notification_lists[list_name]
-        
+
         if not "notified_on" in notification_list.keys():
             notification_list["notified_on"] = []
 
@@ -284,6 +290,55 @@ class GuildData:
 
         return True
 
+    async def add_pet(self, pet_name: str, user_id: str, category: str) -> None:
+        pet_id = await self.get_new_pet_id()
+        pet_id_str = str(pet_id)
+        self.pets[pet_id_str] = {}
+        self.pets[pet_id_str]['owner'] = user_id
+        self.pets[pet_id_str]['pet_name'] = pet_name.lower()
+        self.pets[pet_id_str]['category'] = category.lower()
+        await self.save()
+        
+    
+
+    async def delete_pet(self, pet_id: str) -> None:
+        pets = self.pets
+
+        del pets[pet_id]
+
+        await self.save()
+
+    async def get_new_pet_id(self) -> int:
+        if self.pets_last_id is None:
+            self.pets_last_id = 0
+
+        self.pets_last_id += 1
+
+        await self.save()
+        return self.pets_last_id
+
+    async def add_new_pet_category(self, category_name: str) -> bool:
+        categories = self.pets_categories
+
+        if category_name in categories:
+            return False
+
+        categories.append(category_name)
+
+        await self.save()
+        return True
+
+    async def remove_pet_category(self, category_name: str) -> bool:
+        categories = self.pets_categories
+        category_name = category_name.lower()
+        
+        if category_name not in categories:
+            return False
+
+        categories.remove(category_name)
+        await self.save()
+        return True
+      
     async def update_church_channel(self, church: str) -> bool:
         """
         Updates the kerk_channel
@@ -411,6 +466,9 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.culture = data.get("culture", "en")
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
+        guildData.pets = data.get("pets", {})
+        guildData.pets_last_id = data.get("pets_last_id", None)
+        guildData.pets_categories = data.get("pets_categories", [])
         guildData.mod_channel = data.get("mod_channel",None)
         guildData.church_channel = data.get("church_channel", "")
         guildData.church_event = data.get("church_event", [])

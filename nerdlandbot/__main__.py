@@ -19,6 +19,7 @@ def main() -> None:
 
     if PREFIX:
         info("Start bot with prefix '" + PREFIX + "'")
+
     else:
         fatal("Please provide a PREFIX in your .env file")
         sys.exit()
@@ -51,7 +52,7 @@ def main() -> None:
     bot.load_extension("nerdlandbot.commands.open_source")
     bot.load_extension("nerdlandbot.commands.privacy")
     bot.load_extension("nerdlandbot.commands.reminder")
-
+    bot.load_extension("nerdlandbot.commands.pets")
     bot.load_extension("nerdlandbot.commands.space_launches")
 
     # Setting up the google token

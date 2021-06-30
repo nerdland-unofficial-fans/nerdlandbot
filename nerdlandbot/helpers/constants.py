@@ -12,6 +12,7 @@ INTERACT_TIMEOUT = 30 #seconds
 # directory where the womat photos are stored
 WOMBATS_DIR_NAME = "wombats"
 PONCHO_DIR_NAME = "poncho"
+PETS_DIR_NAME = "community_pets"
 
 SCHEDULER_INTERVAL = 10.0 #minutes
 
@@ -52,3 +53,6 @@ PERCY_ICON = 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fvansch
 # Dadjoke
 DAD_JOKE_URL = 'https://icanhazdadjoke.com'
 EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
+
+#Image file size in bytes
+IMAGE_SIZE = 2e6
