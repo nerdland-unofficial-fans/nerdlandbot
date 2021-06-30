@@ -16,6 +16,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
     @commands.command(
         name="add_youtube", usage="add_youtube_usage", help="add_youtube_help",
     )
+    @commands.guild_only()
     async def add_youtube_channel(
         self, ctx: commands.Context, youtube_channel_id: str, text_channel: str
     ):
@@ -39,7 +40,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
 
         # TODO: Give information to the user when the text channel does not exist
         if not channel:
-            await ctx.channel.send(translate("membercount_channel_nonexistant", await culture(ctx)))
+            await ctx.channel.send(translate("channel_nonexistant", await culture(ctx)))
             raise Exception("Invalid text channel provided")
 
         if isinstance(channel, discord.VoiceChannel):
@@ -65,6 +66,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
     @commands.command(
         name="remove_youtube", usage="remove_youtube_usage", help="remove_youtube_help",
     )
+    @commands.guild_only()
     async def remove_youtube_channel(
         self, ctx: commands.Context, youtube_channel_id: str):
         """
@@ -95,6 +97,7 @@ class Youtube(commands.Cog, name="Youtube_lists"):
     @commands.command(
         name="list_youtube", help="list_youtube_help",
     )
+    @commands.guild_only()
     async def list_youtube_channels(self, ctx: commands.Context):
         """
         List all Youtube channels that are being monitored

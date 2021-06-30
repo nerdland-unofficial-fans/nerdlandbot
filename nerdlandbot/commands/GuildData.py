@@ -19,6 +19,9 @@ class GuildData:
     youtube_channels: dict
     purgers: dict
     culture: str
+    mod_channel: str
+    church_channel: int
+    church_event: list
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -27,6 +30,9 @@ class GuildData:
         self.purgers = dict()
         self.bot_admins = []
         self.culture = "en"
+        self.mod_channel = None
+        self.church_channel = None
+        self.church_event = []
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -159,6 +165,20 @@ class GuildData:
             or user_to_check.id in self.bot_admins
         )
 
+    def user_is_admin_moderator(self, user_to_check: Member):
+        """
+        Checks whether or not a user is a bot admin or a moderator.
+        :param user_to_check: The user to check (discord.Member)
+        :return: True if the user is either a bot admin or a server moderator, False if the user is neither (bool)
+        """
+        # Checks whether the user is moderator by checking the 'Ban Members permission'
+        return (
+            user_to_check.guild_permissions.administrator
+            or user_to_check.guild_permissions.ban_members
+            or user_to_check.id in self.bot_admins
+        )
+
+
     async def update_language(self, language: str):
         """
         Updates the language and saves the guild
@@ -263,8 +283,51 @@ class GuildData:
         await self.save()
 
         return True
-        
 
+    async def update_church_channel(self, church: str) -> bool:
+        """
+        Updates the kerk_channel
+        :param kerk: the channel that's been set
+        :return: True if updated and saved, False if it's the same
+        """
+        church = church.strip("<#")
+        church = int(church.strip(">"))
+        if church != self.church_channel:
+            self.church_channel = church
+            await self.save()
+            return True
+        else:
+            return False
+    
+    async def set_church_event(self, sender: str, receiver: str, day: int, culture: str, message:Optional[str] = None):
+        """
+        Adds a kerk_event
+        :param sender: The person who sent a challenge
+        :param receiver: The person who's being challenged
+        :param day: The day the challenge will be sent out
+        :param culture: The language being used in the bot
+        :param message: In case the sender wants to add a message to his challenge
+        """
+        info = {}
+        info["sender"] = sender
+        info["receiver"] = receiver
+        info["day"] = day
+        info["culture"] = culture
+        info["message"] = message
+        
+        self.church_event.append(info)
+        await self.save()
+
+
+    async def remove_church_event(self):
+        self.church_event.pop(0)
+        await self.save()
+
+    async def update_mod_channel(self, mod_channel: str) -> bool:
+        self.mod_channel = mod_channel
+        await self.save()
+
+        return True
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
     """
@@ -348,6 +411,9 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.culture = data.get("culture", "en")
         guildData.youtube_channels = data.get("youtube_channels", {})
         guildData.purgers = data.get("purgers", {})
+        guildData.mod_channel = data.get("mod_channel",None)
+        guildData.church_channel = data.get("church_channel", "")
+        guildData.church_event = data.get("church_event", [])
 
         return guildData
 

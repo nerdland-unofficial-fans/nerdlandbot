@@ -62,10 +62,37 @@ PREFIX=?
 ```
 Make sure this file is listed in the .gitignore file, so your bot token isn't uploaded to github for everyone to see (and use).
 
+# Using Space Twitter functionality
+In order for Twitter functionality in the Space module to work, you will need to provide a `TWITTER_API_KEY` and `TWITTER_API_SECRET` in your `.env` file. You can find out how to generate those [here](https://www.einfachub.com/blog/twitter-api-key/). The API key and secret need not have any more rights above reading statusses from accounts. The functionality in this bot is limited to that, it will not tweet, retweet or like tweets. Feel free to contact bobvdvleuten for help.
+
 # Using YouTube functionality 
 
 For using the YouTube notifications functionality you'll need to set the `YOUTUBE TOKEN` in your `.env` file. Follow the instructions [here](https://developers.google.com/youtube/registering_an_application) to create an API key.
 
+
+# Using spreadsheet functionality
+
+* To use the spreadsheet functionality you'll need to go [here](https://console.developers.google.com/?hl=nl).  
+* Login with your google-account. Click "create project".  
+* Give the project a name and click "create". Then click on "enable apis and services".  
+* Look for "sheets" and click on "Google Sheets API". Then click on "enable". 
+* After that also enable the "Google Drive API".   
+* On the right-side, click "create credentials". Select "Google Sheets API". On the next question select "web server".  
+* Select "Application data" and "no, I'm not using them". Click "what credentials do I need?".  
+* Fill in the fields and for the role select "project -> editor". Select JSON if not yet selected. Click "continue".  
+* You'll automatically download the JSON. Rename it to something shorter and don't share it!  
+* Put it in the same folder as the .env-file. Go into the JSON to copy the client_email field.  
+* Add that email in the google sheet as an editor like you'd add a normal user.  
+* In the .env-file add a field `SHEETS_JSON` and enter the JSON-filename with double quotes around it.  
+* Add another field named `SPREADSHEET` and enter the spreadsheetname in double quotes. 
+
+# Using moderator functionality
+
+With this functionality, users are able to send a DM to the bot and the bot will post a message in a moderator channel to alert the moderators in a less obvious way than pinging them in a public channel.
+
+To use this you need to add 2 variables to the `.env` file:
+- `DISCORD_SERVER_ID` (int): The ID for the server where this feature will be used. 
+- `MODERATOR_NAME` (str): The name of the moderator role in that server.
 
 # Running the bot on your local machine
 You can now run the bot by running the following command in the root of your nerdlandbot folder:

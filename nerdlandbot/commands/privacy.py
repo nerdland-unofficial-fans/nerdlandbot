@@ -11,6 +11,7 @@ class Privacy(commands.Cog, name="privacy"):
         self.bot = bot
 
     @commands.command(name="privacy", brief="privacy_brief")
+    @commands.guild_only()
     async def privacy(self, ctx: commands.Context):
         language = await culture(ctx)
         title_txt = translate("privacy_policy_title", language)
