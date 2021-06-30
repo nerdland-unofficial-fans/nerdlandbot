@@ -34,6 +34,7 @@ class MemberCount(commands.Cog, name="member_count"):
 
     @commands.command(name="member_count", aliases=["count", "membercount"], brief="membercount_brief",
                       usage="membercount_usage", help="membercount_help")
+    @commands.guild_only()
     async def count(self, ctx, *, channel_name=None):
         """
         Count the members in a given channel, the members in the current server, or the online members in the current server.

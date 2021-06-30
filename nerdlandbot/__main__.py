@@ -62,6 +62,9 @@ def main() -> None:
 
     # Initialize Twitter keys
 
+    # Initialize data for moderator
+    DISCORD_SERVER_ID = os.getenv("DISCORD_SERVER_ID") 
+    MODERATOR_NAME = os.getenv("MODERATOR_NAME")
 
     @bot.event
     async def on_ready():
@@ -77,11 +80,19 @@ def main() -> None:
         purge_messages.start(bot)
         church_fights.start(bot)
 
-        if SHEETS_TOKEN:
-            info("Spreadsheet editing is possible")
-            bot.load_extension("nerdlandbot.commands.recipe")
-        else:
-            error("No google-sheets token")
+    if SHEETS_TOKEN:
+        info("Spreadsheet editing is possible")
+        bot.load_extension("nerdlandbot.commands.recipe")
+    else:
+        error("No google-sheets token")
+
+    if DISCORD_SERVER_ID and MODERATOR_NAME:
+        info("Moderator feature is available.")
+        bot.load_extension("nerdlandbot.commands.moderator")
+    if not DISCORD_SERVER_ID:
+        error("No DISCORD_SERVER_ID in the .env file.")
+    if not MODERATOR_NAME:
+        error("No MODERATOR_NAME in the .env file.")
     bot.run(TOKEN)
 
     return bot

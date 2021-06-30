@@ -47,6 +47,7 @@ class Random(commands.Cog, name="Random"):
 
     @commands.command(name="random_user", aliases=["randomuser"], brief="random_user_brief", usage="random_user_usage",
                       help="random_user_help")
+    @commands.guild_only()
     async def select_random_user(self, ctx: commands.Context, *, channel_name: str = None):
         """
         Selects a random user from the server, channel, or online members.
@@ -84,6 +85,7 @@ class Random(commands.Cog, name="Random"):
         await ctx.send(msg)
 
     @commands.command(name="wombat_pic", aliases = ["wombat","wombatpic"], hidden=True, help="wombat_pic_help")
+    @commands.guild_only()
     async def cmd_wombat_pic(self, ctx):
         wombat_list = [os.path.join(WOMBATS_DIR_NAME, w) for w in os.listdir(WOMBATS_DIR_NAME)]
 
@@ -94,6 +96,7 @@ class Random(commands.Cog, name="Random"):
         await ctx.send(file=discord.File(random.choice(wombat_list)))
 
     @commands.command(name="poncho", aliases=["poncho_pic","ponchopic"],hidden=True, help="poncho_pic_help")
+    @commands.guild_only()
     async def cmd_poncho_pic(self, ctx):
         poncho_list = [os.path.join(PONCHO_DIR_NAME, w) for w in os.listdir(PONCHO_DIR_NAME)]
 
@@ -106,6 +109,7 @@ class Random(commands.Cog, name="Random"):
         await ctx.send(file=discord.File(random.choice(poncho_list)))
 
     @commands.command(name="eight_ball", aliases=["eightball"], help="eight_ball_help")
+    @commands.guild_only()
     async def cmd_eight_ball(self, ctx: commands.Context):
         async with aiohttp.ClientSession() as session:
             async with session.get(EIGHT_BALL_URL) as resp:
@@ -113,7 +117,8 @@ class Random(commands.Cog, name="Random"):
                 msg = msg[1:-2]
                 await ctx.reply(msg)
 
-    @commands.command(name="dad_joke", aliases=["dadjoke"], help="dad_joke_help")
+    @commands.command(name="dad_joke", aliases=["dadjoke"], help="dad_joke_help",no_pm = True)
+    @commands.guild_only()
     async def cmd_dad_joke(self, ctx: commands.Context):
         async with aiohttp.ClientSession() as session:
             async with session.get(DAD_JOKE_URL,headers = { "Accept": "text/plain" }) as resp:
