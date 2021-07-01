@@ -29,3 +29,13 @@ jobs:
           image-name: nerdlandbot # Provide only Docker image name
           image-tag: latest
           # extract-git-tag: true # Provide flag to extract Docker image tag from git reference
+
+      - name: Deploy Docker container
+        uses: wshihadeh/docker-deployment-action@v1
+        with:
+          remote_docker_host: github-actions@ssh.nerdfans.be
+          ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
+          ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
+          stack_file_name: /opt/docker/nerdlandbot/test/docker-compose.yml
+          pull_images_first: true
+          args: up -d
