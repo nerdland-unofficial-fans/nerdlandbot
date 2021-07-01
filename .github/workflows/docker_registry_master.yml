@@ -1,0 +1,31 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Master build Docker image
+
+# Controls when the action will run.
+on:
+  # Trigger when pushed
+  push:
+    branches: [master]
+  # pull_request:
+  #   branches: [master]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build-and-publish-tag"
+  build-and-publish-tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and Publish Tag Docker image
+        uses: DrSkunk/gp-docker-action@1.1.9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }} # Provide GITHUB_TOKEN to login into the GitHub Packages
+          image-name: nerdlandbot # Provide only Docker image name
+          image-tag: stable
+          # extract-git-tag: true # Provide flag to extract Docker image tag from git reference
