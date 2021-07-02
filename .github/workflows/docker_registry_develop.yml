@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Deploy Docker container
-        uses: wshihadeh/docker-deployment-action@v2
+        uses: Autom3/docker-deployment-action@3.0.0
         with:
           remote_docker_host: github-actions@ssh.nerdfan.be
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
