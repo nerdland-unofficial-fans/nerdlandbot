@@ -37,11 +37,12 @@ jobs:
       - uses: actions/checkout@v2
       
       - name: Deploy Docker container
-        uses: wshihadeh/docker-deployment-action@v1
+        uses: wshihadeh/docker-deployment-action@v2
         with:
           remote_docker_host: github-actions@ssh.nerdfan.be
           ssh_private_key: ${{ secrets.DOCKER_SSH_PRIVATE_KEY }}
           ssh_public_key: ${{ secrets.DOCKER_SSH_PUBLIC_KEY }}
           stack_file_name: /opt/docker/nerdlandbot/test/docker-compose.yml
           pull_images_first: true
+          copy_stack_file: true
           args: up -d
