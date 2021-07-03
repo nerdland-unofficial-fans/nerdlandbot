@@ -9,7 +9,7 @@ from datetime import datetime
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
 from nerdlandbot.helpers.constants import NOTIFY_EMBED_COLOR
-
+from nerdlandbot.helpers.log import error
 
 
 class Recipe(commands.Cog, name="Spreadsheets"):
@@ -27,7 +27,10 @@ class Recipe(commands.Cog, name="Spreadsheets"):
         try:
             gc = gspread.service_account(self.sheets_token)
             sh = gc.open(self.spreadsheet)
-        except:
+        except Exception as e:
+            error(type(e))
+            error(str(e.args))
+            error(str(e))
             msg = translate("recipe_verification_error", lang)
             return await ctx.send(msg)
         ws = sh.sheet1
