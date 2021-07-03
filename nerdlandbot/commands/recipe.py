@@ -26,7 +26,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
         lang = await culture(ctx)
         try:
             gc = gspread.service_account(filename = self.sheets_token)
-            sh = gc.open(self.spreadsheet)
+            sh = gc.open_by_key(self.spreadsheet)
         except Exception as e:
             error(type(e))
             error(str(e.args))
