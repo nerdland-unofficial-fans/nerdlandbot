@@ -25,7 +25,7 @@ class Recipe(commands.Cog, name="Spreadsheets"):
         # Getting everything ready to acces 
         lang = await culture(ctx)
         try:
-            gc = gspread.service_account(self.sheets_token)
+            gc = gspread.service_account(filename = self.sheets_token)
             sh = gc.open(self.spreadsheet)
         except Exception as e:
             error(type(e))
