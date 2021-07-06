@@ -167,9 +167,10 @@ class Pets(commands.Cog, name="Pets"):
             message = translate("pet_picture_does_not_exist", lang).format(pet_id)
             return await ctx.send(message)
 
-        if not guild_data.user_is_admin(ctx.author) or not str(ctx.author.id) == guild_data.pets[pet_id]["owner"]:
-            gif = translate("not_admin_gif", lang)
-            return await ctx.send(gif)
+        if str(ctx.author.id) != str(guild_data.pets[pet_id]["owner"]):
+            if not guild_data.user_is_admin(ctx.author):                   
+                gif = translate("not_admin_gif", lang)
+                return await ctx.send(gif)
 
         await guild_data.delete_pet(pet_id)
         filepath = get_pet_path(ctx, pet_id)
