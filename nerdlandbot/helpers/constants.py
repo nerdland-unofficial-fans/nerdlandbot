@@ -56,3 +56,6 @@ EIGHT_BALL_URL = 'https://evening-castle-06130.herokuapp.com/eightball'
 
 #Image file size in bytes
 IMAGE_SIZE = 2e6
+
+# Nerdland Minecraft SRV record location
+MINECRAFT_SRV_RECORD_LOCATION = '_minecraft._tcp.minecraft.nerdfan.be'
