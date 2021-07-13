@@ -44,6 +44,7 @@ def main() -> None:
     bot.load_extension("nerdlandbot.commands.help")
     bot.load_extension("nerdlandbot.commands.settings")
     bot.load_extension("nerdlandbot.commands.membercount")
+    bot.load_extension("nerdlandbot.commands.minecraft")
     bot.load_extension("nerdlandbot.commands.random")
     bot.load_extension("nerdlandbot.commands.youtube")
     bot.load_extension("nerdlandbot.commands.poll")
@@ -64,7 +65,7 @@ def main() -> None:
     # Initialize Twitter keys
 
     # Initialize data for moderator
-    DISCORD_SERVER_ID = os.getenv("DISCORD_SERVER_ID") 
+    DISCORD_SERVER_ID = os.getenv("DISCORD_SERVER_ID")
     MODERATOR_NAME = os.getenv("MODERATOR_NAME")
 
     @bot.event
@@ -73,9 +74,7 @@ def main() -> None:
             info("Starting YouTube scheduler")
             check_and_post_latest_videos.start(bot)
         else:
-            error(
-                "No YOUTUBE_TOKEN present in .env, not starting YouTube scheduler."
-            )
+            error("No YOUTUBE_TOKEN present in .env, not starting YouTube scheduler.")
 
         bot.is_purging = {}
         purge_messages.start(bot)
@@ -99,6 +98,6 @@ def main() -> None:
     return bot
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     load_dotenv()
     main()
