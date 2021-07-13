@@ -21,9 +21,7 @@ class Minecraft(commands.Cog, name="minecraft"):
         name="minecraft", aliases=["mc"], help="minecraft_help",
     )
     @commands.guild_only()
-    async def minecraft(
-        self, ctx: commands.Context, mention: typing.Optional[str] = None
-    ):
+    async def minecraft(self, ctx: commands.Context):
         info("Querying minecraft server status")
         srv_records = dns.resolver.query(MINECRAFT_SRV_RECORD_LOCATION, "SRV")
 
@@ -36,7 +34,7 @@ class Minecraft(commands.Cog, name="minecraft"):
         status = server.status()
         player_names = "\n".join(map(lambda x: f"- {x.name}", status.players.sample))
         s = f"""**MOTD:** {status.description}
-**Version:** {status.version.name}
+            **Version:** {status.version.name}
 **Players:** {status.players.online}/{status.players.max}
 {player_names}
         """
