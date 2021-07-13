@@ -6,10 +6,14 @@ import dns.resolver
 
 from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.helpers.TranslationHelper import get_culture_from_context as culture
-from nerdlandbot.helpers.constants import NOTIFY_EMBED_COLOR
+from nerdlandbot.helpers.constants import (
+    NOTIFY_EMBED_COLOR,
+    MINECRAFT_SRV_RECORD_LOCATION,
+)
+from nerdlandbot.helpers.log import info
 
 
-class OpenSource(commands.Cog, name="minecraft"):
+class Minecraft(commands.Cog, name="minecraft"):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
@@ -20,11 +24,8 @@ class OpenSource(commands.Cog, name="minecraft"):
     async def minecraft(
         self, ctx: commands.Context, mention: typing.Optional[str] = None
     ):
-        srvInfo = {}
-        srv_records = dns.resolver.query("_minecraft._tcp.minecraft.nerdfan.be", "SRV")
-        print(str(srv_records))
-        for line in srv_records:
-            print(str(line.target))
+        info("Querying minecraft server status")
+        srv_records = dns.resolver.query(MINECRAFT_SRV_RECORD_LOCATION, "SRV")
 
         if len(srv_records) == 0:
             await ctx.send(
@@ -44,4 +45,4 @@ class OpenSource(commands.Cog, name="minecraft"):
 
 
 def setup(bot: commands.Bot):
-    bot.add_cog(OpenSource(bot))
+    bot.add_cog(Minecraft(bot))
