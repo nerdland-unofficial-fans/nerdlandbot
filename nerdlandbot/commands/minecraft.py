@@ -34,7 +34,7 @@ class Minecraft(commands.Cog, name="minecraft"):
         status = server.status()
         player_names = "\n".join(map(lambda x: f"- {x.name}", status.players.sample))
         s = f"""**MOTD:** {status.description}
-            **Version:** {status.version.name}
+**Version:** {status.version.name}
 **Players:** {status.players.online}/{status.players.max}
 {player_names}
         """
