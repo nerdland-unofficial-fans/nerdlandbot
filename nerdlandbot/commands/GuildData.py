@@ -39,7 +39,7 @@ class GuildData:
         self.pets_categories = []
         self.mod_channel = None
         self.church_channel = None
-        self.church_event = [],
+        self.church_event = []
         self.member_notification_number = 100
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:

@@ -259,7 +259,7 @@ class Settings(commands.Cog):
 
         # Error if not admin
         if not guild_data.user_is_admin(ctx.author):
-            gif = translate("not_admin_gif", await culture(ctx))
+            gif = translate("not_admin_gif", current_culture)
             return await ctx.send(gif)
 
         # Error if no valid argument
