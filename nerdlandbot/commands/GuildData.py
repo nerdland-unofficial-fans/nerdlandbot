@@ -5,6 +5,8 @@ from typing import List, Optional
 from discord import Member
 from datetime import datetime
 
+from nerdlandbot.helpers.constants import DEFAULT_MEMBER_NOTIFICATION_NUMBER
+
 _configFolder = "GuildConfigs"
 _guildConfigCache = dict()
 
@@ -40,7 +42,7 @@ class GuildData:
         self.mod_channel = None
         self.church_channel = None
         self.church_event = []
-        self.member_notification_number = 100
+        self.member_notification_number = DEFAULT_MEMBER_NOTIFICATION_NUMBER
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -471,6 +473,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.mod_channel = data.get("mod_channel",None)
         guildData.church_channel = data.get("church_channel", "")
         guildData.church_event = data.get("church_event", [])
+        guildData.member_notification_number = data.get("member_notification_number", DEFAULT_MEMBER_NOTIFICATION_NUMBER)
 
         return guildData
 

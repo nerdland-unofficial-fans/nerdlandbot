@@ -2,6 +2,7 @@ NOTIFY_EMBED_COLOR = 0x0a5bf3
 NOTIFY_MAX_MSG_LENGTH = 1024 #characters
 DISCORD_MAX_MSG_LENGTH = 2000
 NOTIFY_MAX_PER_PAGE = 20 #lists
+DEFAULT_MEMBER_NOTIFICATION_NUMBER = 100
 
 # Timeouts
 # reaction timeout is for reactions open to all users
