@@ -25,6 +25,7 @@ class GuildData:
     mod_channel: str
     church_channel: int
     church_event: list
+    member_notification_number: int
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -38,7 +39,8 @@ class GuildData:
         self.pets_categories = []
         self.mod_channel = None
         self.church_channel = None
-        self.church_event = []
+        self.church_event = [],
+        self.member_notification_number = 100
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -184,7 +186,6 @@ class GuildData:
             or user_to_check.id in self.bot_admins
         )
 
-
     async def update_language(self, language: str):
         """
         Updates the language and saves the guild
@@ -298,8 +299,6 @@ class GuildData:
         self.pets[pet_id_str]['pet_name'] = pet_name.lower()
         self.pets[pet_id_str]['category'] = category.lower()
         await self.save()
-        
-    
 
     async def delete_pet(self, pet_id: str) -> None:
         pets = self.pets
@@ -373,7 +372,6 @@ class GuildData:
         self.church_event.append(info)
         await self.save()
 
-
     async def remove_church_event(self):
         self.church_event.pop(0)
         await self.save()
@@ -383,6 +381,7 @@ class GuildData:
         await self.save()
 
         return True
+
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
     """
