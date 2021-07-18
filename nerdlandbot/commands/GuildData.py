@@ -1,4 +1,5 @@
 import json
+import os
 
 from os import path, listdir, makedirs
 from typing import List, Optional
@@ -25,6 +26,7 @@ class GuildData:
     mod_channel: str
     church_channel: int
     church_event: list
+    prefix: str
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -39,6 +41,7 @@ class GuildData:
         self.mod_channel = None
         self.church_channel = None
         self.church_event = []
+        self.prefix = os.getenv("PREFIX")
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -472,6 +475,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.mod_channel = data.get("mod_channel",None)
         guildData.church_channel = data.get("church_channel", "")
         guildData.church_event = data.get("church_event", [])
+        guildData.prefix = data.get("prefix", os.getenv("PREFIX"))
 
         return guildData
 

@@ -267,7 +267,8 @@ class Settings(commands.Cog):
             return await ctx.send(translate("set_pref_no_arg", current_culture))
 
         #set prefix
-        self.bot.command_prefix = prefix
+        guild_data.prefix = prefix
+        await guild_data.save()
         await ctx.send(translate("set_pref_success", current_culture).format(prefix))
 
 def setup(bot: commands.Bot):
