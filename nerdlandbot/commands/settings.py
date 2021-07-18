@@ -1,4 +1,5 @@
 import asyncio
+import typing
 
 from discord.ext import commands
 
@@ -242,6 +243,32 @@ class Settings(commands.Cog):
             msg = translate("snooze_lose", await culture(ctx))
             return await ctx.send(msg)
 
+    @commands.command(name="set_prefix", aliases=["prefix", "pref"], brief="prefix_brief", help="prefix_help",
+                      usage="prefix_usage")
+    @commands.guild_only()
+    async def set_prefix(self, ctx: commands.Context, prefix: typing.Optional[str]=None):
+        """
+        Set a new prefix.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        :param prefix: The new prefix to be used
+        """
+
+        # Get guild data
+        guild_data = await get_guild_data(ctx.guild.id)
+        current_culture = await culture(ctx)
+
+        # Error if not admin
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", current_culture)
+            return await ctx.send(gif)
+
+        # Error if no parameter
+        if not prefix:
+            return await ctx.send(translate("set_pref_no_arg", current_culture))
+
+        #set prefix
+        self.bot.command_prefix = prefix
+        await ctx.send(translate("set_pref_success", current_culture).format(prefix))
 
 def setup(bot: commands.Bot):
     bot.add_cog(Settings(bot))
