@@ -24,6 +24,9 @@ RUN poetry build && pip install dist/*.whl
 
 FROM base as final
 
+ENV TZ=Europe/Brussels
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 ENV VIRTUAL_ENV=/venv
 
 COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV

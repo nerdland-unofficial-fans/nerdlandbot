@@ -10,6 +10,7 @@ from nerdlandbot.translations.Translations import load_translations, get_text as
 from nerdlandbot.scheduler.YoutubeScheduler import check_and_post_latest_videos
 from nerdlandbot.scheduler.PurgeScheduler import purge_messages
 from nerdlandbot.scheduler.ChurchScheduler import church_fights
+from nerdlandbot.scheduler.Zomerpuzzels import zomerpuzzels
 from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
 
 
@@ -79,6 +80,7 @@ def main() -> None:
         bot.is_purging = {}
         purge_messages.start(bot)
         church_fights.start(bot)
+        zomerpuzzels.init(bot)
 
     if SHEETS_TOKEN:
         info("Spreadsheet editing is possible")
