@@ -1,3 +1,4 @@
+from random import sample
 import typing
 import discord
 from discord.ext import commands
@@ -32,7 +33,10 @@ class Minecraft(commands.Cog, name="minecraft"):
             return
         server = MinecraftServer(srv_records[0].target.to_text())
         status = server.status()
-        player_names = "\n".join(map(lambda x: f"- {x.name}", status.players.sample))
+        if status.players.online == 0:
+            player_names = translate("minecraft_no_players", await culture(ctx))
+        else:    
+            player_names = "\n".join(map(lambda x: f"- {x.name}", status.players.sample))
         s = f"""**MOTD:** {status.description}
 **Version:** {status.version.name}
 **Players:** {status.players.online}/{status.players.max}
