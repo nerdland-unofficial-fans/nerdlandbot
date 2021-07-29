@@ -1,4 +1,3 @@
-from random import sample
 import typing
 import discord
 from discord.ext import commands
