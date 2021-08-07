@@ -257,3 +257,4 @@
 "church_no_mention","You need to challenge someone, <<foemp>>!","Ge moet iemand uitdagen, <<foemp>>!"
 "minecraft_help","Query the status of the Nerdland Minecraft server.","Haal de status van de Nerdland Minecraft server op."
 "minecraft_server_not_found","The status of the server could not be fetched.","De status van de server kon niet opgehaald worden."
+"minecraft_no_players", "There are no players online.","Er zijn geen spelers online."
