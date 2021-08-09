@@ -255,13 +255,14 @@ class Settings(commands.Cog):
 
         # Get guild data
         guild_data = await get_guild_data(ctx.guild.id)
+        
         current_culture = await culture(ctx)
 
         # Error if not admin
         if not guild_data.user_is_admin(ctx.author):
             gif = translate("not_admin_gif", current_culture)
             return await ctx.send(gif)
-
+        
         # Error if no parameter
         if not prefix:
             return await ctx.send(translate("set_pref_no_arg", current_culture))
@@ -270,6 +271,40 @@ class Settings(commands.Cog):
         guild_data.prefix = prefix
         await guild_data.save()
         await ctx.send(translate("set_pref_success", current_culture).format(prefix))
+        
+        
+    @commands.command(name="set_member_notification_number", aliases=["new_members"], brief="settings_member_notification_number_brief",
+                      help="settings_member_notification_number_help", usage="settings_member_notification_number_usage")
+    @commands.guild_only()
+    async def set_member_notification_number(self, ctx: commands.Context, max: typing.Optional[str]=None):
+        """
+        Show the current max number of users to be notified in a single message, before it is split in multiple posts.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        """
+        # Get guild data
+        guild_data = await get_guild_data(ctx.guild.id)
+
+        # Get current culture
+        current_culture = await culture(ctx)
+
+        # Error if not admin
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", current_culture)
+            return await ctx.send(gif)
+          
+        # Error if no valid argument
+        if not max or not max.isnumeric():
+            msg = translate("set_member_notification_number_invalid_parameter", current_culture)
+            return await ctx.send(msg)
+
+        # Update value
+        guild_data.member_notification_number = int(max)
+        await guild_data.save()
+
+        # Notify success
+        msg = translate("set_member_notification_number_success", current_culture).format(int(max))
+        await ctx.send(msg)
+        
 
 def setup(bot: commands.Bot):
     bot.add_cog(Settings(bot))

@@ -6,8 +6,6 @@ from nerdlandbot.translations.Translations import get_text as translate
 from nerdlandbot.commands.GuildData import get_guild_data
 
 notification_channel_name = 'botplayground'
-member_notification_trigger = 100
-
 
 class OnMemberJoin(commands.Cog, name="on_member_join"):
     def __init__(self, bot: commands.Bot):
@@ -24,6 +22,10 @@ class OnMemberJoin(commands.Cog, name="on_member_join"):
 
         # Get member count
         member_count = len(guild.members)
+
+        # Get notification trigger
+        guild_data = await get_guild_data(guild.id)
+        member_notification_trigger = guild_data.member_notification_number
 
         # Return if count is no multiple of threshold
         if member_count % member_notification_trigger != 0:
