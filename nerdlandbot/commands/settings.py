@@ -291,7 +291,7 @@ class Settings(commands.Cog):
         if not guild_data.user_is_admin(ctx.author):
             gif = translate("not_admin_gif", current_culture)
             return await ctx.send(gif)
-          
+
         # Error if no valid argument
         if not max or not max.isnumeric():
             msg = translate("set_member_notification_number_invalid_parameter", current_culture)
@@ -304,7 +304,7 @@ class Settings(commands.Cog):
         # Notify success
         msg = translate("set_member_notification_number_success", current_culture).format(int(max))
         await ctx.send(msg)
-        
+
 
 def setup(bot: commands.Bot):
     bot.add_cog(Settings(bot))
