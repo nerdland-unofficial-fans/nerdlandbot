@@ -25,6 +25,7 @@ class GuildData:
     pets_last_id: Optional[int]
     pets_categories: List[str]
     mod_channel: str
+    boodschap_channel: str
     church_channel: int
     church_event: list
     member_notification_number: int
@@ -40,6 +41,7 @@ class GuildData:
         self.pets_last_id = None
         self.pets_categories = []
         self.mod_channel = None
+        self.boodschap_channel = None
         self.church_channel = None
         self.church_event = []
         self.member_notification_number = DEFAULT_MEMBER_NOTIFICATION_NUMBER
@@ -384,6 +386,11 @@ class GuildData:
 
         return True
 
+    async def update_boodschap_channel(self, boodschap_channel: str) -> bool:
+        self.boodschap_channel = boodschap_channel
+        await self.save()
+
+        return True
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
     """
@@ -471,6 +478,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.pets_last_id = data.get("pets_last_id", None)
         guildData.pets_categories = data.get("pets_categories", [])
         guildData.mod_channel = data.get("mod_channel",None)
+        guildData.boodschap_channel = data.get("boodschap_channel",None)
         guildData.church_channel = data.get("church_channel", "")
         guildData.church_event = data.get("church_event", [])
         guildData.member_notification_number = data.get("member_notification_number", DEFAULT_MEMBER_NOTIFICATION_NUMBER)
