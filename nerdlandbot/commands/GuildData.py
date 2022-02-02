@@ -245,9 +245,9 @@ class GuildData:
             :return: True if added successfully, False if already in list. (bool)
             """
 
-        if text_channel.id not in self.purgers.keys():
+        if str(text_channel.id) not in self.purgers.keys():
             # purger text channel not in list, add to list and return True
-            self.purgers[text_channel.id] = max_age
+            self.purgers[str(text_channel.id)] = max_age
             await self.save()
             return True
 
@@ -262,9 +262,9 @@ class GuildData:
         :return: True if added successfully, False if already in list. (bool)
         """
 
-        if text_channel.id in self.purgers.keys():
+        if str(text_channel.id) in self.purgers.keys():
             # purger text channel exists in list, remove and return True
-            self.purgers.pop(text_channel.id, None)
+            self.purgers.pop(str(text_channel.id), None)
             await self.save()
             return True
         else:
