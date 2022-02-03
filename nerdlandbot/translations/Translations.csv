@@ -258,3 +258,8 @@
 "minecraft_help","Query the status of the Nerdland Minecraft server.","Haal de status van de Nerdland Minecraft server op."
 "minecraft_server_not_found","The status of the server could not be fetched.","De status van de server kon niet opgehaald worden."
 "minecraft_no_players", "There are no players online.","Er zijn geen spelers online."
+"set_member_notification_number_invalid_parameter","This command requires a number as parameter, <<foemp>>!","Dit commando verwacht een getal als parameter, <<foemp>>!"
+"set_member_notification_number_success","The bot will now notify this server for each {0} new members!","De bot zal nu een notificatie sturen voor elke {0} nieuwe leden!"
+"settings_member_notification_number_brief","**admin-only** \n \u2003 Change the member notification number.","**admin-functie** \n \u2003 Nieuwe leden notificatie waarde aanpassen."
+"settings_member_notification_number_help","**admin-only** \n \u2003 Change the number of new members after which the bot sends out a notification.","**admin-functie** \n \u2003 Verander het aantal nieuwe leden waarna de bot een notificatie stuurt."
+"settings_member_notification_number_usage","<new value>","<nieuwe waarde>"

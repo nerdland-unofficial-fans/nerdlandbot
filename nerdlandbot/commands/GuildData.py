@@ -5,6 +5,8 @@ from typing import List, Optional
 from discord import Member
 from datetime import datetime
 
+from nerdlandbot.helpers.constants import DEFAULT_MEMBER_NOTIFICATION_NUMBER
+
 _configFolder = "GuildConfigs"
 _guildConfigCache = dict()
 
@@ -25,6 +27,7 @@ class GuildData:
     mod_channel: str
     church_channel: int
     church_event: list
+    member_notification_number: int
 
     def __init__(self, guild_id: int):
         self.guild_id = guild_id
@@ -39,6 +42,7 @@ class GuildData:
         self.mod_channel = None
         self.church_channel = None
         self.church_event = []
+        self.member_notification_number = DEFAULT_MEMBER_NOTIFICATION_NUMBER
 
     async def sub_user(self, list_name: str, user_id: int) -> bool:
         """
@@ -184,7 +188,6 @@ class GuildData:
             or user_to_check.id in self.bot_admins
         )
 
-
     async def update_language(self, language: str):
         """
         Updates the language and saves the guild
@@ -245,9 +248,9 @@ class GuildData:
             :return: True if added successfully, False if already in list. (bool)
             """
 
-        if text_channel.id not in self.purgers.keys():
+        if str(text_channel.id) not in self.purgers.keys():
             # purger text channel not in list, add to list and return True
-            self.purgers[text_channel.id] = max_age
+            self.purgers[str(text_channel.id)] = max_age
             await self.save()
             return True
 
@@ -262,9 +265,9 @@ class GuildData:
         :return: True if added successfully, False if already in list. (bool)
         """
 
-        if text_channel.id in self.purgers.keys():
+        if str(text_channel.id) in self.purgers.keys():
             # purger text channel exists in list, remove and return True
-            self.purgers.pop(text_channel.id, None)
+            self.purgers.pop(str(text_channel.id), None)
             await self.save()
             return True
         else:
@@ -298,8 +301,6 @@ class GuildData:
         self.pets[pet_id_str]['pet_name'] = pet_name.lower()
         self.pets[pet_id_str]['category'] = category.lower()
         await self.save()
-        
-    
 
     async def delete_pet(self, pet_id: str) -> None:
         pets = self.pets
@@ -373,7 +374,6 @@ class GuildData:
         self.church_event.append(info)
         await self.save()
 
-
     async def remove_church_event(self):
         self.church_event.pop(0)
         await self.save()
@@ -383,6 +383,7 @@ class GuildData:
         await self.save()
 
         return True
+
 
 async def update_youtube_channel_video_id(guild_id: int, youtube_channel_id, latest_video_id):
     """
@@ -472,6 +473,7 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.mod_channel = data.get("mod_channel",None)
         guildData.church_channel = data.get("church_channel", "")
         guildData.church_event = data.get("church_event", [])
+        guildData.member_notification_number = data.get("member_notification_number", DEFAULT_MEMBER_NOTIFICATION_NUMBER)
 
         return guildData
 
