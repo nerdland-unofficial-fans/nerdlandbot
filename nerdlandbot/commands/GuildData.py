@@ -97,6 +97,14 @@ class GuildData:
         """
         return self.notification_lists[list_name]["emoji"], self.notification_lists[list_name]["is_custom_emoji"]
 
+    def get_filtered_lists(self, search: str) -> List[str]:
+        """
+        Returns a filtered list of notification_lists based on the search keyword
+        :param search: The text to math. (str)
+        :return: A list with all matching notification_lists
+        """
+        return {k: v for k, v in self.notification_lists.items() if search in k}
+
     def does_list_exist(self, list_name: str) -> bool:
         """
         Checks whether or not a list exists.
@@ -332,14 +340,14 @@ class GuildData:
     async def remove_pet_category(self, category_name: str) -> bool:
         categories = self.pets_categories
         category_name = category_name.lower()
-        
+
         if category_name not in categories:
             return False
 
         categories.remove(category_name)
         await self.save()
         return True
-      
+
     async def update_church_channel(self, church: str) -> bool:
         """
         Updates the kerk_channel
@@ -354,8 +362,8 @@ class GuildData:
             return True
         else:
             return False
-    
-    async def set_church_event(self, sender: str, receiver: str, day: int, culture: str, message:Optional[str] = None):
+
+    async def set_church_event(self, sender: str, receiver: str, day: int, culture: str, message: Optional[str] = None):
         """
         Adds a kerk_event
         :param sender: The person who sent a challenge
@@ -370,7 +378,7 @@ class GuildData:
         info["day"] = day
         info["culture"] = culture
         info["message"] = message
-        
+
         self.church_event.append(info)
         await self.save()
 
@@ -470,10 +478,11 @@ async def __read_file(guild_id: int, filename: str) -> GuildData:
         guildData.pets = data.get("pets", {})
         guildData.pets_last_id = data.get("pets_last_id", None)
         guildData.pets_categories = data.get("pets_categories", [])
-        guildData.mod_channel = data.get("mod_channel",None)
+        guildData.mod_channel = data.get("mod_channel", None)
         guildData.church_channel = data.get("church_channel", "")
         guildData.church_event = data.get("church_event", [])
-        guildData.member_notification_number = data.get("member_notification_number", DEFAULT_MEMBER_NOTIFICATION_NUMBER)
+        guildData.member_notification_number = data.get(
+            "member_notification_number", DEFAULT_MEMBER_NOTIFICATION_NUMBER)
 
         return guildData
 

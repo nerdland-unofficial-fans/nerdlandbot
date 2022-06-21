@@ -21,7 +21,7 @@ class Notify(commands.Cog, name="Notification_lists"):
         """
         Subscribes user to a list and confirms with message
         :param ctx: The current context. (discord.ext.commands.Context)
-        :param list_name: The list to subscribe to or the all keyword. (str)
+        :param list_name: The list to subscribe to, the all keyword or a filter keyword. (str)
         :param user_id: the user to subscribe (int)
         """
         # Make sure list is lowercase
@@ -37,15 +37,24 @@ class Notify(commands.Cog, name="Notification_lists"):
             msg = translate("all_sub_success", await culture(ctx))
             return await ctx.send(msg)
         else:
-            # Error if list does not exist
-            if not guild_data.does_list_exist(list_name):
+            # Check if 1 or more lists with list_name exist
+            list_matches = guild_data.get_filtered_lists(list_name)
+
+            # No matches => Error
+            if not list_matches:
                 msg = translate("list_err_does_not_exit", await culture(ctx))
                 return await ctx.send(msg)
 
-            # Subscribe user and error if failed
-            if not await guild_data.sub_user(list_name, user_id):
-                msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(user_id), list_name)
-                return await ctx.send(msg)
+            # Single match => Sub
+            elif len(list_matches) == 1:
+                # Subscribe user and error if failed
+                if not await guild_data.sub_user(list_name, user_id):
+                    msg = translate("list_err_already_subscribed", await culture(ctx)).format(str(user_id), list_name)
+                    return await ctx.send(msg)
+
+            # Show all matching lists
+            else:
+                return await self.show_lists(ctx, list_name)
 
             # Subscription successful, show result to user
             msg = translate("list_subscribed", await culture(ctx)).format(str(user_id), list_name)
@@ -90,7 +99,8 @@ class Notify(commands.Cog, name="Notification_lists"):
     @commands.guild_only()
     async def subscribe(self, ctx: commands.Context, list_name: typing.Optional[str] = None):
         """
-        If used with list_name, subscribes the user to that list if possible.
+        If used with list_name, subscribes the user to that list if possible. list_name can also be 'all' to sub to all
+        lists or a keyword to filter existing lists.
         If used without parameter it prints the existing lists, and allows users to subscribe by adding reactions.
         :param ctx: The current context (discord.ext.commands.Context)
         :param list_name: The list to subscribe to. (optional - str - default = None)
@@ -146,7 +156,8 @@ class Notify(commands.Cog, name="Notification_lists"):
         # Setup the announcement with the subject and caller
         message_text = translate("notifying", await culture(ctx)).format(list_name.capitalize(), ctx.message.author.id, ctx.guild.get_member(ctx.bot.user.id).display_name)
 
-        filtered_users = [user for user in users if ctx.guild.get_member(int(user))]
+        filtered_users = [
+            user for user in users if ctx.guild.get_member(int(user))]
         # build users mentioning strings
         user_tags = f'<@{str(filtered_users[0])}>'
         user_messages = []
@@ -252,10 +263,11 @@ class Notify(commands.Cog, name="Notification_lists"):
 
     @commands.command(name="show_lists", brief="notify_show_lists_brief", help="notify_show_lists_help")
     @commands.guild_only()
-    async def show_lists(self, ctx: commands.Context):
+    async def show_lists(self, ctx: commands.Context, list_filter: typing.Optional[str] = None):
         """
-        Show all currently existing lists for this server
+        Show all currently existing lists for this server or a filtered list in case a filter was entered
         :param ctx: The current context. (discord.ext.commands.Context)
+        :param list_filter: Optional search string to filter the lists (useful if many lists exist)
         """
 
         guild_data = await get_guild_data(ctx.message.guild.id)
@@ -265,10 +277,14 @@ class Notify(commands.Cog, name="Notification_lists"):
             msg = translate("no_existing_lists", await culture(ctx))
             return await ctx.send(msg)
 
+        lists = guild_data.notification_lists
+        if list_filter:
+            lists = guild_data.get_filtered_lists(list_filter)
+
         # Check list count
         max_per_page = NOTIFY_MAX_PER_PAGE
-        page_count = math.ceil(len(guild_data.notification_lists)/max_per_page)
-        sorted_lists = sorted(guild_data.notification_lists.items())
+        page_count = math.ceil(len(lists)/max_per_page)
+        sorted_lists = sorted(lists.items())
 
         messages = []
         for page in range(1, page_count+1):
