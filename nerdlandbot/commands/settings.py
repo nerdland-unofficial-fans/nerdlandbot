@@ -243,6 +243,36 @@ class Settings(commands.Cog):
             msg = translate("snooze_lose", await culture(ctx))
             return await ctx.send(msg)
 
+    @commands.command(name="set_prefix", aliases=["prefix", "pref"], brief="prefix_brief", help="prefix_help",
+                      usage="prefix_usage")
+    @commands.guild_only()
+    async def set_prefix(self, ctx: commands.Context, prefix: typing.Optional[str]=None):
+        """
+        Set a new prefix.
+        :param ctx: The current context. (discord.ext.commands.Context)
+        :param prefix: The new prefix to be used
+        """
+
+        # Get guild data
+        guild_data = await get_guild_data(ctx.guild.id)
+        
+        current_culture = await culture(ctx)
+
+        # Error if not admin
+        if not guild_data.user_is_admin(ctx.author):
+            gif = translate("not_admin_gif", current_culture)
+            return await ctx.send(gif)
+        
+        # Error if no parameter
+        if not prefix:
+            return await ctx.send(translate("set_pref_no_arg", current_culture))
+
+        #set prefix
+        guild_data.prefix = prefix
+        await guild_data.save()
+        await ctx.send(translate("set_pref_success", current_culture).format(prefix))
+        
+        
     @commands.command(name="set_member_notification_number", aliases=["new_members"], brief="settings_member_notification_number_brief",
                       help="settings_member_notification_number_help", usage="settings_member_notification_number_usage")
     @commands.guild_only()

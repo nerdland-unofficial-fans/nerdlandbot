@@ -10,8 +10,16 @@ from nerdlandbot.translations.Translations import load_translations, get_text as
 from nerdlandbot.scheduler.YoutubeScheduler import check_and_post_latest_videos
 from nerdlandbot.scheduler.PurgeScheduler import purge_messages
 from nerdlandbot.scheduler.ChurchScheduler import church_fights
-from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData
+from nerdlandbot.commands.GuildData import get_all_guilds_data, GuildData, get_guild_data
 
+
+async def determine_prefix(bot, message):
+    guild = message.guild
+    if not guild:
+        return os.getenv("PREFIX")
+
+    guild_data = await get_guild_data(guild.id)
+    return guild_data.prefix
 
 def main() -> None:
     PREFIX = os.getenv("PREFIX")
@@ -29,7 +37,7 @@ def main() -> None:
     # load up intents
     intents = discord.Intents.all()
 
-    bot = NerdlandBot(PREFIX, intents)
+    bot = NerdlandBot(determine_prefix, intents)
 
     # remove default help command
     bot.remove_command("help")
